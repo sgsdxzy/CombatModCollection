@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<partyTemplates>
+  <MBPartyTemplate id="desert_bandits_template" >
+    <stacks>
+      <PartyTemplateStack min_value="2" max_value="21" troop="NPCCharacter.desert_bandits_bandit" />
+      <PartyTemplateStack min_value="0" max_value="4" troop="NPCCharacter.desert_bandits_raider" />
+      <PartyTemplateStack min_value="0" max_value="2" troop="NPCCharacter.desert_bandits_chief" />
+    </stacks>
+  </MBPartyTemplate>
+  <MBPartyTemplate id="steppe_bandits_template" >
+    <stacks>
+      <PartyTemplateStack min_value="1" max_value="11" troop="NPCCharacter.forest_bandits_bandit" />
+      <PartyTemplateStack min_value="1" max_value="12" troop="NPCCharacter.steppe_bandits_bandit" />  
+      <PartyTemplateStack min_value="0" max_value="4" troop="NPCCharacter.steppe_bandits_chief" />     
+    </stacks>
+  </MBPartyTemplate>
+</partyTemplates>

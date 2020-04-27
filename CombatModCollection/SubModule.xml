@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Module>
+  <Name value="Combat Mod Collection"/>
+  <Id value="CombatModCollection"/>
+  <Version value="v1.3.0"/>
+  <DefaultModule value="false"/>
+  <SingleplayerModule value="true"/>
+  <MultiplayerModule value="false"/>
+  <Official value="false" />
+  <DependedModules>
+    <DependedModule Id="Native" />
+    <DependedModule Id="SandBoxCore" />
+    <DependedModule Id="Sandbox" />
+    <DependedModule Id="StoryMode" />
+	  <DependedModule Id="CustomBattle"/>
+  </DependedModules>
+  <SubModules>
+		<SubModule>
+			<Name value="CombatModCollection"/>
+			<DLLName value="CombatModCollection.dll"/>
+			<SubModuleClassType value="CombatModCollection.SubModule"/>
+			<Tags>
+				<Tag key="DedicatedServerType" value="none" />
+				<Tag key="IsNoRenderModeElement" value="false" />
+			</Tags>
+		</SubModule>
+	</SubModules>
+    <Xmls>
+    <XmlNode>
+      <XmlName id="partyTemplates" path="partyTemplates"/>
+      <IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+			</IncludedGameTypes>
+    </XmlNode>
+    <XmlNode>
+      <XmlName id="NPCCharacters" path="bandits"/>
+      <IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+				<GameType value = "CustomGame"/>
+			</IncludedGameTypes>
+    </XmlNode>
+  </Xmls>
+</Module>
