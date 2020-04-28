@@ -7,13 +7,13 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 
-namespace LightCombatModCollection
+namespace CombatModCollection
 {
     [HarmonyPatch(typeof(MobilePartyHelper), "SpawnLordPartyInternal")]
     public class SpawnLordPartyInternalPatch
-    {
-        private static MethodInfo OnLordPartySpawnedMI = CampaignEventDispatcher.Instance.GetType().GetMethod("OnLordPartySpawned", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        
+    {        
+        private static MethodInfo OnLordPartySpawnedMI = typeof(CampaignEventDispatcher).GetMethod("OnLordPartySpawned", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
         static bool Prefix(ref MobileParty __result, Hero hero,
             Vec2 position,
             float spawnRadius,
@@ -22,7 +22,8 @@ namespace LightCombatModCollection
             MobileParty spawnedParty = MBObjectManager.Instance.CreateObject<MobileParty>(hero.CharacterObject.StringId + "_" + (object)hero.NumberOfCreatedParties);
             ++hero.NumberOfCreatedParties;
             spawnedParty.AddElementToMemberRoster(hero.CharacterObject, 1, true);
-            int troopNumberLimit = hero == Hero.MainHero || hero.Clan == Clan.PlayerClan ? 0 : SubModule.Settings.AIRespawnPartySize;
+            int troopNumberLimit = hero == Hero.MainHero || hero.Clan == Clan.PlayerClan ?
+                (int)SubModule.Settings.Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn : (int)SubModule.Settings.Strategy_ModifyRespawnParty_AILordPartySizeOnRespawn;
             if (!Campaign.Current.GameStarted)
             {
                 float num = (float)(1.0 - (double)MBRandom.RandomFloat * (double)MBRandom.RandomFloat);
@@ -42,9 +43,11 @@ namespace LightCombatModCollection
                 spawnedParty.Ai.SetAIState(AIState.VisitingNearbyTown, (PartyBase)null);
                 spawnedParty.SetMoveGoToSettlement(spawnSettlement);
             }
+
             // CampaignEventDispatcher.Instance.OnLordPartySpawned(spawnedParty);
             object[] parametersArray = new object[] { spawnedParty };
             OnLordPartySpawnedMI.Invoke(CampaignEventDispatcher.Instance, parametersArray);
+
             __result = spawnedParty;
 
             return false;
@@ -52,7 +55,7 @@ namespace LightCombatModCollection
 
         static bool Prepare()
         {
-            return SubModule.Settings.AIRespawnPartySize >= 0;
+            return SubModule.Settings.Strategy_ModifyRespawnParty;
         }
     }
 }

@@ -1,2 +1,4 @@
 src/.vs/
 src/obj/
+*.7z
+cover.png

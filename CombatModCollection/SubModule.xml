@@ -25,22 +25,4 @@
 			</Tags>
 		</SubModule>
 	</SubModules>
-    <Xmls>
-    <XmlNode>
-      <XmlName id="partyTemplates" path="partyTemplates"/>
-      <IncludedGameTypes>
-				<GameType value = "Campaign"/>
-				<GameType value = "CampaignStoryMode"/>
-				<GameType value = "CustomGame"/>
-			</IncludedGameTypes>
-    </XmlNode>
-    <XmlNode>
-      <XmlName id="NPCCharacters" path="bandits"/>
-      <IncludedGameTypes>
-				<GameType value = "Campaign"/>
-				<GameType value = "CampaignStoryMode"/>
-				<GameType value = "CustomGame"/>
-			</IncludedGameTypes>
-    </XmlNode>
-  </Xmls>
 </Module>

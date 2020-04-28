@@ -1,3 +1,24 @@
 {
-  "AIRespawnPartySize": 3
+  "Battle_SurviveByArmor": false,
+    "Battle_SurviveByArmor_ArmorThreshold": 100,
+
+  "Battle_GoodSoildersNeverDie": false,
+    "Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty": true,
+    "Battle_GoodSoildersNeverDie_MinimumLevel": 20,
+
+  "Battle_SendAllTroops": false,
+    "Battle_SendAllTroops_CombatSpeed": 1.0,
+
+  "Battle_WarStomp": false,
+    "Battle_WarStomp_UnstoppableCharge": true,
+    "Battle_WarStomp_WarStompDamageMultiplier": 4,
+
+  "Battle_PowerThrust": false,
+
+
+  "Strategy_ModifyRespawnParty": false,
+    "Strategy_ModifyRespawnParty_AILordPartySizeOnRespawn": 3,
+    "Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn": 0,
+
+  "Strategy_Strategy_LearnToQuit": false
 }
