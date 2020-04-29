@@ -2,7 +2,7 @@
 <Module>
   <Name value="Combat Mod Collection"/>
   <Id value="CombatModCollection"/>
-  <Version value="v1.3.0"/>
+  <Version value="v1.3.1"/>
   <DefaultModule value="false"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>

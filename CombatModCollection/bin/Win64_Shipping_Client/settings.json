@@ -1,6 +1,6 @@
 {
   "Battle_SurviveByArmor": false,
-    "Battle_SurviveByArmor_ArmorThreshold": 100,
+    "Battle_SurviveByArmor_ArmorThreshold": 80,
 
   "Battle_GoodSoildersNeverDie": false,
     "Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty": true,
@@ -8,12 +8,16 @@
 
   "Battle_SendAllTroops": false,
     "Battle_SendAllTroops_CombatSpeed": 1.0,
+    "Battle_SendAllTroops_SimXPMultiplier": 1.0,
 
   "Battle_WarStomp": false,
     "Battle_WarStomp_UnstoppableCharge": true,
     "Battle_WarStomp_WarStompDamageMultiplier": 4,
 
   "Battle_PowerThrust": false,
+    "Battle_PowerThrust_kE": 0.125,
+    "Battle_PowerThrust_kP": 0.10,
+    "Battle_PowerThrust_kC": 0.067,
 
 
   "Strategy_ModifyRespawnParty": false,

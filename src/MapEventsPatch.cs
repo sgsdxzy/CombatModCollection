@@ -25,8 +25,6 @@ namespace CombatModCollection
         private static FieldInfo MapEventSide__selectedSimulationTroop = typeof(MapEventSide).GetField(
             "_selectedSimulationTroop", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static int NumShareXp = 4;
-
         private static UniqueTroopDescriptor SelectSimulationTroopAtIndex(MapEventSide side, int index)
         {
             // side._selectedSimulationTroopIndex = index;
@@ -51,9 +49,13 @@ namespace CombatModCollection
         {
             int strikerNumber = strikerSide.NumRemainingSimulationTroops;
             int strikedNumber = strikedSide.NumRemainingSimulationTroops;
-
-            bool finishedAnyone = false;
             totalDamageDone = 0;
+            if (strikerNumber == 0 || strikedNumber == 0)
+            {
+                return true;
+            }
+
+            bool finishedAnyone = false;          
             for (int index = strikedNumber - 1; index >= 0; index--)
             {
                 UniqueTroopDescriptor strikerTroopDescriptor = strikerSide.SelectRandomSimulationTroop();
@@ -156,7 +158,7 @@ namespace CombatModCollection
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
             int numDefenders = __instance.DefenderSide.NumRemainingSimulationTroops;
             double ratio1 = (Math.Pow(numAttackers, -0.6) + Math.Pow(numDefenders, -0.6));
-            double ratio2 = __instance.IsSiegeAssault ? 0.3 : 1.0;
+            double ratio2 = __instance.IsSiegeAssault ? 0.2 : 1.0;
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 20f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
             simulationRoundsAttacker = rounds;
