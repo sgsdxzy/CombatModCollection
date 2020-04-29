@@ -8,10 +8,10 @@ namespace CombatModCollection
     {        
         static void Postfix(ref (float defenderAdvantage, float attackerAdvantage) __result)
         {
-            if (__result.defenderAdvantage <= 1)
-            {
-                return;
-            }
+            // if (__result.defenderAdvantage <= 1)
+            // {
+            //     return;
+            // }
             __result.attackerAdvantage /= __result.defenderAdvantage;
             __result.defenderAdvantage = 1.0f;
         }
