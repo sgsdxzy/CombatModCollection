@@ -128,8 +128,8 @@ namespace CombatModCollection
         {
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
             int numDefenders = __instance.DefenderSide.NumRemainingSimulationTroops;
-            float ratio = (float)(Math.Pow(numAttackers, -0.4) + Math.Pow(numDefenders, -0.4)) * 20f;
-            int rounds = (int)(ratio * SubModule.Settings.Battle_SendAllTroops_CombatSpeed);
+            double ratio = (Math.Pow(numAttackers, -0.4) + Math.Pow(numDefenders, -0.4));
+            int rounds = (int)Math.Max(ratio * 20f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 4);
             simulationRoundsDefender = rounds;
             simulationRoundsAttacker = rounds;
         }
@@ -153,7 +153,8 @@ namespace CombatModCollection
             float num2 = 0.0f;
             foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.DefenderSide.Parties)
                 num2 += party.TotalStrength;
-            if (__instance.IsSiegeAssault)
+            // if (__instance.IsSiege) v1.2.1
+            if (__instance.IsSiegeAssault)         
                 num1 *= 0.6666667f;
             float powerRatio = num2 / num1;
 
