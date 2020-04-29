@@ -62,6 +62,7 @@ namespace CombatModCollection
             float strikerOffenseRating = strikerStrength / strikedNumber * strikerAdvantage * 0.05f;
 
             bool finishedAnyone = false;
+            float totalDamage = 0;
             for (int index = strikedNumber - 1; index >= 0; index--)
             {
                 UniqueTroopDescriptor strikerTroopDescriptor = strikerSide.SelectRandomSimulationTroop();
@@ -81,7 +82,7 @@ namespace CombatModCollection
                 DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
                 float defenceRating = strikedTroop.GetPower();
                 float damage = MBRandom.RandomFloat * 50f * actualOffenseRating / defenceRating;
-
+                totalDamage += damage;
                 /*
                 internal enum SimulationTroopState
                 {
@@ -99,14 +100,17 @@ namespace CombatModCollection
 
                 // bool isFinishingStrike = troopState == MapEvent.SimulationTroopState.Killed || troopState == MapEvent.SimulationTroopState.Wounded;
                 bool isFinishingStrike = troopState == 2 || troopState == 1;
-                strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, (int)(damage / (NumShareXp + 1)), isFinishingStrike);
-                for (int auxIndex = 0; auxIndex < NumShareXp; auxIndex++)
-                {
-                    strikerTroopDescriptor = strikerSide.SelectRandomSimulationTroop();
-                    strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, (int)(damage / (NumShareXp + 1)), false);
-                }
+                strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, 0, isFinishingStrike);
                 finishedAnyone = finishedAnyone || isFinishingStrike;
-            }           
+            }
+
+            // Distribute XP among all strikers
+            int averageDamage = (int)Math.Min(totalDamage / strikerNumber, 1);
+            for (int index = 0; index < strikerNumber; index++)
+            {
+                UniqueTroopDescriptor strikerTroopDescriptor = SelectSimulationTroopAtIndex(strikerSide, index);
+                strikerSide.ApplySimulatedHitRewardToSelectedTroop(null, averageDamage, false);
+            }
             __result = finishedAnyone;
 
             return false;
