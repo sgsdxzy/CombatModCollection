@@ -19,7 +19,9 @@ namespace CombatModCollection
             float num = thrustWeaponSpeed + extraLinearSpeed;
             if (!isThrown)
                 weaponWeight += 2.5f;
-            __result = 0.125f * (0.5f * weaponWeight * num * num) + 0.125f * weaponWeight * num + 0.067f;
+            __result = SubModule.Settings.Battle_PowerThrust_kE * (0.5f * weaponWeight * num * num) 
+                + SubModule.Settings.Battle_PowerThrust_kP * weaponWeight * num 
+                + SubModule.Settings.Battle_PowerThrust_kC;
 
             return false;
         }
