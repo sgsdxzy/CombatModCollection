@@ -38,7 +38,7 @@ namespace CombatModCollection
             }
             if (collisionData.IsHorseCharge && SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier != 1f)
             {
-                if (victimAgent.IsRunningAway)
+                if (victimAgent.IsRunningAway || (double)Vec3.DotProduct(swingDir, victimAgent.Frame.rotation.f) > 0.5)
                 {
                     __result.InflictedDamage = (int)(__result.InflictedDamage * SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier);
                 }
