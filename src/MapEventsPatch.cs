@@ -10,9 +10,17 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
 using System.Linq;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using System.Collections.Concurrent;
+using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
 {
+    public class MapEventGlobalStorage
+    {
+        public static ConcurrentDictionary<MBGUID, bool> IsDefenderRunAway = new ConcurrentDictionary<MBGUID, bool>();
+    }
+
+
     [HarmonyPatch(typeof(MapEvent), "SimulateSingleHit")]
     public class SimulateSingleHitPatch
     {
@@ -80,7 +88,7 @@ namespace CombatModCollection
             IBattleObserver battleObserver,
             CharacterObject strikedTroop,
             PartyBase strikedTroopParty,
-            UniqueTroopDescriptor strikedTroopDescriptor,           
+            UniqueTroopDescriptor strikedTroopDescriptor,
             int selectedSimulationTroopIndex,
             List<UniqueTroopDescriptor> strikedTroopList,
             float damage,
@@ -136,7 +144,7 @@ namespace CombatModCollection
                 return true;
             }
 
-            bool finishedAnyone = false;          
+            bool finishedAnyone = false;
             for (int index = strikedNumber - 1; index >= 0; index--)
             {
                 UniqueTroopDescriptor strikerTroopDescriptor = strikerSide.SelectRandomSimulationTroop();
@@ -174,7 +182,7 @@ namespace CombatModCollection
                 // MapEventSide_ApplySimulationDamageToSelectedTroop.Invoke(strikedSide, parametersArray);
                 // int troopState = (int)parametersArray[2];
 
-                bool isFinishingStrike = ApplySimulationDamageToSelectedTroop(strikedSide, battleObserver, strikedTroop, strikedTroopParty, 
+                bool isFinishingStrike = ApplySimulationDamageToSelectedTroop(strikedSide, battleObserver, strikedTroop, strikedTroopParty,
                     strikedTroopDescriptor, index, strikedTroopList, damage, damageType, strikerTroopParty);
 
                 // bool isFinishingStrike = troopState == MapEvent.SimulationTroopState.Killed || troopState == MapEvent.SimulationTroopState.Wounded;
@@ -266,7 +274,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(MapEvent), "GetAttackersRunAwayChance")]
     public class GetAttackersRunAwayChancePatch
     {
-        // PlayerEncounter.SacrificeTroops, RemoveRandomTroops and 
+        // PlayerEncounter.SacrificeTroops
         private static void SacrificeTroops(float ratio, MapEventSide side, MapEvent mapEvent)
         {
             side.MakeReadyForSimulation();
@@ -309,14 +317,14 @@ namespace CombatModCollection
         {
             float num1 = mapEventSide.RecalculateStrengthOfSide() + 1f;
             float val1 = oppositeSide.RecalculateStrengthOfSide() / num1;
-            
+
             int num2 = mapEventSide.CountTroops((Func<FlattenedTroopRosterElement, bool>)(x => x.State == RosterTroopState.Active && !x.Troop.IsHero));
             ExplainedNumber stat = new ExplainedNumber(1f, (StringBuilder)null);
             if (mapEventSide.LeaderParty.Leader != null)
             {
                 SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Tactics, DefaultSkillEffects.TacticsTroopSacrificeReduction, mapEventSide.LeaderParty.Leader, ref stat, true);
             }
-            
+
             int num3 = Math.Max(((double)ofRegularMembers * Math.Pow((double)Math.Min(val1, 3f), 1.29999995231628) * 0.100000001490116 / (2.0 / (2.0 + ((double)stat.ResultNumber - 1.0) * 10.0)) + 5.0).Round(), 1);
             return num3 <= num2 ? num3 : -1;
         }
@@ -340,7 +348,8 @@ namespace CombatModCollection
             if (__instance.AttackerSide.LeaderParty.LeaderHero == null)
             {
                 AttackerRunaway = false;
-            } else
+            }
+            else
             {
                 // Attacker Runaway
                 if (powerRatio > 1.2)
@@ -366,7 +375,7 @@ namespace CombatModCollection
                 DefenderRunaway = false;
             }
             else
-            {               
+            {
                 // Defender Runaway
                 if (powerRatio <= 0.8f)
                 {
@@ -389,15 +398,18 @@ namespace CombatModCollection
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
                 }
-            }               
+            }
             if (DefenderRunaway)
             {
+                MapEventGlobalStorage.IsDefenderRunAway[__instance.Id] = true;
+
                 TextObject textObject = new TextObject("{LEADER.LINK_AND_FACTION} was forced to retreat.", (Dictionary<string, TextObject>)null);
                 StringHelpers.SetCharacterProperties("LEADER", __instance.DefenderSide.LeaderParty.LeaderHero.CharacterObject, (TextObject)null, textObject);
                 InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
 
                 SacrificeTroops(sacrificeRatio, __instance.DefenderSide, __instance);
-                __instance.DefenderSide.LeaderParty.MobileParty.BesiegerCamp?.RemoveAllSiegeParties();
+                // __instance.DefenderSide.LeaderParty.MobileParty.BesiegerCamp?.RemoveAllSiegeParties();
+
                 __result = true;
                 return false;
             }
@@ -409,6 +421,46 @@ namespace CombatModCollection
         public static bool Prepare()
         {
             return SubModule.Settings.Strategy_LearnToQuit;
+        }
+    }
+
+    [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
+    public class FinishBattlePatch
+    {
+        private static FieldInfo MapEvent__attackersRanAway = typeof(MapEvent).GetField(
+            "_attackersRanAway", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+
+        public static void Prefix(MapEvent __instance)
+        {
+            if (MapEventGlobalStorage.IsDefenderRunAway.TryRemove(__instance.Id, out _))
+            {
+                // Defender ran away
+                // this._attackersRanAway = false;
+                MapEvent__attackersRanAway.SetValue(__instance, false);
+
+                // Place denfenders further away from attackers to prevent instantly get caught again
+                foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.DefenderSide.Parties)
+                {
+                    if (party.IsMobile)
+                    {
+                        MobileParty mobileParty = party.MobileParty;
+                        if (mobileParty.IsActive && mobileParty.AttachedTo == null)
+                        {
+                            if (mobileParty.BesiegerCamp != null && mobileParty.BesiegerCamp.SiegeParties.Contains<PartyBase>(mobileParty.Party))
+                                mobileParty.BesiegerCamp.RemoveSiegeParty(mobileParty);
+                            Vec2 pointAroundPosition = mobileParty.FindReachablePointAroundPosition(mobileParty.Position2D, 4.1f, 4f, true);
+                            mobileParty.Position2D = pointAroundPosition;
+                            mobileParty.SetMoveModeHold();
+                        }
+                    }
+                }
+
+            }
+        }
+
+        public static bool Prepare()
+        {
+            return SubModule.Settings.Battle_SendAllTroops;
         }
     }
 }
