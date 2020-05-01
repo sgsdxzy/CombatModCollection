@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
 using System.Linq;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace CombatModCollection
 {
@@ -344,14 +345,17 @@ namespace CombatModCollection
                 // Attacker Runaway
                 if (powerRatio > 1.2)
                 {
-                    float baseChance = (powerRatio - 1.2f) / 0.5f;
+                    float baseChance = (powerRatio - 1.2f) / 1.0f;
                     float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
                     AttackerRunaway = MBRandom.RandomFloat < baseChance + bonus;
                 }
             }
             if (AttackerRunaway)
             {
-                // InformationManager.DisplayMessage(new InformationMessage("Attacker Retreat!"));
+                TextObject textObject = new TextObject("{LEADER.LINK_AND_FACTION} withdrawed from battle.", (Dictionary<string, TextObject>)null);
+                StringHelpers.SetCharacterProperties("LEADER", __instance.AttackerSide.LeaderParty.LeaderHero.CharacterObject, (TextObject)null, textObject);
+                InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
+
                 __result = true;
                 return false;
             }
@@ -380,7 +384,7 @@ namespace CombatModCollection
                     else
                     {
                         sacrificeRatio = (float)forTryingToGetAway / (float)ofRegularMembers;
-                        float baseChance = (0.5f - sacrificeRatio) / 0.5f;
+                        float baseChance = (1f - 1.25f * powerRatio) * 0.5f;
                         float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
@@ -388,8 +392,12 @@ namespace CombatModCollection
             }               
             if (DefenderRunaway)
             {
-                // InformationManager.DisplayMessage(new InformationMessage("Defender Retreat!"));
+                TextObject textObject = new TextObject("{LEADER.LINK_AND_FACTION} was forced to retreat.", (Dictionary<string, TextObject>)null);
+                StringHelpers.SetCharacterProperties("LEADER", __instance.DefenderSide.LeaderParty.LeaderHero.CharacterObject, (TextObject)null, textObject);
+                InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
+
                 SacrificeTroops(sacrificeRatio, __instance.DefenderSide, __instance);
+                __instance.DefenderSide.LeaderParty.MobileParty.BesiegerCamp?.RemoveAllSiegeParties();
                 __result = true;
                 return false;
             }
