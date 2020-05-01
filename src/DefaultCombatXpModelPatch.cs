@@ -12,7 +12,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(DefaultCombatXpModel), "GetXpFromHit")]
     public class GetXpFromHitPatch
     {        
-        static bool Prefix(CharacterObject attackerTroop,
+        public static bool Prefix(CharacterObject attackerTroop,
             CharacterObject attackedTroop,
             int damage,
             bool isFatal,
@@ -58,7 +58,7 @@ namespace CombatModCollection
             return false;
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Battle_SendAllTroops;
         }

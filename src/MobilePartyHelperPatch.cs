@@ -14,7 +14,7 @@ namespace CombatModCollection
     {        
         private static MethodInfo OnLordPartySpawnedMI = typeof(CampaignEventDispatcher).GetMethod("OnLordPartySpawned", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        static bool Prefix(ref MobileParty __result, Hero hero,
+        public static bool Prefix(ref MobileParty __result, Hero hero,
             Vec2 position,
             float spawnRadius,
             Settlement spawnSettlement)
@@ -53,7 +53,7 @@ namespace CombatModCollection
             return false;
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Strategy_ModifyRespawnParty;
         }

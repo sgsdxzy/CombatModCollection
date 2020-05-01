@@ -15,7 +15,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(DefaultPartyHealingModel), "GetSurvivalChance")]
     public class GetSurvivalChancePatch
     {        
-        static bool Prefix(ref float __result,
+        public static bool Prefix(ref float __result,
             PartyBase party,
             CharacterObject character,
             DamageTypes damageType,
@@ -73,7 +73,7 @@ namespace CombatModCollection
             return false;
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Battle_SurviveByArmor || SubModule.Settings.Battle_GoodSoildersNeverDie;
         }

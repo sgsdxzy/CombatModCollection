@@ -9,7 +9,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(CombatStatCalculator), "CalculateStrikeMagnitudeForThrust")]
     public class CalculateStrikeMagnitudeForThrustPatch
     {        
-        static bool Prefix(ref float __result,
+        public static bool Prefix(ref float __result,
             float thrustWeaponSpeed,
             float weaponWeight,
             float extraLinearSpeed,
@@ -26,7 +26,7 @@ namespace CombatModCollection
             return false;
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Battle_PowerThrust;
         }

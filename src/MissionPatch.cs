@@ -23,7 +23,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(Mission), "CreateBlow")]
     public class CreateBlowPatch
     {        
-        static void Postfix(ref Blow __result,
+        public static void Postfix(ref Blow __result,
             Agent attackerAgent,
             Agent victimAgent,
             ref AttackCollisionData collisionData,
@@ -45,7 +45,7 @@ namespace CombatModCollection
             }
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Battle_WarStomp;
         }

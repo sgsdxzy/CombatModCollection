@@ -6,7 +6,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(DefaultCombatSimulationModel), "GetBattleAdvantage")]
     public class GetBattleAdvantagePatch
     {        
-        static void Postfix(ref (float defenderAdvantage, float attackerAdvantage) __result)
+        public static void Postfix(ref (float defenderAdvantage, float attackerAdvantage) __result)
         {
             // if (__result.defenderAdvantage <= 1)
             // {
@@ -16,7 +16,7 @@ namespace CombatModCollection
             __result.defenderAdvantage = 1.0f;
         }
 
-        static bool Prepare()
+        public static bool Prepare()
         {
             return SubModule.Settings.Battle_SendAllTroops;
         }
