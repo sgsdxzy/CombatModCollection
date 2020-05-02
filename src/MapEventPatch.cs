@@ -450,7 +450,7 @@ namespace CombatModCollection
                             Vec2 pointAroundPosition = mobileParty.FindReachablePointAroundPosition(mobileParty.Position2D, 3.1f, 3f, true);
                             mobileParty.Position2D = pointAroundPosition;
                             mobileParty.SetMoveModeHold();
-                            mobileParty.IgnoreForHours(0.5f);
+                            mobileParty.IgnoreForHours(0.3f);
                         }
                     }
                 }
