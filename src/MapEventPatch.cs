@@ -212,9 +212,8 @@ namespace CombatModCollection
             float DefenderDistributedOffenseRating = DefenderTotalOffenseRating / AttackerNumber * 1.0f * DamageMultiplier;
 
             bool finishedAnyone = false;
-            float AttackerTotalDamageDone, DefenderTotalDamageDone;
-            finishedAnyone |= StrikeOnce(__instance, battleObserver, AttackerSide, DefenderSide, AttackerDistributedOffenseRating, out AttackerTotalDamageDone);
-            finishedAnyone |= StrikeOnce(__instance, battleObserver, DefenderSide, AttackerSide, DefenderDistributedOffenseRating, out DefenderTotalDamageDone);
+            finishedAnyone |= StrikeOnce(__instance, battleObserver, AttackerSide, DefenderSide, AttackerDistributedOffenseRating, out float AttackerTotalDamageDone);
+            finishedAnyone |= StrikeOnce(__instance, battleObserver, DefenderSide, AttackerSide, DefenderDistributedOffenseRating, out float DefenderTotalDamageDone);
 
             // Distribute XP among all living
             int AttackerAverageDamageDone = (int)Math.Round(Math.Min(AttackerTotalDamageDone / AttackerNumber, 1));
