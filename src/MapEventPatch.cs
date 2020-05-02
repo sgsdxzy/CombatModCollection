@@ -393,7 +393,7 @@ namespace CombatModCollection
                     else
                     {
                         sacrificeRatio = (float)forTryingToGetAway / (float)ofRegularMembers;
-                        float baseChance = (1f - 1.25f * powerRatio) * 0.5f;
+                        float baseChance = (1f - 1.25f * powerRatio) * 0.8f;
                         float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
@@ -408,7 +408,6 @@ namespace CombatModCollection
                 InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
 
                 SacrificeTroops(sacrificeRatio, __instance.DefenderSide, __instance);
-                // __instance.DefenderSide.LeaderParty.MobileParty.BesiegerCamp?.RemoveAllSiegeParties();
 
                 __result = true;
                 return false;
@@ -448,15 +447,16 @@ namespace CombatModCollection
                         {
                             if (mobileParty.BesiegerCamp != null && mobileParty.BesiegerCamp.SiegeParties.Contains<PartyBase>(mobileParty.Party))
                                 mobileParty.BesiegerCamp.RemoveSiegeParty(mobileParty);
-                            Vec2 pointAroundPosition = mobileParty.FindReachablePointAroundPosition(mobileParty.Position2D, 4.1f, 4f, true);
+                            Vec2 pointAroundPosition = mobileParty.FindReachablePointAroundPosition(mobileParty.Position2D, 3.1f, 3f, true);
                             mobileParty.Position2D = pointAroundPosition;
                             mobileParty.SetMoveModeHold();
+                            mobileParty.IgnoreForHours(0.5f);
                         }
                     }
                 }
-
             }
         }
+
 
         public static bool Prepare()
         {
