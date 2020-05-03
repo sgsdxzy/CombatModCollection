@@ -70,13 +70,16 @@ namespace CombatModCollection
         }
 
         public static bool Prefix(ref bool __result, MapEvent __instance)
-        {
+        {           
             bool AttackerRunaway = false;
             bool DefenderRunaway = false;
 
             float num1 = 0.0f;
             foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.AttackerSide.Parties)
+            {
                 num1 += party.TotalStrength;
+            }
+                
             float num2 = 0.0f;
             foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.DefenderSide.Parties)
                 num2 += party.TotalStrength;

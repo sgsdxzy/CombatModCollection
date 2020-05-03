@@ -29,7 +29,7 @@ namespace CombatModCollection
         private static FieldInfo MapEventSide__selectedSimulationTroop = typeof(MapEventSide).GetField(
             "_selectedSimulationTroop", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 5.0f;
+        private static readonly float DamageMultiplier = 200.0f;
 
         private static UniqueTroopDescriptor SelectSimulationTroopAtIndex(MapEventSide side, int index, out List<UniqueTroopDescriptor> simulationTroopList)
         {
@@ -131,7 +131,7 @@ namespace CombatModCollection
             IBattleObserver battleObserver,
             MapEventSide strikerSide,
             MapEventSide strikedSide,
-            float distributedOffenseRating,
+            float distributedAttackPoints,
             out float totalDamageDone)
         {
             int strikerNumber = strikerSide.NumRemainingSimulationTroops;
@@ -156,15 +156,15 @@ namespace CombatModCollection
                 PartyBase strikedTroopParty = strikedSide.GetAllocatedTroopParty(strikedTroopDescriptor);
 
                 // MapEvents.GetSimulatedDamage and CombatSimulationModel.SimulateHit
-                float actualOffenseRating = distributedOffenseRating;
+                float actualAttackPoints = distributedAttackPoints;
                 if (mapEvent.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
                 {
                     float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
-                    actualOffenseRating *= damageMultiplier;
+                    actualAttackPoints *= damageMultiplier;
                 }
                 DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
-                float defenceRating = strikedTroop.GetPower();
-                float damage = DamageMultiplier * actualOffenseRating / defenceRating;
+                float defencePoints = TroopEvaluationModel.GetDefensePoints(strikedTroop);
+                float damage = DamageMultiplier * actualAttackPoints / defencePoints;
                 if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
                 {
                     damage *= 0.5f;
@@ -188,36 +188,53 @@ namespace CombatModCollection
             MapEvent __instance,
             float strikerAdvantage)
         {
-            MapEventSide AttackerSide = __instance.AttackerSide;
-            MapEventSide DefenderSide = __instance.DefenderSide;
+            MapEventSide attackerSide = __instance.AttackerSide;
+            MapEventSide defenderSide = __instance.DefenderSide;
+            float attackerTotalAttackPoints = 0;
+            float defenderTotalAttackPoints = 0;
             IBattleObserver battleObserver = (IBattleObserver)MapEvent_BattleObserver.GetValue(__instance);
 
-            float AttackerTotalOffenseRating = AttackerSide.RecalculateStrengthOfSide();
-            float DefenderTotalOffenseRating = DefenderSide.RecalculateStrengthOfSide();
-            int AttackerNumber = AttackerSide.NumRemainingSimulationTroops;
-            int DefenderNumber = DefenderSide.NumRemainingSimulationTroops;
+            for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
+            {
+                UniqueTroopDescriptor troopDescriptor = SelectSimulationTroopAtIndex(attackerSide, index, out _);
+                CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
+                attackerTotalAttackPoints += TroopEvaluationModel.GetAttackPoints(troop);
+            }
+            for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
+            {
+                UniqueTroopDescriptor troopDescriptor = SelectSimulationTroopAtIndex(defenderSide, index, out _);
+                CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
+                defenderTotalAttackPoints += TroopEvaluationModel.GetAttackPoints(troop);
+            }
 
-            float AttackerDistributedOffenseRating = AttackerTotalOffenseRating / DefenderNumber * strikerAdvantage;
-            float DefenderDistributedOffenseRating = DefenderTotalOffenseRating / AttackerNumber * 1.0f;
+            //UniqueTroopDescriptor td = SelectSimulationTroopAtIndex(attackerSide, 1, out _);
+            //CharacterObject tp = attackerSide.GetAllocatedTroop(td);
+            //InformationManager.DisplayMessage(new InformationMessage(TroopEvaluationModel.GetAttackPoints(tp).ToString()));
+            //InformationManager.DisplayMessage(new InformationMessage(TroopEvaluationModel.GetDefensePoints(tp).ToString()));
+
+            int attackerNumber = attackerSide.NumRemainingSimulationTroops;
+            int defenderNumber = defenderSide.NumRemainingSimulationTroops;
+            float attackerDistributedAttackPoints = attackerTotalAttackPoints / defenderNumber * strikerAdvantage;
+            float defenderDistributedAttackPoints = defenderTotalAttackPoints / attackerNumber * 1.0f;
 
             bool finishedAnyone = false;
-            finishedAnyone |= StrikeOnce(__instance, battleObserver, AttackerSide, DefenderSide, AttackerDistributedOffenseRating, out float AttackerTotalDamageDone);
-            finishedAnyone |= StrikeOnce(__instance, battleObserver, DefenderSide, AttackerSide, DefenderDistributedOffenseRating, out float DefenderTotalDamageDone);
+            finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttackPoints, out float attackerTotalDamageDone);
+            finishedAnyone |= StrikeOnce(__instance, battleObserver, defenderSide, attackerSide, defenderDistributedAttackPoints, out float defenderTotalDamageDone);
 
             // Distribute XP among all living
-            int AttackerAverageDamageDone = (int)Math.Round(Math.Min(AttackerTotalDamageDone / AttackerNumber, 1));
+            int AttackerAverageDamageDone = (int)Math.Round(Math.Min(attackerTotalDamageDone / attackerNumber, 1));
             try
             {
-                for (int index = 0; index < AttackerSide.NumRemainingSimulationTroops; index++)
+                for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
                 {
-                    SelectSimulationTroopAtIndex(AttackerSide, index, out _);
-                    AttackerSide.ApplySimulatedHitRewardToSelectedTroop(null, AttackerAverageDamageDone, false);
+                    SelectSimulationTroopAtIndex(attackerSide, index, out _);
+                    attackerSide.ApplySimulatedHitRewardToSelectedTroop(null, AttackerAverageDamageDone, false);
                 }
-                int DefenderAverageDamageDone = (int)Math.Round(Math.Min(DefenderTotalDamageDone / DefenderNumber, 1));
-                for (int index = 0; index < AttackerSide.NumRemainingSimulationTroops; index++)
+                int DefenderAverageDamageDone = (int)Math.Round(Math.Min(defenderTotalDamageDone / defenderNumber, 1));
+                for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
                 {
-                    SelectSimulationTroopAtIndex(AttackerSide, index, out _);
-                    AttackerSide.ApplySimulatedHitRewardToSelectedTroop(null, DefenderAverageDamageDone, false);
+                    SelectSimulationTroopAtIndex(attackerSide, index, out _);
+                    attackerSide.ApplySimulatedHitRewardToSelectedTroop(null, DefenderAverageDamageDone, false);
                 }
             }
             catch (NullReferenceException)
