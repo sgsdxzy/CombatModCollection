@@ -93,8 +93,7 @@ namespace CombatModCollection
             }
             else
             {
-                TroopStat troopStat;
-                if (!mapEventStat.TroopStats.ContainsKey(strikedTroop.Id))
+                if (!mapEventStat.TroopStats.TryGetValue(strikedTroop.Id, out TroopStat troopStat))
                 {
                     troopStat = new TroopStat
                     {
@@ -102,7 +101,6 @@ namespace CombatModCollection
                     };
                     mapEventStat.TroopStats[strikedTroop.Id] = troopStat;
                 }
-                troopStat = mapEventStat.TroopStats[strikedTroop.Id];
                 troopStat.Hitpoints -= damage;
 
                 if (troopStat.Hitpoints <= 0)
@@ -166,7 +164,14 @@ namespace CombatModCollection
                 }
                 DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
                 float defenceRating = strikedTroop.GetPower();
-                float damage = MBRandom.RandomFloat * DamageMultiplier * actualOffenseRating / defenceRating;
+                float damage = DamageMultiplier * actualOffenseRating / defenceRating;
+                if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
+                {
+                    damage *= 0.5f;
+                } else
+                {
+                    damage *= MBRandom.RandomFloat;
+                }
                 totalDamageDone += damage;
 
                 bool isFinishingStrike = ApplySimulationDamageToSelectedTroop(strikedSide, strikedTroop, strikedTroopParty,

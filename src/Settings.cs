@@ -10,6 +10,7 @@
         public float Battle_GoodSoildersNeverDie_MinimumLevel { get; set; } = 20f;
 
         public bool Battle_SendAllTroops { get; set; } = false;
+        public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;
         public float Battle_SendAllTroops_CombatSpeed { get; set; } = 1.0f;
         public float Battle_SendAllTroops_SimXPMultiplier { get; set; } = 1.0f;
 

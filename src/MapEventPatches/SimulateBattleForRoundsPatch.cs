@@ -16,7 +16,7 @@ namespace CombatModCollection
             double ratio2 = __instance.IsSiegeAssault ? 0.2 : 1.0;
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 40f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
-            simulationRoundsAttacker = 1; // rounds;
+            simulationRoundsAttacker = rounds;
 
             if (!GlobalStorage.MapEventStats.ContainsKey(__instance.Id))
             {
