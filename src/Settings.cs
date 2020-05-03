@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace CombatModCollection
+﻿namespace CombatModCollection
 {
     public class Settings
     {

@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
-using TaleWorlds.MountAndBlade;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 
 namespace CombatModCollection
 {
     [HarmonyPatch(typeof(Mission), "CreateBlow")]
     public class CreateBlowPatch
-    {        
+    {
         public static void Postfix(ref Blow __result,
             Agent attackerAgent,
             Agent victimAgent,

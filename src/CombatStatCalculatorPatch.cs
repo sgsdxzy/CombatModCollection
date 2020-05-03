@@ -6,7 +6,7 @@ namespace CombatModCollection
 {
     [HarmonyPatch(typeof(CombatStatCalculator), "CalculateStrikeMagnitudeForThrust")]
     public class CalculateStrikeMagnitudeForThrustPatch
-    {        
+    {
         public static bool Prefix(ref float __result,
             float thrustWeaponSpeed,
             float weaponWeight,
@@ -17,8 +17,8 @@ namespace CombatModCollection
             float num = thrustWeaponSpeed + extraLinearSpeed;
             if (!isThrown)
                 weaponWeight += 2.5f;
-            __result = SubModule.Settings.Battle_PowerThrust_kE * (0.5f * weaponWeight * num * num) 
-                + SubModule.Settings.Battle_PowerThrust_kP * weaponWeight * num 
+            __result = SubModule.Settings.Battle_PowerThrust_kE * (0.5f * weaponWeight * num * num)
+                + SubModule.Settings.Battle_PowerThrust_kP * weaponWeight * num
                 + SubModule.Settings.Battle_PowerThrust_kC;
 
             return false;

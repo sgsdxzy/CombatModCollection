@@ -1,20 +1,16 @@
 ﻿using HarmonyLib;
 using Helpers;
-using System.Reflection;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace CombatModCollection
 {
     [HarmonyPatch(typeof(DefaultPartyHealingModel), "GetSurvivalChance")]
     public class GetSurvivalChancePatch
-    {        
+    {
         public static bool Prefix(ref float __result,
             PartyBase party,
             CharacterObject character,
@@ -27,12 +23,12 @@ namespace CombatModCollection
                 {
                     __result = 0.0f;
                     return false;
-                }                
+                }
                 if (character.HeroObject.AlwaysUnconscious)
                 {
                     __result = 1f;
                     return false;
-                }                 
+                }
             }
             if (damageType == DamageTypes.Blunt)
             {

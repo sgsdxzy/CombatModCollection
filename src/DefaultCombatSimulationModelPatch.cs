@@ -5,7 +5,7 @@ namespace CombatModCollection
 {
     [HarmonyPatch(typeof(DefaultCombatSimulationModel), "GetBattleAdvantage")]
     public class GetBattleAdvantagePatch
-    {        
+    {
         public static void Postfix(ref (float defenderAdvantage, float attackerAdvantage) __result)
         {
             // if (__result.defenderAdvantage <= 1)

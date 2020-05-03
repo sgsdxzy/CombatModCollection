@@ -1,17 +1,14 @@
 ﻿using HarmonyLib;
-using Helpers;
 using System;
-using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
-using TaleWorlds.Core;
 using TaleWorlds.Library;
 
 namespace CombatModCollection
 {
     [HarmonyPatch(typeof(DefaultCombatXpModel), "GetXpFromHit")]
     public class GetXpFromHitPatch
-    {        
+    {
         public static bool Prefix(CharacterObject attackerTroop,
             CharacterObject attackedTroop,
             int damage,
@@ -29,7 +26,7 @@ namespace CombatModCollection
             {
                 val2 = attackedTroop.MaxHitPoints();
                 num1 = 0.400000005960464 * (((double)attackedTroop.GetPower() + 0.5) * (double)(Math.Min(damage, val2) + (isFatal ? val2 : 0)));
-            }          
+            }
             double num2;
             switch (missionType)
             {

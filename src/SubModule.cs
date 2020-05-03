@@ -1,7 +1,7 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using HarmonyLib;
 using Newtonsoft.Json;
-using HarmonyLib;
+using System.IO;
+using System.Reflection;
 using TaleWorlds.MountAndBlade;
 
 namespace CombatModCollection
@@ -10,7 +10,7 @@ namespace CombatModCollection
     {
 
         public static Settings Settings { get; private set; }
-        
+
         private static void LoadSettings()
         {
             string configPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "settings.json");
