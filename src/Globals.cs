@@ -11,7 +11,7 @@ namespace CombatModCollection
 
     public class MapEventStat
     {
-        public ConcurrentDictionary<UniqueTroopDescriptor, TroopStat> TroopStats = new ConcurrentDictionary<UniqueTroopDescriptor, TroopStat>();
+        public ConcurrentDictionary<MBGUID, TroopStat> TroopStats = new ConcurrentDictionary<MBGUID, TroopStat>();
         public int StageRounds = 0;
     }
 

@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using System;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
 
 namespace CombatModCollection
 {
@@ -17,7 +16,7 @@ namespace CombatModCollection
             double ratio2 = __instance.IsSiegeAssault ? 0.2 : 1.0;
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 40f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
-            simulationRoundsAttacker = rounds;
+            simulationRoundsAttacker = 1; // rounds;
 
             if (!GlobalStorage.MapEventStats.ContainsKey(__instance.Id))
             {
@@ -28,7 +27,6 @@ namespace CombatModCollection
             {
                 GlobalStorage.MapEventStats[__instance.Id].StageRounds += 1;
             }
-            InformationManager.DisplayMessage(new InformationMessage(GlobalStorage.MapEventStats[__instance.Id].StageRounds.ToString()));
         }
 
         public static bool Prepare()
