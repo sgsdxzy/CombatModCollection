@@ -1,23 +1,35 @@
 ﻿using HarmonyLib;
-using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
 using Helpers;
-using TaleWorlds.Core;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
-using System.Linq;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
-using System.Collections.Concurrent;
 using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
 {
+    public class TroopStat
+    {
+        public float Hitpoints;
+    }
+
+    public class MapEventStat
+    {
+        public ConcurrentDictionary<UniqueTroopDescriptor, TroopStat> TroopStats = new ConcurrentDictionary<UniqueTroopDescriptor, TroopStat>();
+        public int StageRounds = 0;
+    }
+
     public class MapEventGlobalStorage
     {
         public static ConcurrentDictionary<MBGUID, bool> IsDefenderRunAway = new ConcurrentDictionary<MBGUID, bool>();
+        public static ConcurrentDictionary<MBGUID, MapEventStat> MapEventStats = new ConcurrentDictionary<MBGUID, MapEventStat>();
     }
 
 
@@ -42,9 +54,7 @@ namespace CombatModCollection
         private static FieldInfo MapEventSide__selectedSimulationTroop = typeof(MapEventSide).GetField(
             "_selectedSimulationTroop", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 0.05f;
-
-        private static readonly float GuranteedAliveThreshold = 0.5f * DamageMultiplier / 10f;
+        private static readonly float DamageMultiplier = 1.0f;
 
         private static UniqueTroopDescriptor SelectSimulationTroopAtIndex(MapEventSide side, int index, out List<UniqueTroopDescriptor> simulationTroopList)
         {
@@ -85,7 +95,6 @@ namespace CombatModCollection
 
         // MapEventSide.ApplySimulationDamageToSelectedTroop
         private static bool ApplySimulationDamageToSelectedTroop(MapEventSide side,
-            IBattleObserver battleObserver,
             CharacterObject strikedTroop,
             PartyBase strikedTroopParty,
             UniqueTroopDescriptor strikedTroopDescriptor,
@@ -93,10 +102,11 @@ namespace CombatModCollection
             List<UniqueTroopDescriptor> strikedTroopList,
             float damage,
             DamageTypes damageType,
-            PartyBase strikerParty)
+            PartyBase strikerParty,
+            MapEventStat mapEventStat,
+            IBattleObserver battleObserver)
         {
             bool flag = false;
-            float defeatedChance = damage / strikedTroop.MaxHitPoints();
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
@@ -106,22 +116,38 @@ namespace CombatModCollection
                     battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
                 }
             }
-            else if (MBRandom.RandomFloat < defeatedChance)
+            else
             {
-                float extraSurvivalChance = Math.Max((defeatedChance - GuranteedAliveThreshold) / GuranteedAliveThreshold, 1);
-                if ((double)MBRandom.RandomFloat * extraSurvivalChance < (double)Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty))
+                TroopStat troopStat;
+                if (!mapEventStat.TroopStats.ContainsKey(strikedTroopDescriptor))
                 {
-                    side.OnTroopWounded(strikedTroopDescriptor);
-                    battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
-                    SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 1f);
+                    troopStat = new TroopStat
+                    {
+                        Hitpoints = strikedTroop.MaxHitPoints()
+                    };
+                    mapEventStat.TroopStats[strikedTroopDescriptor] = troopStat;
                 }
-                else
+                troopStat = mapEventStat.TroopStats[strikedTroopDescriptor];
+                troopStat.Hitpoints -= damage;
+                //InformationManager.DisplayMessage(new InformationMessage(troopStat.Hitpoints.ToString() + "  " + damage.ToString()));
+
+                if (troopStat.Hitpoints <= 0)
                 {
-                    side.OnTroopKilled(strikedTroopDescriptor);
-                    battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 1, 0, 0, 0, 0);
-                    SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
+                    if ((double)MBRandom.RandomFloat < (double)Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty))
+                    {
+                        side.OnTroopWounded(strikedTroopDescriptor);
+                        battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
+                        SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 1f);
+                    }
+                    else
+                    {
+                        side.OnTroopKilled(strikedTroopDescriptor);
+                        battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 1, 0, 0, 0, 0);
+                        SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
+                    }
+                    flag = true;
+                    mapEventStat.TroopStats.TryRemove(strikedTroopDescriptor, out _);
                 }
-                flag = true;
             }
             if (flag)
                 // side.RemoveSelectedTroopFromSimulationList();
@@ -129,7 +155,7 @@ namespace CombatModCollection
             return flag;
         }
 
-        private static bool StrikeOnce(MapEvent __instance,
+        private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
             MapEventSide strikerSide,
             MapEventSide strikedSide,
@@ -158,7 +184,7 @@ namespace CombatModCollection
 
                 // MapEvents.GetSimulatedDamage and CombatSimulationModel.SimulateHit
                 float actualOffenseRating = distributedOffenseRating;
-                if (__instance.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
+                if (mapEvent.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
                 {
                     float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
                     actualOffenseRating *= damageMultiplier;
@@ -182,8 +208,9 @@ namespace CombatModCollection
                 // MapEventSide_ApplySimulationDamageToSelectedTroop.Invoke(strikedSide, parametersArray);
                 // int troopState = (int)parametersArray[2];
 
-                bool isFinishingStrike = ApplySimulationDamageToSelectedTroop(strikedSide, battleObserver, strikedTroop, strikedTroopParty,
-                    strikedTroopDescriptor, index, strikedTroopList, damage, damageType, strikerTroopParty);
+                MapEventStat mapEventStat = MapEventGlobalStorage.MapEventStats[mapEvent.Id];
+                bool isFinishingStrike = ApplySimulationDamageToSelectedTroop(strikedSide, strikedTroop, strikedTroopParty,
+                    strikedTroopDescriptor, index, strikedTroopList, damage, damageType, strikerTroopParty, mapEventStat, battleObserver);
 
                 // bool isFinishingStrike = troopState == MapEvent.SimulationTroopState.Killed || troopState == MapEvent.SimulationTroopState.Wounded;
                 strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, 0, isFinishingStrike);
@@ -195,11 +222,9 @@ namespace CombatModCollection
 
         public static bool Prefix(ref bool __result,
             MapEvent __instance,
-            int strikerSideIndex,
-            int strikedSideIndex,
             float strikerAdvantage)
         {
-            MapEventSide AttackerSide = __instance.AttackerSide;
+             MapEventSide AttackerSide = __instance.AttackerSide;
             MapEventSide DefenderSide = __instance.DefenderSide;
             IBattleObserver battleObserver = (IBattleObserver)MapEvent_BattleObserver.GetValue(__instance);
 
@@ -252,7 +277,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(MapEvent), "SimulateBattleForRounds")]
     public class SimulateBattleForRoundsPatch
     {
-        public static void Prefix(MapEvent __instance,
+        public static void Prefix(MapEvent __instance, int ____mapEventUpdateCount,
             ref int simulationRoundsDefender, ref int simulationRoundsAttacker)
         {
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
@@ -262,6 +287,16 @@ namespace CombatModCollection
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 40f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
             simulationRoundsAttacker = rounds;
+
+            if (!MapEventGlobalStorage.MapEventStats.ContainsKey(__instance.Id))
+            {
+                MapEventGlobalStorage.MapEventStats[__instance.Id] = new MapEventStat();
+                MapEventGlobalStorage.MapEventStats[__instance.Id].StageRounds = ____mapEventUpdateCount;
+            } else
+            {
+                MapEventGlobalStorage.MapEventStats[__instance.Id].StageRounds += 1;
+            }
+            InformationManager.DisplayMessage(new InformationMessage(MapEventGlobalStorage.MapEventStats[__instance.Id].StageRounds.ToString()));
         }
 
         public static bool Prepare()
@@ -454,12 +489,14 @@ namespace CombatModCollection
                     }
                 }
             }
+
+            MapEventGlobalStorage.MapEventStats.TryRemove(__instance.Id, out _);
         }
 
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops;
+            return SubModule.Settings.Battle_SendAllTroops || SubModule.Settings.Strategy_LearnToQuit;
         }
     }
 }
