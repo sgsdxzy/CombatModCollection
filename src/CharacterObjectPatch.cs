@@ -9,7 +9,9 @@ namespace CombatModCollection
         public static bool Prefix(ref float __result,
             CharacterObject __instance)
         {
-            __result = 4.68e-7f * TroopEvaluationModel.GetAttackPoints(__instance) * TroopEvaluationModel.GetDefensePoints(__instance);
+            __result = 4.68e-9f * TroopEvaluationModel.GetAttackPoints(__instance) * 
+                TroopEvaluationModel.GetDefensePoints(__instance) *
+                __instance.MaxHitPoints();
 
             return false;
         }

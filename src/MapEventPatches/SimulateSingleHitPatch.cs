@@ -29,9 +29,9 @@ namespace CombatModCollection
         private static FieldInfo MapEventSide__selectedSimulationTroop = typeof(MapEventSide).GetField(
             "_selectedSimulationTroop", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 200.0f;
+        private static readonly float DamageMultiplier = 300.0f;
 
-        private static UniqueTroopDescriptor SelectSimulationTroopAtIndex(MapEventSide side, int index, out List<UniqueTroopDescriptor> simulationTroopList)
+        public static UniqueTroopDescriptor SelectSimulationTroopAtIndex(MapEventSide side, int index, out List<UniqueTroopDescriptor> simulationTroopList)
         {
             // side._selectedSimulationTroopIndex = index;
             MapEventSide__selectedSimulationTroopIndex.SetValue(side, index);

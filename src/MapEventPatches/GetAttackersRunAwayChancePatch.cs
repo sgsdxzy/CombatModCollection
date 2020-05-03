@@ -53,10 +53,10 @@ namespace CombatModCollection
         public static int GetNumberOfTroopsSacrificedForTryingToGetAway(
             MapEventSide mapEventSide,
             MapEventSide oppositeSide,
+            float powerRatio,
             int ofRegularMembers)
         {
-            float num1 = mapEventSide.RecalculateStrengthOfSide() + 1f;
-            float val1 = oppositeSide.RecalculateStrengthOfSide() / num1;
+            float val1 = powerRatio;
 
             int num2 = mapEventSide.CountTroops((Func<FlattenedTroopRosterElement, bool>)(x => x.State == RosterTroopState.Active && !x.Troop.IsHero));
             ExplainedNumber stat = new ExplainedNumber(1f, (StringBuilder)null);
@@ -70,23 +70,58 @@ namespace CombatModCollection
         }
 
         public static bool Prefix(ref bool __result, MapEvent __instance)
-        {           
+        {
             bool AttackerRunaway = false;
             bool DefenderRunaway = false;
 
-            float num1 = 0.0f;
-            foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.AttackerSide.Parties)
+            __instance.SimulateBattleSetup();
+            MapEventSide attackerSide = __instance.AttackerSide;
+            MapEventSide defenderSide = __instance.DefenderSide;
+            float attackerTotalStrength = 0;
+            float defenderTotalStrength = 0;
+            bool hasStat = GlobalStorage.MapEventStats.TryGetValue(__instance.Id, out MapEventStat mapEventStat);
+            int stageRounds = hasStat ? mapEventStat.StageRounds : 0;
+
+            for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
             {
-                num1 += party.TotalStrength;
+                UniqueTroopDescriptor troopDescriptor = SimulateSingleHitPatch.SelectSimulationTroopAtIndex(attackerSide, index, out _);
+                CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
+                float attackPoints = TroopEvaluationModel.GetAttackPoints(troop, stageRounds);
+
+                float defensePoints = TroopEvaluationModel.GetDefensePoints(troop);
+                float hitPoints;
+                if (hasStat && mapEventStat.TroopStats.TryGetValue(troop.Id, out TroopStat troopStat))
+                {
+                    hitPoints = troopStat.Hitpoints;
+                }
+                else
+                {
+                    hitPoints = troop.MaxHitPoints();
+                }
+                attackerTotalStrength += attackPoints * defensePoints * hitPoints;
             }
-                
-            float num2 = 0.0f;
-            foreach (PartyBase party in (IEnumerable<PartyBase>)__instance.DefenderSide.Parties)
-                num2 += party.TotalStrength;
-            // if (__instance.IsSiege) v1.2.1
+            for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
+            {
+                UniqueTroopDescriptor troopDescriptor = SimulateSingleHitPatch.SelectSimulationTroopAtIndex(defenderSide, index, out _);
+                CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
+                float attackPoints = TroopEvaluationModel.GetAttackPoints(troop, stageRounds);
+
+                float defensePoints = TroopEvaluationModel.GetDefensePoints(troop);
+                float hitPoints;
+                if (hasStat && mapEventStat.TroopStats.TryGetValue(troop.Id, out TroopStat troopStat))
+                {
+                    hitPoints = troopStat.Hitpoints;
+                }
+                else
+                {
+                    hitPoints = troop.MaxHitPoints();
+                }
+                defenderTotalStrength += attackPoints * defensePoints * hitPoints;
+            }
+
             if (__instance.IsSiegeAssault)
-                num1 *= 0.6666667f;
-            float powerRatio = num2 / num1;
+                attackerTotalStrength *= 0.6666667f;
+            float powerRatio = defenderTotalStrength / attackerTotalStrength;
 
             if (__instance.AttackerSide.LeaderParty.LeaderHero == null)
             {
@@ -97,7 +132,7 @@ namespace CombatModCollection
                 // Attacker Runaway
                 if (powerRatio > 1.2)
                 {
-                    float baseChance = (powerRatio - 1.2f) / 1.0f;
+                    float baseChance = (powerRatio - 1.2f) / 1.2f;
                     float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
                     AttackerRunaway = MBRandom.RandomFloat < baseChance + bonus;
                 }
@@ -127,7 +162,7 @@ namespace CombatModCollection
                     {
                         ofRegularMembers += party.NumberOfRegularMembers;
                     }
-                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, ofRegularMembers);
+                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, 1 / powerRatio, ofRegularMembers);
                     if (forTryingToGetAway < 0 || ofRegularMembers < forTryingToGetAway)
                     {
                         // Not enough man

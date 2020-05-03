@@ -7,7 +7,7 @@ namespace CombatModCollection
 {
     public class TroopEvaluationModel
     {
-        public static float GetAttackPoints(CharacterObject troop)
+        public static float GetAttackPoints(CharacterObject troop, int StageRounds = 0)
         {
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
@@ -20,7 +20,7 @@ namespace CombatModCollection
             
         }
 
-        public static float GetDefensePoints(CharacterObject troop)
+        public static float GetDefensePoints(CharacterObject troop, int StageRounds = 0)
         {
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
