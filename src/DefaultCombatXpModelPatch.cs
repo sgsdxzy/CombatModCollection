@@ -20,7 +20,7 @@ namespace CombatModCollection
             double num1;
             if (attackedTroop == null)
             {
-                num1 = 0.400000005960464 * 1.0 * Math.Min(damage, val2);
+                num1 = 0.400000005960464 * 2.0 * Math.Min(damage, val2);
             }
             else
             {
