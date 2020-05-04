@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -16,10 +17,15 @@ namespace CombatModCollection
             Vec3 swingDir,
             bool cancelDamage)
         {
-            if (SubModule.Settings.Battle_WarStomp_UnstoppableCharge)
+            if ((__result.BlowFlag & BlowFlags.MakesRear) == BlowFlags.MakesRear)
             {
-                __result.BlowFlag &= ~BlowFlags.MakesRear;
+                __result.InflictedDamage = (int)(__result.InflictedDamage * SubModule.Settings.Battle_WarStomp_DamageMultiplierToHorse);
+                if (SubModule.Settings.Battle_WarStomp_UnstoppableCharge)
+                {
+                    __result.BlowFlag &= ~BlowFlags.MakesRear;
+                }
             }
+            
             if (collisionData.IsHorseCharge && SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier != 1f)
             {
                 if (victimAgent.IsRunningAway || (double)Vec3.DotProduct(swingDir, victimAgent.Frame.rotation.f) > 0.5)

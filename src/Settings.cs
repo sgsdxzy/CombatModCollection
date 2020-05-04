@@ -17,6 +17,7 @@
 
         public bool Battle_WarStomp { get; set; } = false;
         public bool Battle_WarStomp_UnstoppableCharge { get; set; } = true;
+        public float Battle_WarStomp_DamageMultiplierToHorse { get; set; } = 1.0f;
         public float Battle_WarStomp_WarStompDamageMultiplier { get; set; } = 4.0f;
 
         public bool Battle_PowerThrust { get; set; } = false;
