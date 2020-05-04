@@ -13,7 +13,8 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 400.0f;
+        private static readonly float DamageMultiplier = SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel ?
+            100.0f : 10f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,

@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
 
 namespace CombatModCollection
 {
-    [HarmonyPatch(typeof(CharacterObject), "GetPower")]
+    // [HarmonyPatch(typeof(CharacterObject), "GetPower")]
     public class GetPowerPatch
     {
         public static bool Prefix(ref float __result,
@@ -12,6 +13,11 @@ namespace CombatModCollection
             __result = 4.68e-9f * TroopEvaluationModel.GetAttackPoints(__instance) * 
                 TroopEvaluationModel.GetDefensePoints(__instance) *
                 __instance.MaxHitPoints();
+
+            InformationManager.DisplayMessage(new InformationMessage(__instance.Name.ToString() + 
+                "  " + TroopEvaluationModel.GetAttackPoints(__instance).ToString()
+                + "  " + TroopEvaluationModel.GetDefensePoints(__instance) 
+                + "  " + __instance.MaxHitPoints()));
 
             return false;
         }

@@ -29,7 +29,6 @@ namespace CombatModCollection
             float sacrifaceRatio)
         {
             int num1 = MBRandom.RoundRandomized((float)mobileParty.Party.NumberOfRegularMembers * sacrifaceRatio);
-            //InformationManager.DisplayMessage(new InformationMessage("Defender Num sacrifice: "+num1.ToString()));
             for (int index = 0; index < num1; ++index)
             {
                 float num2 = 100f;
@@ -43,7 +42,6 @@ namespace CombatModCollection
                         troopRosterElement1 = troopRosterElement2;
                     }
                 }
-                //InformationManager.DisplayMessage(new InformationMessage(troopRosterElement1.Character.Name.ToString()));
                 mobileParty.MemberRoster.AddToCounts(troopRosterElement1.Character, -1, false, troopRosterElement1.WoundedNumber > 0 ? -1 : 0, 0, true, -1);
             }
         }

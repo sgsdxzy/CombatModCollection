@@ -27,7 +27,7 @@ namespace CombatModCollection
             {
                 return attackPoints * 0.7f;
             }
-            return attackPoints;
+            return attackPoints * 40;
         }
 
         public static float GetDefensePoints(CharacterObject troop, int StageRounds = 0)

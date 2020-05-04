@@ -88,7 +88,7 @@ namespace CombatModCollection
         
         public static float GetExcessiveDamageSurvivalChance(Agent agent, float excessiveDamage)
         {
-            float chance = 1 - (excessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage) / agent.HealthLimit;
+            float chance = 1 - 2 * (excessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage) / agent.HealthLimit;
 
             return chance;
         }
