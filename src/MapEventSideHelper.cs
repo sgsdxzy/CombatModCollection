@@ -59,6 +59,7 @@ namespace CombatModCollection
             MapEventSide__selectedSimulationTroop.SetValue(side, (CharacterObject)null);
         }
 
+
         // MapEventSide.ApplySimulationDamageToSelectedTroop
         public static bool ApplySimulationDamageToSelectedTroop(MapEventSide side,
             CharacterObject strikedTroop,
@@ -96,7 +97,8 @@ namespace CombatModCollection
 
                 if (troopStat.Hitpoints <= 0)
                 {
-                    if ((double)MBRandom.RandomFloat < (double)Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty))
+                    float survivalChance = SurvivalModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty, true);
+                    if (MBRandom.RandomFloat < survivalChance)
                     {
                         side.OnTroopWounded(strikedTroopDescriptor);
                         battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
