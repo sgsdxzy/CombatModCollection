@@ -30,5 +30,6 @@
         public float Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn { get; set; } = 0.0f;
 
         public bool Strategy_LearnToQuit { get; set; } = false;
+        public bool Strategy_LearnToQuit_Verbose { get; set; } = true;
     }
 }

@@ -104,9 +104,13 @@ namespace CombatModCollection
             }
             if (AttackerRunaway)
             {
-                TextObject textObject = new TextObject("{LEADER.LINK_AND_FACTION} withdrawed from battle.", (Dictionary<string, TextObject>)null);
-                StringHelpers.SetCharacterProperties("LEADER", __instance.AttackerSide.LeaderParty.LeaderHero.CharacterObject, (TextObject)null, textObject);
-                InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
+                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
+                {
+                    string information = __instance.AttackerSide.LeaderParty.Name.ToString() +
+                        " withdrew from battle against " +
+                        __instance.DefenderSide.LeaderParty.Name.ToString();
+                    InformationManager.DisplayMessage(new InformationMessage(information));
+                }
 
                 __result = true;
                 return false;
@@ -146,9 +150,13 @@ namespace CombatModCollection
             {
                 GlobalStorage.IsDefenderRunAway[__instance.Id] = true;
 
-                TextObject textObject = new TextObject("{LEADER.LINK_AND_FACTION} was forced to retreat.", (Dictionary<string, TextObject>)null);
-                StringHelpers.SetCharacterProperties("LEADER", __instance.DefenderSide.LeaderParty.LeaderHero.CharacterObject, (TextObject)null, textObject);
-                InformationManager.DisplayMessage(new InformationMessage(textObject.ToString()));
+                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
+                {
+                    string information = __instance.DefenderSide.LeaderParty.Name.ToString() +
+                        " was forced to retreat against " +
+                        __instance.AttackerSide.LeaderParty.Name.ToString();
+                    InformationManager.DisplayMessage(new InformationMessage(information));
+                }
 
                 SacrificeTroops(sacrificeRatio, __instance.DefenderSide, __instance);
 
