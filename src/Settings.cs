@@ -13,7 +13,7 @@
         public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;
         public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = true;
         public float Battle_SendAllTroops_CombatSpeed { get; set; } = 1.0f;
-        public float Battle_SendAllTroops_SimXPMultiplier { get; set; } = 1.0f;
+        public float Battle_SendAllTroops_XPMultiplier { get; set; } = 1.0f;
 
         public bool Battle_WarStomp { get; set; } = false;
         public bool Battle_WarStomp_UnstoppableCharge { get; set; } = true;

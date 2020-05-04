@@ -40,7 +40,7 @@ namespace CombatModCollection
                     num2 = 0.330000013113022;
                     break;
                 case CombatXpModel.MissionTypeEnum.SimulationBattle:
-                    num2 = 0.899999976158142 * SubModule.Settings.Battle_SendAllTroops_SimXPMultiplier;
+                    num2 = 0.899999976158142;
                     break;
                 case CombatXpModel.MissionTypeEnum.NoXp:
                     num2 = 0.0;
@@ -49,7 +49,7 @@ namespace CombatModCollection
                     num2 = 1.0;
                     break;
             }
-            float f = (float)(num1 * num2);
+            float f = (float)(num1 * num2 * SubModule.Settings.Battle_SendAllTroops_XPMultiplier);
             xpAmount = MathF.Round(f);
 
             return false;
