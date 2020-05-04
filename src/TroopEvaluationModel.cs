@@ -25,7 +25,7 @@ namespace CombatModCollection
             }
             if (troop.IsArcher && StageRounds > 20)
             {
-                return attackPoints * 0.6f;
+                return attackPoints * 0.7f;
             }
             return attackPoints;
         }

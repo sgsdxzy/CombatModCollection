@@ -35,5 +35,9 @@
 
         public bool Strategy_LearnToQuit { get; set; } = false;
         public bool Strategy_LearnToQuit_Verbose { get; set; } = true;
+
+        public bool Strategy_BanditMerger { get; set; } = false;
+        public float Strategy_BanditMerger_MergRadius { get; set; } = 15f;
+        public float Strategy_BanditMerger_MaxNumber { get; set; } = 100f;
     }
 }

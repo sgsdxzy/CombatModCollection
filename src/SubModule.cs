@@ -2,13 +2,14 @@
 using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 namespace CombatModCollection
 {
     public class SubModule : MBSubModuleBase
     {
-
         public static Settings Settings { get; private set; }
 
         private static void LoadSettings()
@@ -23,6 +24,7 @@ namespace CombatModCollection
             }
         }
 
+
         protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
@@ -30,6 +32,22 @@ namespace CombatModCollection
             SubModule.LoadSettings();
             var harmony = new Harmony("mod.bannerlord.lightcombat");
             harmony.PatchAll();
+        }
+
+
+        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
+        {
+            base.OnGameStart(game, gameStarterObject);
+            AddBehaviors(gameStarterObject as CampaignGameStarter);
+        }
+
+
+        private void AddBehaviors(CampaignGameStarter gameStarter)
+        {
+            if (Settings.Strategy_BanditMerger)
+            {
+                gameStarter?.AddBehavior(new BanditMergeBehavior());
+            }
         }
     }
 }

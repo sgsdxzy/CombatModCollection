@@ -69,8 +69,14 @@ namespace CombatModCollection
             return num3 <= num2 ? num3 : -1;
         }
 
-        public static bool Prefix(ref bool __result, MapEvent __instance)
+        public static bool Prefix(ref bool __result, MapEvent __instance, int ____mapEventUpdateCount)
         {
+            if (____mapEventUpdateCount <= 1)
+            {
+                __result = false;
+                return false;
+            }
+
             bool AttackerRunaway = false;
             bool DefenderRunaway = false;
 
