@@ -38,7 +38,17 @@ namespace CombatModCollection
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             base.OnGameStart(game, gameStarterObject);
+            AddModels(gameStarterObject as CampaignGameStarter);
             AddBehaviors(gameStarterObject as CampaignGameStarter);
+        }
+
+
+        private void AddModels(CampaignGameStarter gameStarter)
+        {
+            if (Settings.Strategy_BanditMerger)
+            {
+                gameStarter?.AddModel(new LightBanditDensityModel());
+            }
         }
 
 

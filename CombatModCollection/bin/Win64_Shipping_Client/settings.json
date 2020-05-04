@@ -1,18 +1,24 @@
 {
   "Battle_SurviveByArmor": false,
-    "Battle_SurviveByArmor_ArmorThreshold": 80,
+    "Battle_SurviveByArmor_SurviveByExcessiveDamage": true,
+    "Battle_SurviveByArmor_SafeExcessiveDamage": 10,
+    "Battle_SurviveByArmor_SurviveByArmorValue": true,
+    "Battle_SurviveByArmor_ArmorValueThreshold": 100,
 
   "Battle_GoodSoildersNeverDie": false,
     "Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty": true,
     "Battle_GoodSoildersNeverDie_MinimumLevel": 20,
 
   "Battle_SendAllTroops": false,
+    "Battle_SendAllTroops_AbsoluteZeroRandomness": true,
+    "Battle_SendAllTroops_DetailedCombatModel": true,
     "Battle_SendAllTroops_CombatSpeed": 1.0,
-    "Battle_SendAllTroops_SimXPMultiplier": 1.0,
+    "Battle_SendAllTroops_XPMultiplier": 1.0,
 
   "Battle_WarStomp": false,
     "Battle_WarStomp_UnstoppableCharge": true,
-    "Battle_WarStomp_WarStompDamageMultiplier": 4,
+    "Battle_WarStomp_DamageMultiplierToHorse": 1.0,
+    "Battle_WarStomp_WarStompDamageMultiplier": 4.0,
 
   "Battle_PowerThrust": false,
     "Battle_PowerThrust_kE": 0.125,
@@ -24,5 +30,11 @@
     "Strategy_ModifyRespawnParty_AILordPartySizeOnRespawn": 3,
     "Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn": 0,
 
-  "Strategy_LearnToQuit": false
+  "Strategy_LearnToQuit": false,
+    "Strategy_LearnToQuit_Verbose": true,
+
+  "Strategy_BanditMerger": false,
+    "Strategy_BanditMerger_MergRadius": 15,
+    "Strategy_BanditMerger_MaxNumber": 100,
+    "Strategy_BanditMerger_MaximumBanditParties": 200
 }
