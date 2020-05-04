@@ -19,6 +19,14 @@ namespace CombatModCollection
         private static float GetAttackPointsNewModel(CharacterObject troop, int StageRounds = 0)
         {
             troop.GetSimulationAttackPower(out float attackPoints, out _);
+            if (!troop.IsArcher && StageRounds == 0)
+            {
+                return 0f;
+            }
+            if (troop.IsArcher && StageRounds > 20)
+            {
+                return attackPoints * 0.6f;
+            }
             return attackPoints;
         }
 

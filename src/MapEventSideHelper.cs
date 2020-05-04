@@ -144,6 +144,13 @@ namespace CombatModCollection
                     {
                         hitPoints = troop.MaxHitPoints();
                     }
+                    if (SubModule.Settings.Battle_GoodSoildersNeverDie && !SubModule.Settings.Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty)
+                    {
+                        if (troop.Level >= SubModule.Settings.Battle_GoodSoildersNeverDie_MinimumLevel)
+                        {
+                            hitPoints = hitPoints * 0.75f + troop.MaxHitPoints() * 0.25f;
+                        }
+                    }
                     totalStrength += attackPoints * defensePoints * hitPoints;
                 }
                 return totalStrength;
