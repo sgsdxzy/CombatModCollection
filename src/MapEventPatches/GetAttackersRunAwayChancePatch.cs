@@ -77,50 +77,15 @@ namespace CombatModCollection
             __instance.SimulateBattleSetup();
             MapEventSide attackerSide = __instance.AttackerSide;
             MapEventSide defenderSide = __instance.DefenderSide;
-            float attackerTotalStrength = 0;
-            float defenderTotalStrength = 0;
             bool hasStat = GlobalStorage.MapEventStats.TryGetValue(__instance.Id, out MapEventStat mapEventStat);
             int stageRounds = hasStat ? mapEventStat.StageRounds : 0;
-
-            for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
-            {
-                UniqueTroopDescriptor troopDescriptor = SimulateSingleHitPatch.SelectSimulationTroopAtIndex(attackerSide, index, out _);
-                CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
-                float attackPoints = TroopEvaluationModel.GetAttackPoints(troop, stageRounds);
-
-                float defensePoints = TroopEvaluationModel.GetDefensePoints(troop);
-                float hitPoints;
-                if (hasStat && mapEventStat.TroopStats.TryGetValue(troop.Id, out TroopStat troopStat))
-                {
-                    hitPoints = troopStat.Hitpoints;
-                }
-                else
-                {
-                    hitPoints = troop.MaxHitPoints();
-                }
-                attackerTotalStrength += attackPoints * defensePoints * hitPoints;
-            }
-            for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
-            {
-                UniqueTroopDescriptor troopDescriptor = SimulateSingleHitPatch.SelectSimulationTroopAtIndex(defenderSide, index, out _);
-                CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
-                float attackPoints = TroopEvaluationModel.GetAttackPoints(troop, stageRounds);
-
-                float defensePoints = TroopEvaluationModel.GetDefensePoints(troop);
-                float hitPoints;
-                if (hasStat && mapEventStat.TroopStats.TryGetValue(troop.Id, out TroopStat troopStat))
-                {
-                    hitPoints = troopStat.Hitpoints;
-                }
-                else
-                {
-                    hitPoints = troop.MaxHitPoints();
-                }
-                defenderTotalStrength += attackPoints * defensePoints * hitPoints;
-            }
+            float attackerTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(attackerSide, stageRounds, hasStat, mapEventStat);
+            float defenderTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(defenderSide, stageRounds, hasStat, mapEventStat);
 
             if (__instance.IsSiegeAssault)
+            {
                 attackerTotalStrength *= 0.6666667f;
+            }
             float powerRatio = defenderTotalStrength / attackerTotalStrength;
 
             if (__instance.AttackerSide.LeaderParty.LeaderHero == null)

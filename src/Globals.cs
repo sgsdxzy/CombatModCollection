@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection

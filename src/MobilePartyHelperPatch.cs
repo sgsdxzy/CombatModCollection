@@ -12,7 +12,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(MobilePartyHelper), "SpawnLordPartyInternal")]
     public class SpawnLordPartyInternalPatch
     {
-        private static MethodInfo OnLordPartySpawnedMI = typeof(CampaignEventDispatcher).GetMethod("OnLordPartySpawned", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo OnLordPartySpawnedMI = typeof(CampaignEventDispatcher).GetMethod("OnLordPartySpawned", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
         public static bool Prefix(ref MobileParty __result, Hero hero,
             Vec2 position,

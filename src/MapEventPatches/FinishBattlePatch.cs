@@ -10,7 +10,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
     public class FinishBattlePatch
     {
-        private static FieldInfo MapEvent__attackersRanAway = typeof(MapEvent).GetField(
+        private static readonly FieldInfo MapEvent__attackersRanAway = typeof(MapEvent).GetField(
             "_attackersRanAway", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
         public static void Prefix(MapEvent __instance)
