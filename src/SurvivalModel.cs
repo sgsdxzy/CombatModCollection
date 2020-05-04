@@ -58,12 +58,20 @@ namespace CombatModCollection
                     // Simulations always have this bonus
                     if (SubModule.Settings.Battle_SurviveByArmor && SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue)
                     {
-                        float head = character.GetHeadArmorSum();
-                        float body = character.GetBodyArmorSum();
-                        float arm = character.GetArmArmorSum();
-                        float leg = character.GetLegArmorSum();
-                        float totalArmor = head + body + arm + leg;
-                        stat.Add(totalArmor / SubModule.Settings.Battle_SurviveByArmor_ArmorValueThreshold * 16 * 0.03f, (TextObject)null);
+                        try
+                        {
+                            float head = character.GetHeadArmorSum();
+                            float body = character.GetBodyArmorSum();
+                            float arm = character.GetArmArmorSum();
+                            float leg = character.GetLegArmorSum();
+                            float totalArmor = head + body + arm + leg;
+                            stat.Add(totalArmor / SubModule.Settings.Battle_SurviveByArmor_ArmorValueThreshold * 16 * 0.03f, (TextObject)null);
+                        }
+                        catch (NullReferenceException)
+                        {
+                            // Cannot find FirstBattleEquipment for the troop, possible added by other mods
+                            stat.Add((float)character.Level * 0.03f, (TextObject)null);
+                        }
                     }
                     else
                     {
