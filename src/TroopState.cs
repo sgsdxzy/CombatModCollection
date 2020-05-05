@@ -125,8 +125,8 @@ namespace CombatModCollection
                 RangedAmmo = Math.Max(numAmmo / 2, 1);
             }        
 
-            InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
-                " " + MeleePoints + " " + RangedPoints + " " + ArmorPoints + " " + ShieldPoints + " " + RangedAmmo));
+            //InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
+            //    " " + MeleePoints + " " + RangedPoints + " " + ArmorPoints + " " + ShieldPoints + " " + RangedAmmo));
         }
 
         private float GetMeleeWeaponStrength(ItemObject item)
@@ -285,7 +285,7 @@ namespace CombatModCollection
         {
             if (RangedPoints > 0 && StageRounds < RangedAmmo)
             {
-                damage = 0.75f * attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
+                damage = 0.8f * attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
             } else
             {
                 damage = attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
