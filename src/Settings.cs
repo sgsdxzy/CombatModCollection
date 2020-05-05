@@ -12,10 +12,12 @@
         public bool Battle_GoodSoildersNeverDie { get; set; } = false;
         public bool Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty { get; set; } = false;
         public float Battle_GoodSoildersNeverDie_MinimumLevel { get; set; } = 20f;
+        public float Battle_GoodSoildersNeverDie_DeathRate { get; set; } = 0f;
 
         public bool Battle_SendAllTroops { get; set; } = false;
         public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;
-        public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = true;
+        public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = false;
+        public bool Battle_SendAllTroops_SimplifiedModel { get; set; } = true;
         public float Battle_SendAllTroops_CombatSpeed { get; set; } = 1.0f;
         public float Battle_SendAllTroops_XPMultiplier { get; set; } = 1.0f;
 

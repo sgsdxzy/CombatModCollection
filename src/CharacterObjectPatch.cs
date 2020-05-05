@@ -10,21 +10,16 @@ namespace CombatModCollection
         public static bool Prefix(ref float __result,
             CharacterObject __instance)
         {
-            __result = 4.68e-9f * TroopEvaluationModel.GetAttackPoints(__instance) * 
-                TroopEvaluationModel.GetDefensePoints(__instance) *
-                __instance.MaxHitPoints();
-
-            InformationManager.DisplayMessage(new InformationMessage(__instance.Name.ToString() + 
-                "  " + TroopEvaluationModel.GetAttackPoints(__instance).ToString()
-                + "  " + TroopEvaluationModel.GetDefensePoints(__instance) 
-                + "  " + __instance.MaxHitPoints()));
+            TroopState troopState = new TroopState(__instance);
+            __result = troopState.GetStrength(0);
 
             return false;
         }
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops && SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel;
+            return false;
+            // return SubModule.Settings.Battle_SendAllTroops && SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel;
         }
     }
 
