@@ -4,7 +4,7 @@ using TaleWorlds.Core;
 
 namespace CombatModCollection
 {
-    // [HarmonyPatch(typeof(CharacterObject), "GetPower")]
+    [HarmonyPatch(typeof(CharacterObject), "GetPower")]
     public class GetPowerPatch
     {
         public static bool Prefix(ref float __result,

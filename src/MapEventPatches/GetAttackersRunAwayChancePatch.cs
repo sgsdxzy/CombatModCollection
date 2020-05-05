@@ -81,10 +81,9 @@ namespace CombatModCollection
             __instance.SimulateBattleSetup();
             MapEventSide attackerSide = __instance.AttackerSide;
             MapEventSide defenderSide = __instance.DefenderSide;
-            bool hasStat = GlobalStorage.MapEventStats.TryGetValue(__instance.Id, out MapEventStat mapEventStat);
-            int stageRounds = hasStat ? mapEventStat.StageRounds : 0;
-            float attackerTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(attackerSide, stageRounds, hasStat, mapEventStat);
-            float defenderTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(defenderSide, stageRounds, hasStat, mapEventStat);
+            MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
+            float attackerTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(attackerSide, mapEventState);
+            float defenderTotalStrength = MapEventSideHelper.RecalculateStrengthOfSide(defenderSide, mapEventState);
 
             if (__instance.IsSiegeAssault)
             {
@@ -152,7 +151,7 @@ namespace CombatModCollection
             }
             if (DefenderRunaway)
             {
-                GlobalStorage.IsDefenderRunAway[__instance.Id] = true;
+                mapEventState.IsDefenderRunAway = true;
 
                 if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
                 {

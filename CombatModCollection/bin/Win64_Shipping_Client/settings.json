@@ -11,7 +11,7 @@
 
   "Battle_SendAllTroops": false,
     "Battle_SendAllTroops_AbsoluteZeroRandomness": true,
-    "Battle_SendAllTroops_DetailedCombatModel": true,
+    "Battle_SendAllTroops_DetailedCombatModel": false,
     "Battle_SendAllTroops_CombatSpeed": 1.0,
     "Battle_SendAllTroops_XPMultiplier": 1.0,
 

@@ -1,10 +1,8 @@
 ﻿using Helpers;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
@@ -85,10 +83,10 @@ namespace CombatModCollection
             return (float)(1.0 - 1.0 / (double)stat.ResultNumber);
         }
 
-        
+
         public static float GetExcessiveDamageSurvivalChance(Agent agent, float excessiveDamage)
         {
-            float chance = 1 - (excessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage) 
+            float chance = 1 - (excessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage)
                 / (SubModule.Settings.Battle_SurviveByArmor_LethalExcessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage);
 
             return chance;

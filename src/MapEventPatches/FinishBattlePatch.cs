@@ -15,7 +15,8 @@ namespace CombatModCollection
 
         public static void Prefix(MapEvent __instance)
         {
-            if (GlobalStorage.IsDefenderRunAway.TryRemove(__instance.Id, out _))
+            MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
+            if (mapEventState.IsDefenderRunAway)
             {
                 // Defender ran away
                 // this._attackersRanAway = false;
@@ -40,7 +41,7 @@ namespace CombatModCollection
                 }
             }
 
-            GlobalStorage.MapEventStats.TryRemove(__instance.Id, out _);
+            MapEventState.RemoveMapEventState(__instance);
         }
 
 

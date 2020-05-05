@@ -13,25 +13,24 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel ?
-            100.0f : 10f;
+        private static readonly float DamageMultiplier = 10;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
             MapEventSide strikerSide,
             MapEventSide strikedSide,
-            float distributedAttackPoints,
+            AttackComposition distributedAttackPoints,
             out float totalDamageDone)
         {
-            int strikerNumber = strikerSide.NumRemainingSimulationTroops;
+                        int strikerNumber = strikerSide.NumRemainingSimulationTroops;
             int strikedNumber = strikedSide.NumRemainingSimulationTroops;
             totalDamageDone = 0;
             if (strikerNumber == 0 || strikedNumber == 0)
             {
                 return true;
             }
-            MapEventStat mapEventStat = GlobalStorage.MapEventStats[mapEvent.Id];
 
+            MapEventState mapEventState = MapEventState.GetMapEventState(mapEvent);
             bool finishedAnyone = false;
             for (int index = strikedNumber - 1; index >= 0; index--)
             {
@@ -44,27 +43,26 @@ namespace CombatModCollection
                 PartyBase strikedTroopParty = strikedSide.GetAllocatedTroopParty(strikedTroopDescriptor);
 
                 // MapEvents.GetSimulatedDamage and CombatSimulationModel.SimulateHit
-                float actualAttackPoints = distributedAttackPoints;
+                AttackComposition actualAttackPoints = distributedAttackPoints;
                 if (mapEvent.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
                 {
                     float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
                     actualAttackPoints *= damageMultiplier;
-                }
-                DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
-                float defencePoints = TroopEvaluationModel.GetDefensePoints(strikedTroop);
-                float damage = DamageMultiplier * actualAttackPoints / defencePoints;
+                }               
                 if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
                 {
-                    damage *= 0.5f;
+                    actualAttackPoints *= 0.5f;
                 }
                 else
                 {
-                    damage *= MBRandom.RandomFloat;
+                    actualAttackPoints *= MBRandom.RandomFloat;
                 }
-                totalDamageDone += damage;
+                DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
 
-                bool isFinishingStrike = MapEventSideHelper.ApplySimulationDamageToSelectedTroop(strikedSide, strikedTroop, strikedTroopParty,
-                    strikedTroopDescriptor, index, strikedTroopList, damage, damageType, strikerTroopParty, mapEventStat, battleObserver);
+                bool isFinishingStrike = MapEventSideHelper.ApplySimulationDamageToSelectedTroop(
+                    strikedSide, strikedTroop, strikedTroopParty, strikedTroopDescriptor, index, strikedTroopList, 
+                    actualAttackPoints, damageType, strikerTroopParty, mapEventState, battleObserver, out float damage);
+                totalDamageDone += damage;
 
                 strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, 0, isFinishingStrike);
                 finishedAnyone = finishedAnyone || isFinishingStrike;
@@ -79,32 +77,29 @@ namespace CombatModCollection
         {
             MapEventSide attackerSide = __instance.AttackerSide;
             MapEventSide defenderSide = __instance.DefenderSide;
-            float attackerTotalAttackPoints = 0;
-            float defenderTotalAttackPoints = 0;
+            AttackComposition attackerTotalAttackPoints = new AttackComposition();
+            AttackComposition defenderTotalAttackPoints = new AttackComposition();
+            MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
+
             IBattleObserver battleObserver = (IBattleObserver)MapEvent_BattleObserver.GetValue(__instance);
 
             for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
             {
                 UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(attackerSide, index, out _);
                 CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
-                attackerTotalAttackPoints += TroopEvaluationModel.GetAttackPoints(troop);
+                attackerTotalAttackPoints += mapEventState.GetAttackPoints(troop);
             }
             for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
             {
                 UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(defenderSide, index, out _);
                 CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
-                defenderTotalAttackPoints += TroopEvaluationModel.GetAttackPoints(troop);
+                defenderTotalAttackPoints += mapEventState.GetAttackPoints(troop);
             }
-
-            //UniqueTroopDescriptor td = SelectSimulationTroopAtIndex(attackerSide, 1, out _);
-            //CharacterObject tp = attackerSide.GetAllocatedTroop(td);
-            //InformationManager.DisplayMessage(new InformationMessage(TroopEvaluationModel.GetAttackPoints(tp).ToString()));
-            //InformationManager.DisplayMessage(new InformationMessage(TroopEvaluationModel.GetDefensePoints(tp).ToString()));
 
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
-            float attackerDistributedAttackPoints = attackerTotalAttackPoints / defenderNumber * strikerAdvantage;
-            float defenderDistributedAttackPoints = defenderTotalAttackPoints / attackerNumber * 1.0f;
+            AttackComposition attackerDistributedAttackPoints = attackerTotalAttackPoints * DamageMultiplier / defenderNumber * strikerAdvantage;
+            AttackComposition defenderDistributedAttackPoints = defenderTotalAttackPoints * DamageMultiplier / attackerNumber * 1.0f;
 
             bool finishedAnyone = false;
             finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttackPoints, out float attackerTotalDamageDone);

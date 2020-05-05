@@ -1,15 +1,7 @@
-﻿using Helpers;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.Barterables;
-using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
-using TaleWorlds.Core;
-using TaleWorlds.Library;
-using TaleWorlds.Localization;
-using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
 {

@@ -67,13 +67,15 @@ namespace CombatModCollection
             UniqueTroopDescriptor strikedTroopDescriptor,
             int selectedSimulationTroopIndex,
             List<UniqueTroopDescriptor> strikedTroopList,
-            float damage,
+            AttackComposition attackPoints,
             DamageTypes damageType,
             PartyBase strikerParty,
-            MapEventStat mapEventStat,
-            IBattleObserver battleObserver)
+            MapEventState mapEventState,
+            IBattleObserver battleObserver,
+            out float damage)
         {
             bool flag = false;
+            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attackPoints, strikedTroop, out damage);
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
@@ -85,17 +87,7 @@ namespace CombatModCollection
             }
             else
             {
-                if (!mapEventStat.TroopStats.TryGetValue(strikedTroop.Id, out TroopStat troopStat))
-                {
-                    troopStat = new TroopStat
-                    {
-                        Hitpoints = strikedTroop.MaxHitPoints()
-                    };
-                    mapEventStat.TroopStats[strikedTroop.Id] = troopStat;
-                }
-                troopStat.Hitpoints -= damage;
-
-                if (troopStat.Hitpoints <= 0)
+                if (IsFinishingStrike)
                 {
                     float survivalChance = SurvivalModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty, true);
                     if (MBRandom.RandomFloat < survivalChance)
@@ -111,7 +103,6 @@ namespace CombatModCollection
                         SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
                     }
                     flag = true;
-                    mapEventStat.TroopStats.TryRemove(strikedTroop.Id, out _);
                 }
             }
             if (flag)
@@ -120,7 +111,7 @@ namespace CombatModCollection
             return flag;
         }
 
-        public static float RecalculateStrengthOfSide(MapEventSide side, int StageRounds = 0, bool hasStat = false, MapEventStat mapEventStat = null)
+        public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
         {
             if (!SubModule.Settings.Battle_SendAllTroops)
             {
@@ -133,25 +124,9 @@ namespace CombatModCollection
                 {
                     UniqueTroopDescriptor troopDescriptor = SelectSimulationTroopAtIndex(side, index, out _);
                     CharacterObject troop = side.GetAllocatedTroop(troopDescriptor);
-                    float attackPoints = TroopEvaluationModel.GetAttackPoints(troop, StageRounds);
-                    float defensePoints = TroopEvaluationModel.GetDefensePoints(troop);
-                    float hitPoints;
-                    if (hasStat && mapEventStat.TroopStats.TryGetValue(troop.Id, out TroopStat troopStat))
-                    {
-                        hitPoints = troopStat.Hitpoints;
-                    }
-                    else
-                    {
-                        hitPoints = troop.MaxHitPoints();
-                    }
-                    if (SubModule.Settings.Battle_GoodSoildersNeverDie && !SubModule.Settings.Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty)
-                    {
-                        if (troop.Level >= SubModule.Settings.Battle_GoodSoildersNeverDie_MinimumLevel)
-                        {
-                            hitPoints = hitPoints * 0.75f + troop.MaxHitPoints() * 0.25f;
-                        }
-                    }
-                    totalStrength += attackPoints * defensePoints * hitPoints;
+                    float strength = mapEventState.GetTroopStrength(troop);
+
+                    totalStrength += strength;
                 }
                 return totalStrength;
             }

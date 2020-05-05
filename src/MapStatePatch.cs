@@ -8,7 +8,7 @@ namespace CombatModCollection
     {
         public static void Postfix()
         {
-            GlobalStorage.MapEventStats.TryRemove(PlayerEncounter.Battle.Id, out _);
+            MapEventState.RemoveMapEventState(PlayerEncounter.Battle);
         }
 
         public static bool Prepare()

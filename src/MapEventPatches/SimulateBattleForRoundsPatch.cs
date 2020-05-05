@@ -7,7 +7,7 @@ namespace CombatModCollection
     [HarmonyPatch(typeof(MapEvent), "SimulateBattleForRounds")]
     public class SimulateBattleForRoundsPatch
     {
-        public static void Prefix(MapEvent __instance, int ____mapEventUpdateCount,
+        public static void Prefix(MapEvent __instance,
             ref int simulationRoundsDefender, ref int simulationRoundsAttacker)
         {
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
@@ -17,16 +17,6 @@ namespace CombatModCollection
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 20f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
             simulationRoundsAttacker = rounds;
-
-            if (!GlobalStorage.MapEventStats.ContainsKey(__instance.Id))
-            {
-                GlobalStorage.MapEventStats[__instance.Id] = new MapEventStat();
-                GlobalStorage.MapEventStats[__instance.Id].StageRounds = ____mapEventUpdateCount;
-            }
-            else
-            {
-                GlobalStorage.MapEventStats[__instance.Id].StageRounds += 1;
-            }
         }
 
         public static bool Prepare()
