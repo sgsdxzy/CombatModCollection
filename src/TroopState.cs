@@ -122,11 +122,11 @@ namespace CombatModCollection
 
             if (numAmmo > 0)
             {
-                RangedAmmo = Math.Min(numAmmo / 2, 1);
+                RangedAmmo = Math.Max(numAmmo / 2, 1);
             }        
 
-            // InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
-            //    "  " + MeleePoints + "  " + RangedPoints + "  " + ArmorPoints + "  " + ShieldPoints + "  " + RangedAmmo));
+            InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
+                " " + MeleePoints + " " + RangedPoints + " " + ArmorPoints + " " + ShieldPoints + " " + RangedAmmo));
         }
 
         private float GetMeleeWeaponStrength(ItemObject item)
@@ -234,7 +234,7 @@ namespace CombatModCollection
         {
             if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
             {
-                return 0.3f;
+                return (int)itemHorse.Tier * 0.1f;
             }
 
             float harnessStrength = 0.7f;
