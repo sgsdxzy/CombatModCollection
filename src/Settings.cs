@@ -4,9 +4,10 @@
     {
         public bool Battle_SurviveByArmor { get; set; } = false;
         public bool Battle_SurviveByArmor_SurviveByExcessiveDamage { get; set; } = true;
-        public float Battle_SurviveByArmor_SafeExcessiveDamage { get; set; } = 30f;
+        public float Battle_SurviveByArmor_SafeExcessiveDamage { get; set; } = 10f;
+        public float Battle_SurviveByArmor_LethalExcessiveDamage { get; set; } = 50f;
         public bool Battle_SurviveByArmor_SurviveByArmorValue { get; set; } = true;
-        public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 80f;
+        public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 100f;
 
         public bool Battle_GoodSoildersNeverDie { get; set; } = false;
         public bool Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty { get; set; } = false;
