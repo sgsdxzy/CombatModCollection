@@ -32,16 +32,6 @@ namespace CombatModCollection
             {
                 return 1f;
             }
-            if (SubModule.Settings.Battle_GoodSoildersNeverDie)
-            {
-                if (party == PartyBase.MainParty || !SubModule.Settings.Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty)
-                {
-                    if ((float)character.Level >= SubModule.Settings.Battle_GoodSoildersNeverDie_MinimumLevel)
-                    {
-                        return 1f;
-                    }
-                }
-            }
             ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 10f : 1f, (StringBuilder)null);
             if (party != null && party.MobileParty != null)
             {
@@ -80,7 +70,18 @@ namespace CombatModCollection
                 if (character.IsHero && (party.MobileParty.Leader?.HeroObject != null && party.MobileParty.LeaderHero != character.HeroObject))
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.FortitudeTonic, party.MobileParty, ref stat);
             }
-            return (float)(1.0 - 1.0 / (double)stat.ResultNumber);
+            float deathRate = 1.0f / stat.ResultNumber;
+            if (SubModule.Settings.Battle_GoodSoildersNeverDie)
+            {
+                if (party == PartyBase.MainParty || !SubModule.Settings.Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty)
+                {
+                    if ((float)character.Level >= SubModule.Settings.Battle_GoodSoildersNeverDie_MinimumLevel)
+                    {
+                        deathRate *= SubModule.Settings.Battle_GoodSoildersNeverDie_DeathRate;
+                    }
+                }
+            }
+            return 1.0f - deathRate;
         }
 
 
