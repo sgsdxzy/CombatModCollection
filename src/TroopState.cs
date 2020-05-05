@@ -199,7 +199,7 @@ namespace CombatModCollection
                 WeaponComponentData nweapon = item.WeaponComponent.PrimaryWeapon;
                 if (nweapon.WeaponClass == WeaponClass.Stone)
                 {
-                    return 0.4f;
+                    return 0.6f;
                 }
                 return (int)item.Tier * 0.24f + 0.8f;
             }
@@ -281,9 +281,16 @@ namespace CombatModCollection
             return totalAttack * totalDefense * Hitpoints;
         }
 
-        public bool OnHit(AttackComposition attack, out float damage)
+        public bool OnHit(AttackComposition attack, int StageRounds, out float damage)
         {
-            damage = attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
+            if (RangedPoints > 0 && StageRounds < RangedAmmo)
+            {
+                damage = 0.75f * attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
+            } else
+            {
+                damage = attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
+            }
+                
             Hitpoints -= damage;
             return Hitpoints <= 0;
         }

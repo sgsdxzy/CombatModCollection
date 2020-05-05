@@ -49,10 +49,10 @@ namespace CombatModCollection
             }
         }
 
-        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, out float damage)
+        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, int StageRounds, out float damage)
         {
             TroopState troopState = GetTroopState(troop);
-            bool isFinishingBlow = troopState.OnHit(attack, out damage);
+            bool isFinishingBlow = troopState.OnHit(attack, StageRounds, out damage);
             if (isFinishingBlow)
             {
                 TroopStates.TryRemove(troop.Id, out _);

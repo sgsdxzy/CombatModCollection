@@ -75,7 +75,7 @@ namespace CombatModCollection
             out float damage)
         {
             bool flag = false;
-            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attackPoints, strikedTroop, out damage);
+            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attackPoints, strikedTroop, mapEventState.StageRounds, out damage);
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
