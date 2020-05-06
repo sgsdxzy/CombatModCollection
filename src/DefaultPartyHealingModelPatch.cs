@@ -24,7 +24,10 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return (SubModule.Settings.Battle_SurviveByArmor && SubModule.Settings.Battle_SurviveByArmor_SurviveByExcessiveDamage) || SubModule.Settings.Battle_GoodSoildersNeverDie;
+            return (SubModule.Settings.Battle_SurviveByArmor && 
+                (SubModule.Settings.Battle_SurviveByArmor_SurviveByExcessiveDamage 
+                || SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue) 
+                || SubModule.Settings.Battle_GoodSoildersNeverDie);
         }
     }
 }
