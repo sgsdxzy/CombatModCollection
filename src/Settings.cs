@@ -6,13 +6,11 @@
         public bool Battle_SurviveByArmor_SurviveByExcessiveDamage { get; set; } = true;
         public float Battle_SurviveByArmor_SafeExcessiveDamage { get; set; } = 10f;
         public float Battle_SurviveByArmor_LethalExcessiveDamage { get; set; } = 50f;
-        public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 100f;
-        public bool Battle_SurviveByArmor_FieldApplyMedicine { get; set; } = true;
-        public bool Battle_SurviveByArmor_FieldApplyLevel { get; set; } = false;
-        public bool Battle_SurviveByArmor_FieldApplyArmor { get; set; } = false;
-        public bool Battle_SurviveByArmor_SimApplyMedicine { get; set; } = true;
-        public bool Battle_SurviveByArmor_SimApplyLevel { get; set; } = false;
-        public bool Battle_SurviveByArmor_SimApplyArmor { get; set; } = true;
+        public bool Battle_SurviveByArmor_ApplyMedicine { get; set; } = true;
+        public bool Battle_SurviveByArmor_ApplyLevel { get; set; } = false;
+        public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;
+        public bool Battle_SurviveByArmor_SurviveByArmorValue { get; set; } = true;
+        public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 100f;        
 
         public bool Battle_SendAllTroops { get; set; } = false;
         public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;

@@ -51,21 +51,23 @@ namespace CombatModCollection
                 return false;
             }
 
-            bool useMedicine = SubModule.Settings.Battle_SurviveByArmor_FieldApplyMedicine;
-            bool useLevel = SubModule.Settings.Battle_SurviveByArmor_FieldApplyLevel;
-            bool useArmor = SubModule.Settings.Battle_SurviveByArmor_FieldApplyArmor;
+            bool useMedicine = SubModule.Settings.Battle_SurviveByArmor_ApplyMedicine;
+            bool useLevel = SubModule.Settings.Battle_SurviveByArmor_ApplyLevel;
+            bool useArmor = SubModule.Settings.Battle_SurviveByArmor_ApplyArmor;
 
             bool hasDamageData = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
             float baseDeathRate = 1.0f;
             if (hasDamageData)
             {
+                // SurviveByExcessiveDamage is on and is field battle
                 baseDeathRate = GetExcessiveDamageDeathRate(excessiveDamage);
             }
             else
             {
-                useMedicine = SubModule.Settings.Battle_SurviveByArmor_SimApplyMedicine;
-                useLevel = SubModule.Settings.Battle_SurviveByArmor_SimApplyLevel;
-                useArmor = SubModule.Settings.Battle_SurviveByArmor_SimApplyArmor;
+                // SurviveByExcessiveDamage is off or is simulation
+                useMedicine = true;
+                useLevel = !SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
+                useArmor = SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
             }
 
             ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 10f : 1f, (StringBuilder)null);
@@ -93,6 +95,7 @@ namespace CombatModCollection
                     catch (NullReferenceException)
                     {
                         // Cannot find FirstBattleEquipment for the troop, possible the troop is added by other mods
+                        stat.Add((float)character.Level * 0.03f, (TextObject)null);
                     }
                 }
                 if (useLevel)
@@ -103,6 +106,8 @@ namespace CombatModCollection
             float deathRate = baseDeathRate / stat.ResultNumber;
 
             __result = 1.0f - deathRate;
+            if (__result < 0f) __result = 0f;
+            if (__result > 1f) __result = 1f;
 
             return false;
         }
