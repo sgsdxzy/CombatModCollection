@@ -89,7 +89,7 @@ namespace CombatModCollection
             {
                 if (IsFinishingStrike)
                 {
-                    float survivalChance = SurvivalModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty, true);
+                    float survivalChance = Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty);
                     if (MBRandom.RandomFloat < survivalChance)
                     {
                         side.OnTroopWounded(strikedTroopDescriptor);

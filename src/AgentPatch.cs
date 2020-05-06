@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
 namespace CombatModCollection
@@ -9,13 +8,13 @@ namespace CombatModCollection
     {
         public static void Prefix(ref Blow b, Agent __instance)
         {
-            float excessiveDamage = (float)b.InflictedDamage - __instance.Health + 1f;
-            if (excessiveDamage >= 0 && b.DamageType != DamageTypes.Blunt)
+            if (__instance.Character != null)
             {
-                if (MBRandom.RandomFloat < SurvivalModel.GetExcessiveDamageSurvivalChance(__instance, excessiveDamage))
+                float excessiveDamage = (float)b.InflictedDamage - __instance.Health + 1f;
+                if (excessiveDamage > 0)
                 {
-                    b.DamageType = DamageTypes.Blunt;
-                }            
+                    GetSurvivalChancePatch.ExcessiveDamages[__instance.Character.Id] = excessiveDamage;
+                }
             }
         }
 
