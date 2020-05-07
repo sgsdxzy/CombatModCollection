@@ -17,8 +17,6 @@ namespace CombatModCollection
             int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 5f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
             simulationRoundsAttacker = rounds;
-
-            MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
         }
 
         public static void Postfix(MapEvent __instance)

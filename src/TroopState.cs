@@ -7,12 +7,11 @@ namespace CombatModCollection
 {
     public class TroopState
     {
-        private float Hitpoints;
+        public float Hitpoints;
 
         private List<Weapon> Weapons = new List<Weapon>(4);
         private Item Shield = null;
         private Item Horse = null;
-
 
         // cached defense points
         private float ArmorPoints = 1.0f;      // against short melee weapons

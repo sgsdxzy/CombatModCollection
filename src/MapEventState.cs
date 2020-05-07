@@ -77,5 +77,11 @@ namespace CombatModCollection
                 };
             }           
         }
+
+        public float GetTroopStrength(CharacterObject troop)
+        {
+            TroopState troopState = GetTroopState(troop);
+            return troopState.Hitpoints / troop.MaxHitPoints() * troop.GetPower();
+        }
     }
 }
