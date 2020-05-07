@@ -1,13 +1,7 @@
-﻿using TaleWorlds.CampaignSystem;
-using Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
-using TaleWorlds.Localization;
-using TaleWorlds.SaveSystem;
 
 namespace CombatModCollection
 {
@@ -15,46 +9,40 @@ namespace CombatModCollection
     {
         private float Hitpoints;
 
-        // cached attack points
-        private float MeleePoints = 0;
-        private float RangedPoints = 0;
-        // private float PolearmPoints = 0;
+        private List<Weapon> Weapons = new List<Weapon>(4);
+        private Item Shield = null;
+        private Item Horse = null;
+
 
         // cached defense points
-        private float ArmorPoints = 1;      // against short melee weapons
-        private float ShieldPoints = 1;     // against missles
-        // private float HorseArmorPoints = 1; // against polearms
+        private float ArmorPoints = 1.0f;      // against short melee weapons
+        private bool IsUsingShield = false;
+        private bool IsUsingRanged = false;
 
-        private int RangedAmmo = 0;
+        private Weapon ChosenWeapon = Weapon.Fist;
+        private AttackComposition _cachedAttack;
 
         public TroopState(CharacterObject troop)
         {
             Hitpoints = troop.HitPoints;
-            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
-            {
-                MeleePoints = troop.GetPower();
-                ArmorPoints = troop.GetPower();
-            }
-            else
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 CalculateStatesNewModel(troop);
             }
+            else
+            {
+                ArmorPoints = troop.GetPower();
+            }
         }
-
 
         private void CalculateStatesNewModel(CharacterObject troop, Equipment equipment = null)
         {
             if (equipment == null)
                 equipment = troop.Equipment;
 
-            float bestMelee = 0.1f;
-            float bestRanged = 0.0f;
-            float bestShield = 0.0f;
-            int numAmmo = 0;
-
             float armorSum = equipment.GetArmArmorSum() + equipment.GetHeadArmorSum() + equipment.GetHumanBodyArmorSum() + equipment.GetLegArmorSum();
             float num3 = armorSum * armorSum / (5 + equipment.GetTotalWeightOfArmor(true));
-            float armorPoints = (num3 * 10f + 4000f) / 10000f;
+            ArmorPoints = (num3 * 10f + 4000f) / 10000f;
 
             for (EquipmentIndex index1 = EquipmentIndex.WeaponItemBeginSlot; index1 < EquipmentIndex.NumAllWeaponSlots; ++index1)
             {
@@ -65,13 +53,43 @@ namespace CombatModCollection
                     {
                         float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                         float strength = GetShieldStrength(equipmentElement1.Item) * proficiency;
-                        bestShield = Math.Max(bestShield, strength);
+                        Shield = new Item { Strength = strength };
                     }
                     else if (equipmentElement1.Item.PrimaryWeapon.IsMeleeWeapon)
                     {
                         float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                         float strength = GetMeleeWeaponStrength(equipmentElement1.Item) * proficiency;
-                        bestMelee = Math.Max(bestMelee, strength);
+                        Weapon weapon = new Weapon
+                        {
+                            Range = 0,
+                            HasLimitedAmmo = false
+                        };
+                        switch (equipmentElement1.Item.PrimaryWeapon.WeaponClass)
+                        {
+                            case WeaponClass.Dagger:
+                            case WeaponClass.OneHandedSword:
+                            case WeaponClass.OneHandedAxe:
+                            case WeaponClass.Mace:
+                                weapon.IsTwohanded = false;
+                                weapon.Attack.Melee = strength;
+                                break;
+                            case WeaponClass.TwoHandedSword:
+                            case WeaponClass.TwoHandedAxe:
+                            case WeaponClass.TwoHandedMace:
+                                weapon.IsTwohanded = true;
+                                weapon.Attack.Melee = strength;
+                                break;
+                            case WeaponClass.OneHandedPolearm:
+                            case WeaponClass.LowGripPolearm:
+                                weapon.IsTwohanded = false;
+                                weapon.Attack.Polearm = strength;
+                                break;
+                            case WeaponClass.TwoHandedPolearm:
+                                weapon.IsTwohanded = false;
+                                weapon.Attack.Polearm = strength;
+                                break;
+                        }
+                        Weapons.Add(weapon);
                     }
                     else if (equipmentElement1.Item.PrimaryWeapon.IsRangedWeapon)
                     {
@@ -79,51 +97,55 @@ namespace CombatModCollection
                         {
                             float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                             float strength = GetThrownWeaponStrength(equipmentElement1.Item) * proficiency;
-                            if (strength > bestRanged)
+                            Weapon weapon = new Weapon
                             {
-                                numAmmo = equipmentElement1.Item.PrimaryWeapon.MaxDataValue;
-                                bestRanged = strength;
-                            }
+                                Range = 1,
+                                IsTwohanded = false,
+                                HasLimitedAmmo = true,
+                                RemainingAmmo = equipmentElement1.Item.PrimaryWeapon.MaxDataValue
+                            };
+                            weapon.Attack.Missile = strength;
+                            Weapons.Add(weapon);
                         }
                         else
                         {
+                            float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
+                            float strength = GetRangedWeaponStrength(equipmentElement1.Item) * proficiency;
+                            int numAmmo = 0;
+                            float ammoStrength = 0;
                             for (EquipmentIndex index2 = EquipmentIndex.WeaponItemBeginSlot; index2 < EquipmentIndex.NumAllWeaponSlots; ++index2)
                             {
                                 EquipmentElement equipmentElement2 = equipment[index2];
                                 if (index1 != index2 && !equipmentElement2.IsEmpty
-                                    && equipmentElement2.Item.PrimaryWeapon.IsAmmo)
+                                    && equipmentElement1.Item.WeaponComponent.PrimaryWeapon.AmmoClass == equipmentElement2.Item.WeaponComponent.PrimaryWeapon.WeaponClass)
                                 {
-                                    float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
-                                    float strength = GetRangedWeaponStrength(equipmentElement1.Item, equipmentElement2.Item) * proficiency;
-                                    if (strength > bestRanged)
-                                    {
-                                        numAmmo = equipmentElement2.Item.PrimaryWeapon.MaxDataValue;
-                                        bestRanged = strength;
-                                    }
+                                    numAmmo += equipmentElement2.Item.PrimaryWeapon.MaxDataValue;
+                                    ammoStrength = GetRangedAmmoStrength(equipmentElement2.Item);
                                 }
+                            }
+                            if (numAmmo > 0)
+                            {
+                                Weapon weapon = new Weapon
+                                {
+                                    Range = 2,
+                                    IsTwohanded = true,
+                                    HasLimitedAmmo = true,
+                                    RemainingAmmo = numAmmo
+                                };
+                                weapon.Attack.Missile = strength + ammoStrength;
+                                Weapons.Add(weapon);
                             }
                         }
                     }
                 }
             }
 
-            float horseStrengh = 0f;
             if (equipment.Horse.Item != null)
             {
                 float proficiency = equipment.Horse.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipment.Horse.Item.RelevantSkill) / 300.0f * 0.7f;
-                horseStrengh = proficiency * GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item);
-            }          
-
-            MeleePoints = bestMelee * (1 + horseStrengh);
-            RangedPoints = bestRanged;
-
-            ArmorPoints = armorPoints * (1 + horseStrengh);
-            ShieldPoints = (armorPoints + bestShield) * (1 + horseStrengh);
-
-            if (numAmmo > 0)
-            {
-                RangedAmmo = Math.Max(numAmmo / 2, 1);
-            }        
+                float Strength = GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item) * proficiency;
+                Horse = new Item { Strength = Strength };
+            }
 
             //InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
             //    " " + MeleePoints + " " + RangedPoints + " " + ArmorPoints + " " + ShieldPoints + " " + RangedAmmo));
@@ -131,177 +153,197 @@ namespace CombatModCollection
 
         private float GetMeleeWeaponStrength(ItemObject item)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
-            {
-                return (int)item.Tier * 0.24f + 0.8f;
-            }
-            WeaponComponentData weapon = item.WeaponComponent.PrimaryWeapon;
-            WeaponClass weaponClass = weapon.WeaponClass;
-            float constMultiplier = 3.5e-6f;
-            float classMultiplier;
-            switch (weaponClass)
-            {
-                case WeaponClass.TwoHandedAxe:
-                case WeaponClass.TwoHandedMace:
-                    classMultiplier = 1.2f;
-                    break;
-                default:
-                    classMultiplier = 1.0f;
-                    break;
-            }
-            float thrustDPS = weapon.ThrustDamage * weapon.ThrustSpeed;
-            float swingDPS = weapon.SwingDamage * weapon.SwingSpeed;
-            float DPS = Math.Max(thrustDPS, swingDPS);
-            double strength = constMultiplier * classMultiplier * DPS * Math.Pow(weapon.WeaponLength, 0.7)
-                * Math.Pow(weapon.Handling, 0.2) * Math.Pow(item.Weight, 0.2);
-
-            //InformationManager.DisplayMessage(new InformationMessage(item.Name.ToString() +
-            //   " Melee " + strength));
-            return (float)strength;
+            return (int)item.Tier * 0.24f + 0.8f;
         }
 
-        private float GetRangedWeaponStrength(ItemObject item, ItemObject ammoItem)
+        private float GetRangedWeaponStrength(ItemObject item)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
-            {
-                return (int)item.Tier * 0.24f + 0.8f;
-            }
-            WeaponComponentData weapon = item.WeaponComponent.PrimaryWeapon;
-            WeaponComponentData ammo = ammoItem.WeaponComponent.PrimaryWeapon;
-            if (weapon.AmmoClass != ammo.WeaponClass)
-            {
-                return 0;
-            }
-            WeaponClass weaponClass = weapon.WeaponClass;
-            float constMultiplier = 3.5e-5f;
-            float classMultiplier;
-            switch (weaponClass)
-            {
-                case WeaponClass.Crossbow:
-                    classMultiplier = 0.7f;
-                    break;
-                default:
-                    classMultiplier = 1.0f;
-                    break;
-            }
-            float DPS = (weapon.ThrustDamage + ammo.MissileDamage) * weapon.ThrustSpeed;
-            double strength = constMultiplier * classMultiplier * DPS * Math.Pow(weapon.Accuracy, 0.5);
+            return ((int)item.Tier * 0.24f + 0.8f) * 0.9f;
+        }
 
-            //InformationManager.DisplayMessage(new InformationMessage(item.Name.ToString() + "  " +
-            //    ammoItem.Name.ToString() + " Ranged " + strength));
-            return (float)strength;
+        private float GetRangedAmmoStrength(ItemObject item)
+        {
+            return ((int)item.Tier * 0.24f + 0.8f) * 0.1f;
         }
 
         private float GetThrownWeaponStrength(ItemObject item)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
+            WeaponComponentData nweapon = item.WeaponComponent.PrimaryWeapon;
+            if (nweapon.WeaponClass == WeaponClass.Stone)
             {
-                WeaponComponentData nweapon = item.WeaponComponent.PrimaryWeapon;
-                if (nweapon.WeaponClass == WeaponClass.Stone)
-                {
-                    return 0.6f;
-                }
-                return (int)item.Tier * 0.24f + 0.8f;
+                return 0.6f;
             }
-            WeaponComponentData weapon = item.WeaponComponent.PrimaryWeapon;
-            float constMultiplier = 1.5e-5f;
-
-            float DPS = weapon.ThrustDamage * weapon.ThrustSpeed;
-            double strength = constMultiplier * DPS * Math.Pow(weapon.Accuracy, 0.5) / 70000;
-
-            //InformationManager.DisplayMessage(new InformationMessage(item.Name.ToString() +
-            //    " Thrown " + strength));
-            return (float)strength;
+            return (int)item.Tier * 0.24f + 0.8f;
         }
 
         private float GetShieldStrength(ItemObject item)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
-            {
-                return (int)item.Tier * 0.24f + 0.8f;
-            }
-            WeaponComponentData weapon = item.WeaponComponent.PrimaryWeapon;
-            float constMultiplier = 0.001f;
-            double strength = constMultiplier * Math.Pow(weapon.MaxDataValue, 0.5) * 
-                Math.Pow(weapon.BodyArmor, 0.5) * Math.Pow(weapon.ThrustSpeed, 0.5);
-
-            //InformationManager.DisplayMessage(new InformationMessage(item.Name.ToString() +
-            //    " Shield " + strength));
-            return (float)strength;
+            return (int)item.Tier * 0.24f + 0.8f;
         }
 
         private float GetHorseStrength(ItemObject itemHorse, ItemObject itemHarness)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_SimplifiedModel)
-            {
-                return (int)itemHorse.Tier * 0.1f;
-            }
-
             float harnessStrength = 0.7f;
             if (itemHarness != null)
             {
                 harnessStrength = (float)Math.Pow(itemHarness.ArmorComponent.BodyArmor, 0.2);
             }
 
-            HorseComponent horse = itemHorse.HorseComponent;
-            float constMultiplier = 0.001f;
-            double strength = constMultiplier * harnessStrength * Math.Pow(horse.Speed, 0.5) * Math.Pow(horse.HitPoints, 0.5)
-                    * Math.Pow(horse.Maneuver, 0.2) * Math.Pow(horse.ChargeDamage, 0.1);      
-
-            //InformationManager.DisplayMessage(new InformationMessage(itemHorse.Name.ToString() +
-            //    " Horse " + strength));
-            return (float)strength;
+            return (int)itemHorse.Tier * harnessStrength * 0.05f;
         }
 
-
-        public AttackComposition GetAttackPoints(int StageRounds)
+        public AttackComposition GetWeaponAttack(Weapon weapon, MapEventState mapEventState)
         {
-            AttackComposition attackPoints = new AttackComposition();
-            if (RangedPoints > 0 && StageRounds < RangedAmmo)
+            if (weapon.Range + mapEventState.StageRounds < mapEventState.BattleScale)
             {
-                attackPoints.Missile = RangedPoints;
+                return new AttackComposition();
+            }
+
+            var attack = weapon.Attack;
+            if (Horse != null)
+            {
+                attack.Melee *= (1 + Horse.Strength * 0.5f);
+                attack.Polearm *= (1 + Horse.Strength * 1.0f);
+            }
+            return attack;
+        }
+
+        public void PrepareWeapon(MapEventState mapEventState)
+        {
+            ChosenWeapon = Weapon.Fist;
+            var attack = GetWeaponAttack(ChosenWeapon, mapEventState);
+            float highest = attack.Sum();
+            _cachedAttack = attack;
+
+            foreach (var weapon in Weapons)
+            {
+                if (weapon.IsUsable)
+                {
+                    attack = GetWeaponAttack(weapon, mapEventState);
+                    if (attack.Sum() > highest)
+                    {
+                        _cachedAttack = attack;
+                        highest = attack.Sum();
+                        ChosenWeapon = weapon;
+                    }
+                }
+            }
+
+            if (!ChosenWeapon.IsTwohanded && Shield != null)
+            {
+                IsUsingShield = true;
             }
             else
             {
-                if (StageRounds >= 1)
+                IsUsingShield = false;
+            }
+
+            IsUsingRanged = ChosenWeapon.IsRanged;
+        }
+
+        public AttackComposition DoAttack()
+        {
+            if (!ChosenWeapon.IsUsable)
+            {
+                return new AttackComposition();
+            }
+
+            if (ChosenWeapon.HasLimitedAmmo)
+            {
+                ChosenWeapon.RemainingAmmo -= 1;
+            }
+            return _cachedAttack;
+        }
+
+        public bool TakeHit(AttackComposition attack, out float damage)
+        {
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            {
+                float meleeDefense = ArmorPoints;
+                float missileDefense = ArmorPoints;
+                float polearmDefense = ArmorPoints;
+                if (IsUsingShield && Shield != null)
                 {
-                    attackPoints.Melee = MeleePoints;
-                }               
+                    meleeDefense += Shield.Strength;
+                    missileDefense += 3 * Shield.Strength;
+                    polearmDefense += Shield.Strength;
+                }
+                if (Horse != null)
+                {
+                    meleeDefense *= (1 + Horse.Strength);
+                    if (IsUsingRanged)
+                    {
+                        meleeDefense *= 1.2f;
+                    }
+                }
+
+                damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
+            }
+            else
+            {
+                damage = attack.Melee / ArmorPoints;
             }
 
-            return attackPoints;
-        }
-
-        public float GetStrength(int StageRounds)
-        {
-            AttackComposition attackPoints = GetAttackPoints(StageRounds);
-            float totalAttack = Math.Max(attackPoints.Melee, attackPoints.Missile);
-            float totalDefense = ArmorPoints;
-
-            return totalAttack * totalDefense * Hitpoints;
-        }
-
-        public bool OnHit(AttackComposition attack, int StageRounds, out float damage)
-        {
-            if (RangedPoints > 0 && StageRounds < RangedAmmo)
-            {
-                damage = 0.8f * attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
-            } else
-            {
-                damage = attack.Melee / ArmorPoints + attack.Missile / ShieldPoints;
-            }
-                
             Hitpoints -= damage;
-            return Hitpoints <= 0;
+            return Hitpoints < 1.0f;
         }
     }
 
-    public class AttackComposition
+    public class Weapon
     {
-        public float Melee = 0;
-        public float Missile = 0;
-        //public float Polearm = 0;
+        public static Weapon Fist;
+        static Weapon()
+        {
+            Weapon.Fist = new Weapon();
+            Weapon.Fist.Attack.Melee = 0.1f;
+        }
 
+        public AttackComposition Attack;
+        public int Range = 0;
+        public bool IsTwohanded = false;
+        public bool HasLimitedAmmo = false;
+        public int RemainingAmmo = 0;
+
+        public bool IsUsable
+        {
+            get
+            {
+                if (HasLimitedAmmo && RemainingAmmo <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        public bool IsRanged
+        {
+            get
+            {
+                return Range > 0;
+            }
+        }
+    }
+
+    public class Item
+    {
+        public float Strength;
+        public float Health;
+    }
+
+    public struct AttackComposition
+    {
+        public float Melee;
+        public float Missile;
+        public float Polearm;
+
+        public float Sum()
+        {
+            return Melee + Missile + Polearm;
+        }
 
         public static AttackComposition operator *(AttackComposition a, float b)
         {
@@ -309,7 +351,7 @@ namespace CombatModCollection
             {
                 Melee = a.Melee * b,
                 Missile = a.Missile * b,
-                //Polearm = a.Polearm * b,
+                Polearm = a.Polearm * b,
             };
         }
 
@@ -319,7 +361,7 @@ namespace CombatModCollection
             {
                 Melee = a.Melee / b,
                 Missile = a.Missile / b,
-                //Polearm = a.Polearm / b,
+                Polearm = a.Polearm / b,
             };
         }
 
@@ -329,7 +371,7 @@ namespace CombatModCollection
             {
                 Melee = a.Melee + b.Melee,
                 Missile = a.Missile + b.Missile,
-                //Polearm = a.Polearm + b.Polearm,
+                Polearm = a.Polearm + b.Polearm,
             };
         }
     }

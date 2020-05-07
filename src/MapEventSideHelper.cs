@@ -67,7 +67,7 @@ namespace CombatModCollection
             UniqueTroopDescriptor strikedTroopDescriptor,
             int selectedSimulationTroopIndex,
             List<UniqueTroopDescriptor> strikedTroopList,
-            AttackComposition attackPoints,
+            AttackComposition attack,
             DamageTypes damageType,
             PartyBase strikerParty,
             MapEventState mapEventState,
@@ -75,7 +75,7 @@ namespace CombatModCollection
             out float damage)
         {
             bool flag = false;
-            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attackPoints, strikedTroop, mapEventState.StageRounds, out damage);
+            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attack, strikedTroop, out damage);
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
@@ -94,13 +94,15 @@ namespace CombatModCollection
                     {
                         side.OnTroopWounded(strikedTroopDescriptor);
                         battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
-                        SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 1f);
+                        if (strikedTroopParty.MobileParty != null) 
+                            SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 1f);
                     }
                     else
                     {
                         side.OnTroopKilled(strikedTroopDescriptor);
                         battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 1, 0, 0, 0, 0);
-                        SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
+                        if (strikedTroopParty.MobileParty != null) 
+                            SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
                     }
                     flag = true;
                 }
@@ -113,6 +115,8 @@ namespace CombatModCollection
 
         public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
         {
+            return side.RecalculateStrengthOfSide();
+            /*
             if (!SubModule.Settings.Battle_SendAllTroops)
             {
                 return side.RecalculateStrengthOfSide();
@@ -130,6 +134,7 @@ namespace CombatModCollection
                 }
                 return totalStrength;
             }
+            */
         }
     }
 }

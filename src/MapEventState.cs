@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Dynamic;
+using System.Net;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.ObjectSystem;
@@ -20,8 +21,8 @@ namespace CombatModCollection
             {
                 mapEventState = new MapEventState();
                 AllMapEventStates[mapEvent.Id] = mapEventState;
-            }
-            mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+                mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+            }         
             return mapEventState;
         }
 
@@ -32,6 +33,7 @@ namespace CombatModCollection
 
 
         private ConcurrentDictionary<MBGUID, TroopState> TroopStates = new ConcurrentDictionary<MBGUID, TroopState>();
+        public int BattleScale = 2;
         public int StageRounds = 0;
         public bool IsDefenderRunAway = false;
 
@@ -49,10 +51,10 @@ namespace CombatModCollection
             }
         }
 
-        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, int StageRounds, out float damage)
+        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, out float damage)
         {
             TroopState troopState = GetTroopState(troop);
-            bool isFinishingBlow = troopState.OnHit(attack, StageRounds, out damage);
+            bool isFinishingBlow = troopState.TakeHit(attack, out damage);
             if (isFinishingBlow)
             {
                 TroopStates.TryRemove(troop.Id, out _);
@@ -62,14 +64,18 @@ namespace CombatModCollection
 
         public AttackComposition GetAttackPoints(CharacterObject troop)
         {
-            TroopState troopState = GetTroopState(troop);
-            return troopState.GetAttackPoints(StageRounds);
-        }
-
-        public float GetTroopStrength(CharacterObject troop)
-        {
-            TroopState troopState = GetTroopState(troop);
-            return troopState.GetStrength(StageRounds);
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            {
+                TroopState troopState = GetTroopState(troop);
+                troopState.PrepareWeapon(this);
+                return troopState.DoAttack();
+            } else
+            {
+                return new AttackComposition
+                {
+                    Melee = troop.GetPower()
+                };
+            }           
         }
     }
 }

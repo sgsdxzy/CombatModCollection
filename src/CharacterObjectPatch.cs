@@ -11,7 +11,7 @@ namespace CombatModCollection
             CharacterObject __instance)
         {
             TroopState troopState = new TroopState(__instance);
-            __result = troopState.GetStrength(0);
+            // __result = troopState.GetStrength(0);
 
             return false;
         }
