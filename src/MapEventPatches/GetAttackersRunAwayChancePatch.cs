@@ -1,13 +1,11 @@
 ﻿using HarmonyLib;
 using Helpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
-using TaleWorlds.Localization;
 
 namespace CombatModCollection
 {
@@ -17,7 +15,7 @@ namespace CombatModCollection
         // PlayerEncounter.SacrificeTroops
         private static void SacrificeTroops(float ratio, MapEventSide side, MapEvent mapEvent)
         {
-            side.MakeReadyForSimulation();
+            // side.MakeReadyForSimulation();
             foreach (PartyBase party in side.Parties)
             {
                 SacrifaceTroopsWithRatio(party.MobileParty, ratio);

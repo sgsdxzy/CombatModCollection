@@ -75,7 +75,7 @@ namespace CombatModCollection
             out float damage)
         {
             bool flag = false;
-            bool IsFinishingStrike = mapEventState.ApplyDamageToTroop(attack, strikedTroop, out damage);
+            bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage);
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
@@ -115,7 +115,7 @@ namespace CombatModCollection
 
         public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
         {
-            if (!SubModule.Settings.Battle_SendAllTroops)
+            if (!SubModule.Settings.Battle_SendAllTroops || !mapEventState.firstUpdated)
             {
                 return side.RecalculateStrengthOfSide();
             }
@@ -126,7 +126,8 @@ namespace CombatModCollection
                 {
                     UniqueTroopDescriptor troopDescriptor = SelectSimulationTroopAtIndex(side, index, out _);
                     CharacterObject troop = side.GetAllocatedTroop(troopDescriptor);
-                    float strength = mapEventState.GetTroopStrength(troop);
+                    PartyBase troopParty = side.GetAllocatedTroopParty(troopDescriptor);
+                    float strength = mapEventState.GetTroopStrength(troopParty, troop);
 
                     totalStrength += strength;
                 }

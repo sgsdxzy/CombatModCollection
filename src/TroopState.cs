@@ -7,7 +7,9 @@ namespace CombatModCollection
 {
     public class TroopState
     {
+        public int Count = 1;
         public float Hitpoints;
+        public float AccumulatedDamage = 0;
 
         private List<Weapon> Weapons = new List<Weapon>(4);
         private Item Shield = null;
@@ -283,8 +285,14 @@ namespace CombatModCollection
                 damage = attack.Melee / ArmorPoints;
             }
 
-            Hitpoints -= damage;
-            return Hitpoints < 1.0f;
+            AccumulatedDamage += damage;
+            if (AccumulatedDamage >= Hitpoints)
+            {
+                Count -= 1;
+                AccumulatedDamage -= Hitpoints;
+                return true;
+            }
+            return false;
         }
     }
 

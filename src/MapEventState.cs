@@ -1,8 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Net;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
@@ -13,7 +16,7 @@ namespace CombatModCollection
         private static readonly FieldInfo MapEvent__mapEventUpdateCount = typeof(MapEvent).GetField(
             "_mapEventUpdateCount", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly ConcurrentDictionary<MBGUID, MapEventState> AllMapEventStates = new ConcurrentDictionary<MBGUID, MapEventState>();
+        private static readonly ConcurrentDictionary<MBGUID, MapEventState> AllMapEventStates = new ConcurrentDictionary<MBGUID, MapEventState>();        
 
         public static MapEventState GetMapEventState(MapEvent mapEvent)
         {
@@ -21,7 +24,11 @@ namespace CombatModCollection
             {
                 mapEventState = new MapEventState();
                 AllMapEventStates[mapEvent.Id] = mapEventState;
-                mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+                if (SubModule.Settings.Battle_SendAllTroops)
+                {
+                    mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+                }
+                
             }         
             return mapEventState;
         }
@@ -32,56 +39,105 @@ namespace CombatModCollection
         }
 
 
-        private ConcurrentDictionary<MBGUID, TroopState> TroopStates = new ConcurrentDictionary<MBGUID, TroopState>();
+        private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
         public int BattleScale = 2;
         public int StageRounds = 0;
+        public bool firstUpdated = false;
         public bool IsDefenderRunAway = false;
 
-
-        private TroopState GetTroopState(CharacterObject troop)
+        public void UpdateEventState(MapEvent mapEvent)
         {
-            if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
+            bool newParty = false;
+            MapEventSide attackerSide = mapEvent.AttackerSide;
+            foreach (var party in attackerSide.Parties)
             {
-                TroopStates[troop.Id] = new TroopState(troop);
-                return TroopStates[troop.Id];
+                if (!PartyStates.ContainsKey(party.Id))
+                {
+                    newParty = true;
+                    break;
+                }
+            }
+            if (!newParty)
+            {
+                MapEventSide defenderSide = mapEvent.DefenderSide;
+                foreach (var party in defenderSide.Parties)
+                {
+                    if (!PartyStates.ContainsKey(party.Id))
+                    {
+                        newParty = true;
+                        break;
+                    }
+                }
+            }
+            if (newParty)
+            {
+                RegisterPartyAndTroops(mapEvent);
+            }
+            firstUpdated = true;
+        }
+
+        private void RegisterPartyAndTroops(MapEvent mapEvent)
+        {
+            // mapEvent.SimulateBattleSetup();
+            MapEventSide attackerSide = mapEvent.AttackerSide;
+            MapEventSide defenderSide = mapEvent.DefenderSide;
+
+            for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
+            {
+                UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(attackerSide, index, out _);
+                CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
+                PartyBase troopParty = attackerSide.GetAllocatedTroopParty(troopDescriptor);
+
+                var partyState = GetPartyState(troopParty);
+                if (!partyState.Registered)
+                    partyState.RegisterTroop(troop);
+            }
+            for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
+            {
+                UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(defenderSide, index, out _);
+                CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
+                PartyBase troopParty = defenderSide.GetAllocatedTroopParty(troopDescriptor);
+
+                var partyState = GetPartyState(troopParty);
+                if (!partyState.Registered)
+                    partyState.RegisterTroop(troop);
+            }
+
+            foreach (var partyState in PartyStates.Values)
+            {
+                partyState.Registered = true;
+            }
+        }
+
+        private PartyState GetPartyState(PartyBase party)
+        {
+            if (!PartyStates.TryGetValue(party.Id, out PartyState partyState))
+            {
+                PartyStates[party.Id] = new PartyState(this);
+                return PartyStates[party.Id];
             }
             else
             {
-                return troopState;
+                return partyState;
             }
         }
 
-        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, out float damage)
+        public bool ApplyDamageToPartyTroop(AttackComposition attack, PartyBase party, CharacterObject troop, out float damage)
         {
-            TroopState troopState = GetTroopState(troop);
-            bool isFinishingBlow = troopState.TakeHit(attack, out damage);
-            if (isFinishingBlow)
-            {
-                TroopStates.TryRemove(troop.Id, out _);
-            }
-            return isFinishingBlow;
+            PartyState partyState = GetPartyState(party);
+            return partyState.ApplyDamageToTroop(attack, troop, out damage);
         }
 
-        public AttackComposition GetAttackPoints(CharacterObject troop)
+        public AttackComposition GetAttackPoints(PartyBase party, CharacterObject troop)
         {
-            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
-            {
-                TroopState troopState = GetTroopState(troop);
-                troopState.PrepareWeapon(this);
-                return troopState.DoAttack();
-            } else
-            {
-                return new AttackComposition
-                {
-                    Melee = troop.GetPower()
-                };
-            }           
+            PartyState partyState = GetPartyState(party);
+            return partyState.GetAttackPoints(troop);
         }
 
-        public float GetTroopStrength(CharacterObject troop)
+        public float GetTroopStrength(PartyBase party, CharacterObject troop)
         {
-            TroopState troopState = GetTroopState(troop);
-            return troopState.Hitpoints / troop.MaxHitPoints() * troop.GetPower();
+            PartyState partyState = GetPartyState(party);
+            return partyState.GetTroopStrength(troop);
         }
     }
 }

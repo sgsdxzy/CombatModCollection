@@ -1,8 +1,8 @@
-﻿using TaleWorlds.CampaignSystem;
+﻿using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 
 namespace CombatModCollection
 {
-    class LightBanditDensityModel : BanditDensityModel
+    class LightBanditDensityModel : DefaultBanditDensityModel
     {
         public override int NumberOfMaximumLooterParties
         {
@@ -11,7 +11,8 @@ namespace CombatModCollection
                 return (int)SubModule.Settings.Strategy_BanditMerger_MaximumBanditParties;
             }
         }
-
+        
+        /*
         public override int NumberOfMinimumBanditPartiesInAHideoutToInfestIt
         {
             get
@@ -51,5 +52,6 @@ namespace CombatModCollection
                 return 2;
             }
         }
+        */
     }
 }

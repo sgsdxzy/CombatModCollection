@@ -63,6 +63,8 @@ namespace CombatModCollection
                     strikedSide, strikedTroop, strikedTroopParty, strikedTroopDescriptor, index, strikedTroopList,
                     actualAttackPoints, damageType, strikerTroopParty, mapEventState, battleObserver, out float damage);
                 totalDamageDone += damage;
+                //InformationManager.DisplayMessage(new InformationMessage(strikedTroop.Name.ToString() + " took damage: "
+                //    + damage));
 
                 strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, 0, isFinishingStrike);
                 finishedAnyone = finishedAnyone || isFinishingStrike;
@@ -87,8 +89,9 @@ namespace CombatModCollection
             {
                 UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(attackerSide, index, out _);
                 CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
+                PartyBase troopParty = attackerSide.GetAllocatedTroopParty(troopDescriptor);
 
-                var attack = mapEventState.GetAttackPoints(troop);
+                var attack = mapEventState.GetAttackPoints(troopParty, troop);
                 attackerTotalAttack += attack;
                 //InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() + " Do attack: "
                 //    + attack.Melee + " " + attack.Missile + " " + attack.Polearm));
@@ -97,7 +100,9 @@ namespace CombatModCollection
             {
                 UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(defenderSide, index, out _);
                 CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
-                var attack = mapEventState.GetAttackPoints(troop);
+                PartyBase troopParty = defenderSide.GetAllocatedTroopParty(troopDescriptor);
+
+                var attack = mapEventState.GetAttackPoints(troopParty, troop);
                 defenderTotalAttack += attack;
                 //InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() + " Do attack: "
                 //    + attack.Melee + " " + attack.Missile + " " + attack.Polearm));
