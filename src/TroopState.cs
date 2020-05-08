@@ -7,6 +7,7 @@ namespace CombatModCollection
 {
     public class TroopState
     {
+        public string Name;
         public bool IsHero = false;
         public int TotalCount = 1;
         public int ExpectedDeathCount = 0;
@@ -18,6 +19,7 @@ namespace CombatModCollection
         private List<Weapon> Weapons = new List<Weapon>(4);
         private Item Shield = null;
         private Item Horse = null;
+        private float Atheletics = 0;
 
         // cached defense points
         private float ArmorPoints = 1.0f;      // against short melee weapons
@@ -34,6 +36,7 @@ namespace CombatModCollection
 
         public TroopState(CharacterObject troop, bool isSeige = false)
         {
+            Name = troop.Name.ToString();
             IsHero = troop.IsHero;
             HitPoints = troop.HitPoints;
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
@@ -49,6 +52,7 @@ namespace CombatModCollection
         private void CalculateStatesDetailedModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
         {
             Strength = troop.GetPower();
+            Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / 3000.0f;
 
             if (equipment == null)
                 equipment = troop.Equipment;
@@ -66,7 +70,7 @@ namespace CombatModCollection
                     {
                         float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                         float strength = GetShieldStrength(equipmentElement1.Item) * proficiency;
-                        Shield = new Item { Strength = strength };
+                        Shield = new Item { Strength = strength * 0.25f };
                     }
                     else if (equipmentElement1.Item.PrimaryWeapon.IsMeleeWeapon)
                     {
@@ -90,7 +94,7 @@ namespace CombatModCollection
                             case WeaponClass.TwoHandedAxe:
                             case WeaponClass.TwoHandedMace:
                                 weapon.IsTwohanded = true;
-                                weapon.Attack.Melee = strength;
+                                weapon.Attack.Melee = strength * 1.5f;
                                 break;
                             case WeaponClass.OneHandedPolearm:
                             case WeaponClass.LowGripPolearm:
@@ -99,7 +103,7 @@ namespace CombatModCollection
                                 break;
                             case WeaponClass.TwoHandedPolearm:
                                 weapon.IsTwohanded = false;
-                                weapon.Attack.Polearm = strength;
+                                weapon.Attack.Polearm = strength * 1.5f;
                                 break;
                         }
                         Weapons.Add(weapon);
@@ -117,7 +121,7 @@ namespace CombatModCollection
                                 HasLimitedAmmo = true,
                                 RemainingAmmo = equipmentElement1.Item.PrimaryWeapon.MaxDataValue
                             };
-                            weapon.Attack.Missile = strength;
+                            weapon.Attack.Missile = strength * 1.5f;
                             Weapons.Add(weapon);
                         }
                         else
@@ -145,9 +149,9 @@ namespace CombatModCollection
                                     HasLimitedAmmo = isSiege ? false : true,
                                     RemainingAmmo = numAmmo
                                 };
-                                weapon.Attack.Missile = strength + ammoStrength;
+                                weapon.Attack.Missile = (strength + ammoStrength) * 1.5f;
                                 Weapons.Add(weapon);
-                                FavorateWeapon = weapon;
+                                // FavorateWeapon = weapon;
                             }
                         }
                     }
@@ -167,17 +171,17 @@ namespace CombatModCollection
 
         private float GetMeleeWeaponStrength(ItemObject item)
         {
-            return (int)item.Tier * 0.24f + 0.8f;
+            return (int)item.Tier * 0.2f + 0.8f;
         }
 
         private float GetRangedWeaponStrength(ItemObject item)
         {
-            return ((int)item.Tier * 0.24f + 0.8f) * 0.9f;
+            return ((int)item.Tier * 0.2f + 0.8f) * 0.9f;
         }
 
         private float GetRangedAmmoStrength(ItemObject item)
         {
-            return ((int)item.Tier * 0.24f + 0.8f) * 0.1f;
+            return ((int)item.Tier * 0.2f + 0.8f) * 0.1f;
         }
 
         private float GetThrownWeaponStrength(ItemObject item)
@@ -187,12 +191,12 @@ namespace CombatModCollection
             {
                 return 0.6f;
             }
-            return (int)item.Tier * 0.24f + 0.8f;
+            return (int)item.Tier * 0.2f + 0.8f;
         }
 
         private float GetShieldStrength(ItemObject item)
         {
-            return (int)item.Tier * 0.24f + 0.8f;
+            return (int)item.Tier * 0.2f + 0.8f;
         }
 
         private float GetHorseStrength(ItemObject itemHorse, ItemObject itemHarness)
@@ -218,6 +222,10 @@ namespace CombatModCollection
             {
                 attack.Melee *= (1 + Horse.Strength * 0.5f);
                 attack.Polearm *= (1 + Horse.Strength * 1.0f);
+            } else
+            {
+                attack.Melee *= (1 + Atheletics);
+                attack.Polearm *= (1 + Atheletics);
             }
             return attack;
         }
@@ -250,7 +258,8 @@ namespace CombatModCollection
                     if (weapon.IsUsable)
                     {
                         attack = GetWeaponAttack(weapon, mapEventState);
-                        if (attack.Sum() > highest)
+                        var preference = GetWeaponPreference(weapon, mapEventState);
+                        if (attack.Sum() * preference > highest)
                         {
                             _preparedAttack = attack;
                             highest = attack.Sum();
@@ -270,6 +279,33 @@ namespace CombatModCollection
             }
 
             IsUsingRanged = ChosenWeapon.IsRanged;
+
+            // InformationManager.DisplayMessage(new InformationMessage(Name + " is using " + _preparedAttack.Melee + " "
+            //    + _preparedAttack.Missile + " " + _preparedAttack.Polearm));
+        }
+
+        private float GetWeaponPreference(Weapon weapon, MapEventState mapEventState)
+        {
+            if (Horse != null)
+            {
+                if (weapon.IsRanged)
+                {
+                    return 1.5f;
+                }
+            } else
+            {
+                if (weapon.IsRanged)
+                {
+                    return 1.2f;
+                }
+            }
+
+            if (weapon.Attack.Polearm > 0)
+            {
+                return 1.2f;
+            }
+
+            return 1.0f;
         }
 
         public AttackComposition DoSingleAttack()
@@ -319,17 +355,33 @@ namespace CombatModCollection
                 if (IsUsingShield && Shield != null)
                 {
                     meleeDefense += Shield.Strength;
-                    missileDefense += 3 * Shield.Strength;
+                    missileDefense += 4 * Shield.Strength;
                     polearmDefense += Shield.Strength;
                 }
                 if (Horse != null)
                 {
-                    meleeDefense *= (1 + Horse.Strength);
                     if (IsUsingRanged)
                     {
-                        meleeDefense *= 1.2f;
+                        meleeDefense *= (1 + 3 * Horse.Strength);
+                        missileDefense += (1 + Horse.Strength);
+                        polearmDefense *= (1 + 3 * Horse.Strength);
+                    } else
+                    {
+                        meleeDefense *= (1 + Horse.Strength);
+                        missileDefense += (1 + Horse.Strength);
                     }
-                }
+                } else
+                {
+                    if (IsUsingRanged)
+                    {
+                        meleeDefense *= (1 + 6 * Atheletics);
+                        polearmDefense *= (1 + 6 * Atheletics);
+                    } else
+                    {
+                        meleeDefense *= (1 + Atheletics);
+                        polearmDefense *= (1 + Atheletics);
+                    }
+                }                
 
                 damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
             }
@@ -372,7 +424,7 @@ namespace CombatModCollection
             // float hitCountsToKill = HitPoints / damage;
             float ratio = AccumulatedDamage / TotalCount / HitPoints;
             // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
-            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, 2) * TotalCount);
+            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, 1.2) * TotalCount);
         }
 
         public float GetCurrentStrength()
@@ -396,6 +448,7 @@ namespace CombatModCollection
         public bool IsTwohanded = false;
         public bool HasLimitedAmmo = false;
         public int RemainingAmmo = 0;
+        public float Preference = 1.0f;
 
         public bool IsUsable
         {

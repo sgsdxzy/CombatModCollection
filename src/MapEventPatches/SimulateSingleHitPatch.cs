@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -13,7 +14,7 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 10f;
+        private static readonly float DamageMultiplier = 5f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
@@ -87,8 +88,10 @@ namespace CombatModCollection
 
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage;
-            AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber * 1.0f;
+            float numberRatio = (float)defenderNumber / (float)attackerNumber;
+            float siegePenalty = __instance.IsSiegeAssault ? (float)Math.Pow(numberRatio, 0.5) : 1.0f;
+            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage * siegePenalty;
+            AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber;
 
             if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
             {

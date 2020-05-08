@@ -49,10 +49,10 @@ namespace CombatModCollection
         public static int GetNumberOfTroopsSacrificedForTryingToGetAway(
             MapEventSide mapEventSide,
             MapEventSide oppositeSide,
-            float powerRatio,
             int ofRegularMembers)
         {
-            float val1 = powerRatio;
+            float num1 = mapEventSide.RecalculateStrengthOfSide() + 1f;
+            float val1 = oppositeSide.RecalculateStrengthOfSide() / num1;
 
             int num2 = mapEventSide.CountTroops((Func<FlattenedTroopRosterElement, bool>)(x => x.State == RosterTroopState.Active && !x.Troop.IsHero));
             ExplainedNumber stat = new ExplainedNumber(1f, (StringBuilder)null);
@@ -98,8 +98,8 @@ namespace CombatModCollection
                 // Attacker Runaway
                 if (powerRatio > 1.2)
                 {
-                    float baseChance = (powerRatio - 1.2f) / 1.2f;
-                    float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
+                    float baseChance = (powerRatio - 1.2f) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
+                    float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                     AttackerRunaway = MBRandom.RandomFloat < baseChance + bonus;
                 }
             }
@@ -132,7 +132,7 @@ namespace CombatModCollection
                     {
                         ofRegularMembers += party.NumberOfRegularMembers;
                     }
-                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, 1 / powerRatio, ofRegularMembers);
+                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, ofRegularMembers);
                     if (forTryingToGetAway < 0 || ofRegularMembers < forTryingToGetAway)
                     {
                         // Not enough man
@@ -141,8 +141,8 @@ namespace CombatModCollection
                     else
                     {
                         sacrificeRatio = (float)forTryingToGetAway / (float)ofRegularMembers;
-                        float baseChance = (1f - 1.25f * powerRatio) * 0.8f;
-                        float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.1f;
+                        float baseChance = (1f - 1.25f * powerRatio) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
+                        float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
                 }

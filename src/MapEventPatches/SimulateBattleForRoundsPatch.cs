@@ -13,10 +13,10 @@ namespace CombatModCollection
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
             int numDefenders = __instance.DefenderSide.NumRemainingSimulationTroops;
             double ratio1 = (Math.Pow(numAttackers, -0.4) + Math.Pow(numDefenders, -0.4));
-            double ratio2 = __instance.IsSiegeAssault ? 0.2 : 1.0;
-            int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 5f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
+            double ratio2 = __instance.IsSiegeAssault ? 0.3 : 1.0;
+            int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 16f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
-            simulationRoundsAttacker = 1; // rounds;
+            simulationRoundsAttacker = rounds;
         }
 
         public static void Postfix(MapEvent __instance)

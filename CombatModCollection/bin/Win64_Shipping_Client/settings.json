@@ -1,19 +1,18 @@
 {
   "Battle_SurviveByArmor": false,
     "Battle_SurviveByArmor_SurviveByExcessiveDamage": true,
-    "Battle_SurviveByArmor_SafeExcessiveDamage": 10,
-    "Battle_SurviveByArmor_LethalExcessiveDamage": 50,
+      "Battle_SurviveByArmor_SafeExcessiveDamage": 10,
+      "Battle_SurviveByArmor_LethalExcessiveDamage": 50,
+      "Battle_SurviveByArmor_ApplyMedicine": true,
+      "Battle_SurviveByArmor_ApplyLevel": false,
+      "Battle_SurviveByArmor_ApplyArmor": false,
+    "Battle_SurviveByArmor_BluntDeathRate": 0.0,
     "Battle_SurviveByArmor_SurviveByArmorValue": true,
-    "Battle_SurviveByArmor_ArmorValueThreshold": 100,
-
-  "Battle_GoodSoildersNeverDie": false,
-    "Battle_GoodSoildersNeverDie_OnlyApplyToPlayerParty": true,
-    "Battle_GoodSoildersNeverDie_MinimumLevel": 20,
-    "Battle_GoodSoildersNeverDie_DeathRate": 0,
+      "Battle_SurviveByArmor_ArmorValueThreshold": 100,
 
   "Battle_SendAllTroops": false,
     "Battle_SendAllTroops_AbsoluteZeroRandomness": true,
-    "Battle_SendAllTroops_DetailedCombatModel": true,
+    "Battle_SendAllTroops_DetailedCombatModel": false,
     "Battle_SendAllTroops_CombatSpeed": 1.0,
     "Battle_SendAllTroops_XPMultiplier": 1.0,
 
@@ -33,6 +32,7 @@
     "Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn": 0,
 
   "Strategy_LearnToQuit": false,
+    "Strategy_LearnToQuit_RetreatChance": 1.0,
     "Strategy_LearnToQuit_Verbose": true,
 
   "Strategy_BanditMerger": false,

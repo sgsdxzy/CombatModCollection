@@ -76,7 +76,7 @@ namespace CombatModCollection
         {
             bool flag = false;
             bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage);
-            InformationManager.DisplayMessage(new InformationMessage(attack.Melee + " " + strikedTroop.Name.ToString() + " " + damage));
+            // InformationManager.DisplayMessage(new InformationMessage(attack.Melee + " " + strikedTroop.Name.ToString() + " " + damage));
             if (strikedTroop.IsHero)
             {
                 side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
