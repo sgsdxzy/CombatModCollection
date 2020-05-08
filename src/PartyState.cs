@@ -9,7 +9,6 @@ namespace CombatModCollection
     {
         private readonly ConcurrentDictionary<MBGUID, TroopState> TroopStates = new ConcurrentDictionary<MBGUID, TroopState>();
         private readonly MapEventState mapEventState;
-        public bool Registered = false;
 
         public PartyState(MapEventState _mapEventState)
         {
@@ -75,16 +74,10 @@ namespace CombatModCollection
             return totalStrength;
         }
 
-        public void RegisterTroop(CharacterObject troop, bool isSiege = false)
+        public void RegisterTroops(CharacterObject troop, int count, bool isSiege = false)
         {
-            if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
-            {
-                TroopStates[troop.Id] = new TroopState(troop, isSiege);
-            }
-            else
-            {
-                TroopStates[troop.Id].TotalCount += 1;
-            }
+            TroopStates[troop.Id] = new TroopState(troop, isSiege);
+            TroopStates[troop.Id].TotalCount += count;
         }
     }
 }

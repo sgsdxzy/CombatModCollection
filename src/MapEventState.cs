@@ -23,8 +23,8 @@ namespace CombatModCollection
                 if (SubModule.Settings.Battle_SendAllTroops)
                 {
                     mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+                    mapEventState.isSiege = mapEvent.IsSiegeAssault;
                 }
-
             }
             return mapEventState;
         }
@@ -36,99 +36,34 @@ namespace CombatModCollection
 
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
+        private bool isSiege = false;
         public int BattleScale = 2;
         public int StageRounds = 0;
-        public bool firstUpdated = false;
         public bool IsDefenderRunAway = false;
-
-        public void UpdateEventState(MapEvent mapEvent)
-        {
-            bool newParty = false;
-            MapEventSide attackerSide = mapEvent.AttackerSide;
-            foreach (var party in attackerSide.Parties)
-            {
-                if (!PartyStates.ContainsKey(party.Id))
-                {
-                    newParty = true;
-                    break;
-                }
-            }
-            if (!newParty)
-            {
-                MapEventSide defenderSide = mapEvent.DefenderSide;
-                foreach (var party in defenderSide.Parties)
-                {
-                    if (!PartyStates.ContainsKey(party.Id))
-                    {
-                        newParty = true;
-                        break;
-                    }
-                }
-            }
-            if (newParty)
-            {
-                RegisterPartyAndTroops(mapEvent);
-            }
-            firstUpdated = true;
-        }
-
-        private void RegisterPartyAndTroops(MapEvent mapEvent)
-        {
-            // mapEvent.SimulateBattleSetup();
-            MapEventSide attackerSide = mapEvent.AttackerSide;
-            MapEventSide defenderSide = mapEvent.DefenderSide;
-
-            for (int index = 0; index < attackerSide.NumRemainingSimulationTroops; index++)
-            {
-                UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(attackerSide, index, out _);
-                CharacterObject troop = attackerSide.GetAllocatedTroop(troopDescriptor);
-                PartyBase troopParty = attackerSide.GetAllocatedTroopParty(troopDescriptor);
-
-                var partyState = GetPartyState(troopParty);
-                if (!partyState.Registered)
-                    partyState.RegisterTroop(troop, mapEvent.IsSiegeAssault);
-            }
-            for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
-            {
-                UniqueTroopDescriptor troopDescriptor = MapEventSideHelper.SelectSimulationTroopAtIndex(defenderSide, index, out _);
-                CharacterObject troop = defenderSide.GetAllocatedTroop(troopDescriptor);
-                PartyBase troopParty = defenderSide.GetAllocatedTroopParty(troopDescriptor);
-
-                var partyState = GetPartyState(troopParty);
-                if (!partyState.Registered)
-                    partyState.RegisterTroop(troop, mapEvent.IsSiegeAssault);
-            }
-
-            foreach (var partyState in PartyStates.Values)
-            {
-                partyState.Registered = true;
-            }
-        }
 
         private PartyState GetPartyState(PartyBase party)
         {
             if (!PartyStates.TryGetValue(party.Id, out PartyState partyState))
             {
-                PartyStates[party.Id] = new PartyState(this);
-                return PartyStates[party.Id];
+                partyState = new PartyState(this);
+                PartyStates[party.Id] = partyState;
+                for (int index = 0; index < party.MemberRoster.Count; ++index)
+                {
+                    TroopRosterElement elementCopyAtIndex = party.MemberRoster.GetElementCopyAtIndex(index);
+                    CharacterObject troop = elementCopyAtIndex.Character;
+                    if (troop != null)
+                    {
+                        partyState.RegisterTroops(troop, (elementCopyAtIndex.Number - elementCopyAtIndex.WoundedNumber), isSiege);
+                    }                       
+                }
             }
-            else
-            {
-                return partyState;
-            }
+            return partyState;
         }
 
         public float GetPartyStrength(PartyBase party)
         {
-            if (!PartyStates.TryGetValue(party.Id, out PartyState partyState))
-            {
-                // New party joined battle
-                return party.CalculateStrength();
-            }
-            else
-            {
-                return partyState.GetCurrentStrength();
-            }
+            PartyState partyState = GetPartyState(party);
+            return partyState.GetCurrentStrength();
         }
 
         public AttackComposition GetPartyAttack(PartyBase party)

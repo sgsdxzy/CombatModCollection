@@ -377,7 +377,8 @@ namespace CombatModCollection
 
         public float GetCurrentStrength()
         {
-            return Strength * Alive;
+            float totalStrength = Math.Max((TotalCount - AccumulatedDamage / HitPoints) * Strength, 0);
+            return totalStrength;
         }
     }
 
