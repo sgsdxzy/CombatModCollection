@@ -302,6 +302,9 @@ namespace CombatModCollection
                 {
                     CurrentDeathCount += 1;
                     return true;
+                } else
+                {
+                    return false;
                 }
             }
 
