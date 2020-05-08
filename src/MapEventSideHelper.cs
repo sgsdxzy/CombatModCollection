@@ -115,7 +115,6 @@ namespace CombatModCollection
 
         public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
         {
-            return side.RecalculateStrengthOfSide();
             if (!SubModule.Settings.Battle_SendAllTroops || !mapEventState.firstUpdated)
             {
                 return side.RecalculateStrengthOfSide();
@@ -123,14 +122,9 @@ namespace CombatModCollection
             else
             {
                 float totalStrength = 0f;
-                for (int index = 0; index < side.NumRemainingSimulationTroops; index++)
+                foreach (var party in side.Parties)
                 {
-                    UniqueTroopDescriptor troopDescriptor = SelectSimulationTroopAtIndex(side, index, out _);
-                    CharacterObject troop = side.GetAllocatedTroop(troopDescriptor);
-                    PartyBase troopParty = side.GetAllocatedTroopParty(troopDescriptor);
-                    float strength = mapEventState.GetTroopStrength(troopParty, troop);
-
-                    totalStrength += strength;
+                    totalStrength += mapEventState.GetPartyStrength(party);
                 }
                 return totalStrength;
             }

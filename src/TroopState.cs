@@ -30,6 +30,7 @@ namespace CombatModCollection
         private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
 
+        public float Strength;
 
         public TroopState(CharacterObject troop, bool isSeige = false)
         {
@@ -41,12 +42,14 @@ namespace CombatModCollection
             }
             else
             {
-                ArmorPoints = troop.GetPower();
+                Strength = troop.GetPower();
             }
         }
 
         private void CalculateStatesDetailedModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
         {
+            Strength = troop.GetPower();
+
             if (equipment == null)
                 equipment = troop.Equipment;
 
@@ -273,7 +276,7 @@ namespace CombatModCollection
         {
             if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
-                return new AttackComposition { Melee = ArmorPoints };
+                return new AttackComposition { Melee = Strength };
             }
 
             if (!ChosenWeapon.IsUsable)
@@ -332,7 +335,7 @@ namespace CombatModCollection
             }
             else
             {
-                damage = attack.Melee / ArmorPoints;
+                damage = attack.Melee / Strength;
             }
             _cachedHitDamage = damage;
 
@@ -369,6 +372,17 @@ namespace CombatModCollection
             float hitCountsToKill = HitPoints / damage;
             float ratio = AccumulatedDamage / TotalCount / HitPoints;
             ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
+        }
+
+        public float GetCurrentStrength()
+        {
+            float ratio = AccumulatedDamage / TotalCount / HitPoints;
+            float totalStrength = (1 - ratio) * TotalCount * Strength;
+            if (totalStrength < 0)
+            {
+                totalStrength = 0;
+            }
+            return totalStrength;
         }
     }
 

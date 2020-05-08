@@ -65,10 +65,14 @@ namespace CombatModCollection
             return attack;
         }
 
-        public float GetTroopStrength(CharacterObject troop)
+        public float GetCurrentStrength()
         {
-            TroopState troopState = GetTroopState(troop);
-            return troopState.HitPoints / troop.MaxHitPoints() * troop.GetPower();
+            float totalStrength = 0;
+            foreach (var troopState in TroopStates.Values)
+            {
+                totalStrength += troopState.GetCurrentStrength();
+            }
+            return totalStrength;
         }
 
         public void RegisterTroop(CharacterObject troop, bool isSiege = false)

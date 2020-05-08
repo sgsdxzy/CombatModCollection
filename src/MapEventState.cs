@@ -118,6 +118,19 @@ namespace CombatModCollection
             }
         }
 
+        public float GetPartyStrength(PartyBase party)
+        {
+            if (!PartyStates.TryGetValue(party.Id, out PartyState partyState))
+            {
+                // New party joined battle
+                return party.CalculateStrength();
+            }
+            else
+            {
+                return partyState.GetCurrentStrength();
+            }
+        }
+
         public AttackComposition GetPartyAttack(PartyBase party)
         {
             PartyState partyState = GetPartyState(party);
@@ -134,12 +147,6 @@ namespace CombatModCollection
         {
             PartyState partyState = GetPartyState(party);
             return partyState.GetAttack(troop);
-        }
-
-        public float GetTroopStrength(PartyBase party, CharacterObject troop)
-        {
-            PartyState partyState = GetPartyState(party);
-            return partyState.GetTroopStrength(troop);
         }
     }
 }
