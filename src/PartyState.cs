@@ -20,7 +20,7 @@ namespace CombatModCollection
         {
             if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
             {
-                InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() + " not registered "));
+                InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() + " is not registered for battle."));
                 TroopStates[troop.Id] = new TroopState(troop);
                 return TroopStates[troop.Id];
             }
@@ -37,13 +37,13 @@ namespace CombatModCollection
             return isFinishingBlow;
         }
 
-        public AttackComposition GetAttackPoints(CharacterObject troop)
+        public AttackComposition GetAttack(CharacterObject troop)
         {
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 TroopState troopState = GetTroopState(troop);
                 troopState.PrepareWeapon(mapEventState);
-                return troopState.DoAttack();
+                return troopState.DoSingleAttack();
             }
             else
             {
@@ -54,21 +54,32 @@ namespace CombatModCollection
             }
         }
 
+        public AttackComposition GetPartyAttack()
+        {
+            AttackComposition attack = new AttackComposition();
+            foreach (var troopState in TroopStates.Values)
+            {
+                troopState.PrepareWeapon(mapEventState);
+                attack += troopState.DoTotalAttack();
+            }
+            return attack;
+        }
+
         public float GetTroopStrength(CharacterObject troop)
         {
             TroopState troopState = GetTroopState(troop);
-            return troopState.Hitpoints / troop.MaxHitPoints() * troop.GetPower();
+            return troopState.HitPoints / troop.MaxHitPoints() * troop.GetPower();
         }
 
-        public void RegisterTroop(CharacterObject troop)
+        public void RegisterTroop(CharacterObject troop, bool isSiege = false)
         {
             if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
             {
-                TroopStates[troop.Id] = new TroopState(troop);
+                TroopStates[troop.Id] = new TroopState(troop, isSiege);
             }
             else
             {
-                TroopStates[troop.Id].Count += 1;
+                TroopStates[troop.Id].TotalCount += 1;
             }
         }
     }

@@ -45,11 +45,11 @@ namespace CombatModCollection
                     return false;
                 }
             }
-            
+
             bool isFieldBattle = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
-            float damageTypeDeathRate = damageType == DamageTypes.Blunt ? 
+            float damageTypeDeathRate = damageType == DamageTypes.Blunt ?
                 SubModule.Settings.Battle_SurviveByArmor_BluntDeathRate : 1.0f;
-            
+
             bool useMedicine;
             bool useLevel;
             bool useArmor;
@@ -60,7 +60,7 @@ namespace CombatModCollection
                 useMedicine = SubModule.Settings.Battle_SurviveByArmor_ApplyMedicine;
                 useLevel = SubModule.Settings.Battle_SurviveByArmor_ApplyLevel;
                 useArmor = SubModule.Settings.Battle_SurviveByArmor_ApplyArmor;
-                
+
             }
             else
             {

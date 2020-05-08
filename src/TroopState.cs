@@ -7,8 +7,12 @@ namespace CombatModCollection
 {
     public class TroopState
     {
-        public int Count = 1;
-        public float Hitpoints;
+        public bool IsHero = false;
+        public int TotalCount = 1;
+        public int ExpectedDeathCount = 0;
+        public int CurrentDeathCount = 0;
+        public int Alive { get { return TotalCount - CurrentDeathCount; } }
+        public float HitPoints;
         public float AccumulatedDamage = 0;
 
         private List<Weapon> Weapons = new List<Weapon>(4);
@@ -21,14 +25,19 @@ namespace CombatModCollection
         private bool IsUsingRanged = false;
 
         private Weapon ChosenWeapon = Weapon.Fist;
-        private AttackComposition _cachedAttack;
+        private Weapon FavorateWeapon = null;
+        private AttackComposition _preparedAttack;
+        private AttackComposition _cachedHit;
+        private float _cachedHitDamage = 0;
 
-        public TroopState(CharacterObject troop)
+
+        public TroopState(CharacterObject troop, bool isSeige = false)
         {
-            Hitpoints = troop.HitPoints;
+            IsHero = troop.IsHero;
+            HitPoints = troop.HitPoints;
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
-                CalculateStatesNewModel(troop);
+                CalculateStatesNewModel(troop, isSeige);
             }
             else
             {
@@ -36,7 +45,7 @@ namespace CombatModCollection
             }
         }
 
-        private void CalculateStatesNewModel(CharacterObject troop, Equipment equipment = null)
+        private void CalculateStatesNewModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
         {
             if (equipment == null)
                 equipment = troop.Equipment;
@@ -130,18 +139,19 @@ namespace CombatModCollection
                                 {
                                     Range = 2,
                                     IsTwohanded = true,
-                                    HasLimitedAmmo = true,
+                                    HasLimitedAmmo = isSiege ? false : true,
                                     RemainingAmmo = numAmmo
                                 };
                                 weapon.Attack.Missile = strength + ammoStrength;
                                 Weapons.Add(weapon);
+                                FavorateWeapon = weapon;
                             }
                         }
                     }
                 }
             }
 
-            if (equipment.Horse.Item != null)
+            if (!isSiege && equipment.Horse.Item != null)
             {
                 float proficiency = equipment.Horse.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipment.Horse.Item.RelevantSkill) / 300.0f * 0.7f;
                 float Strength = GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item) * proficiency;
@@ -211,21 +221,38 @@ namespace CombatModCollection
 
         public void PrepareWeapon(MapEventState mapEventState)
         {
-            ChosenWeapon = Weapon.Fist;
-            var attack = GetWeaponAttack(ChosenWeapon, mapEventState);
-            float highest = attack.Sum();
-            _cachedAttack = attack;
-
-            foreach (var weapon in Weapons)
+            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
-                if (weapon.IsUsable)
+                return;
+            }
+
+            if (FavorateWeapon != null && FavorateWeapon.IsUsable)
+            {
+                var attack = GetWeaponAttack(FavorateWeapon, mapEventState);
+                if (attack.Sum() > 0)
                 {
-                    attack = GetWeaponAttack(weapon, mapEventState);
-                    if (attack.Sum() > highest)
+                    _preparedAttack = attack;
+                    ChosenWeapon = FavorateWeapon;
+                }
+            }
+            else
+            {
+                ChosenWeapon = Weapon.Fist;
+                var attack = GetWeaponAttack(ChosenWeapon, mapEventState);
+                float highest = attack.Sum();
+                _preparedAttack = attack;
+
+                foreach (var weapon in Weapons)
+                {
+                    if (weapon.IsUsable)
                     {
-                        _cachedAttack = attack;
-                        highest = attack.Sum();
-                        ChosenWeapon = weapon;
+                        attack = GetWeaponAttack(weapon, mapEventState);
+                        if (attack.Sum() > highest)
+                        {
+                            _preparedAttack = attack;
+                            highest = attack.Sum();
+                            ChosenWeapon = weapon;
+                        }
                     }
                 }
             }
@@ -242,22 +269,59 @@ namespace CombatModCollection
             IsUsingRanged = ChosenWeapon.IsRanged;
         }
 
-        public AttackComposition DoAttack()
+        public AttackComposition DoSingleAttack()
         {
+            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            {
+                return new AttackComposition { Melee = ArmorPoints };
+            }
+
             if (!ChosenWeapon.IsUsable)
             {
                 return new AttackComposition();
             }
-
             if (ChosenWeapon.HasLimitedAmmo)
             {
                 ChosenWeapon.RemainingAmmo -= 1;
             }
-            return _cachedAttack;
+            return _preparedAttack;
+        }
+
+        public AttackComposition DoTotalAttack()
+        {
+            return DoSingleAttack() * Alive;
         }
 
         public bool TakeHit(AttackComposition attack, out float damage)
         {
+            if (attack.Equals(_cachedHit))
+            {
+                damage = _cachedHitDamage;
+                AccumulatedDamage += damage;
+                if (IsHero)
+                {
+                    // Uses the vanilla hero health system
+                    HitPoints -= damage;
+                    if (HitPoints <= 20)
+                    {
+                        CurrentDeathCount = 1;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                if (ExpectedDeathCount > CurrentDeathCount)
+                {
+                    CurrentDeathCount += 1;
+                    return true;
+                } else
+                {
+                    return false;
+                }
+            } 
+
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 float meleeDefense = ArmorPoints;
@@ -284,15 +348,40 @@ namespace CombatModCollection
             {
                 damage = attack.Melee / ArmorPoints;
             }
+            _cachedHit = attack;
+            _cachedHitDamage = damage;
+
+            if (IsHero)
+            {
+                // Uses the vanilla hero health system
+                HitPoints -= damage;
+                if (HitPoints <= 20)
+                {
+                    CurrentDeathCount = 1;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
 
             AccumulatedDamage += damage;
-            if (AccumulatedDamage >= Hitpoints)
+            CalculateExpectedDeathCounts(damage);
+            if (ExpectedDeathCount > CurrentDeathCount)
             {
-                Count -= 1;
-                AccumulatedDamage -= Hitpoints;
+                CurrentDeathCount += 1;
                 return true;
             }
+
             return false;
+        }
+
+        private void CalculateExpectedDeathCounts(float damage)
+        {
+            float hitCountsToKill = HitPoints / damage;
+            float ratio = AccumulatedDamage / TotalCount / HitPoints;
+            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
         }
     }
 
@@ -380,6 +469,11 @@ namespace CombatModCollection
                 Missile = a.Missile + b.Missile,
                 Polearm = a.Polearm + b.Polearm,
             };
+        }
+
+        public bool Equals(AttackComposition b)
+        {
+            return Melee == b.Melee && Missile == b.Missile && Polearm == b.Polearm;
         }
     }
 }

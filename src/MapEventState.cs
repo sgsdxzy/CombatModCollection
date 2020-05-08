@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Dynamic;
-using System.Net;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -16,7 +12,7 @@ namespace CombatModCollection
         private static readonly FieldInfo MapEvent__mapEventUpdateCount = typeof(MapEvent).GetField(
             "_mapEventUpdateCount", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly ConcurrentDictionary<MBGUID, MapEventState> AllMapEventStates = new ConcurrentDictionary<MBGUID, MapEventState>();        
+        private static readonly ConcurrentDictionary<MBGUID, MapEventState> AllMapEventStates = new ConcurrentDictionary<MBGUID, MapEventState>();
 
         public static MapEventState GetMapEventState(MapEvent mapEvent)
         {
@@ -28,8 +24,8 @@ namespace CombatModCollection
                 {
                     mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
                 }
-                
-            }         
+
+            }
             return mapEventState;
         }
 
@@ -90,7 +86,7 @@ namespace CombatModCollection
 
                 var partyState = GetPartyState(troopParty);
                 if (!partyState.Registered)
-                    partyState.RegisterTroop(troop);
+                    partyState.RegisterTroop(troop, mapEvent.IsSiegeAssault);
             }
             for (int index = 0; index < defenderSide.NumRemainingSimulationTroops; index++)
             {
@@ -100,7 +96,7 @@ namespace CombatModCollection
 
                 var partyState = GetPartyState(troopParty);
                 if (!partyState.Registered)
-                    partyState.RegisterTroop(troop);
+                    partyState.RegisterTroop(troop, mapEvent.IsSiegeAssault);
             }
 
             foreach (var partyState in PartyStates.Values)
@@ -122,16 +118,22 @@ namespace CombatModCollection
             }
         }
 
+        public AttackComposition GetPartyAttack(PartyBase party)
+        {
+            PartyState partyState = GetPartyState(party);
+            return partyState.GetPartyAttack();
+        }
+
         public bool ApplyDamageToPartyTroop(AttackComposition attack, PartyBase party, CharacterObject troop, out float damage)
         {
             PartyState partyState = GetPartyState(party);
             return partyState.ApplyDamageToTroop(attack, troop, out damage);
         }
 
-        public AttackComposition GetAttackPoints(PartyBase party, CharacterObject troop)
+        public AttackComposition GetAttack(PartyBase party, CharacterObject troop)
         {
             PartyState partyState = GetPartyState(party);
-            return partyState.GetAttackPoints(troop);
+            return partyState.GetAttack(troop);
         }
 
         public float GetTroopStrength(PartyBase party, CharacterObject troop)
