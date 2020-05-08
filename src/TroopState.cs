@@ -27,8 +27,8 @@ namespace CombatModCollection
         private Weapon ChosenWeapon = Weapon.Fist;
         private Weapon FavorateWeapon = null;
         private AttackComposition _preparedAttack;
-        private AttackComposition _cachedHit;
         private float _cachedHitDamage = 0;
+        private int _expectedHits = 0;
 
 
         public TroopState(CharacterObject troop, bool isSeige = false)
@@ -37,7 +37,7 @@ namespace CombatModCollection
             HitPoints = troop.HitPoints;
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
-                CalculateStatesNewModel(troop, isSeige);
+                CalculateStatesDetailedModel(troop, isSeige);
             }
             else
             {
@@ -45,7 +45,7 @@ namespace CombatModCollection
             }
         }
 
-        private void CalculateStatesNewModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
+        private void CalculateStatesDetailedModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
         {
             if (equipment == null)
                 equipment = troop.Equipment;
@@ -294,33 +294,16 @@ namespace CombatModCollection
 
         public bool TakeHit(AttackComposition attack, out float damage)
         {
-            if (attack.Equals(_cachedHit))
+            if (_expectedHits > 0)
             {
                 damage = _cachedHitDamage;
-                AccumulatedDamage += damage;
-                if (IsHero)
-                {
-                    // Uses the vanilla hero health system
-                    HitPoints -= damage;
-                    if (HitPoints <= 20)
-                    {
-                        CurrentDeathCount = 1;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                _expectedHits -= 1;
                 if (ExpectedDeathCount > CurrentDeathCount)
                 {
                     CurrentDeathCount += 1;
                     return true;
-                } else
-                {
-                    return false;
                 }
-            } 
+            }
 
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
@@ -348,7 +331,6 @@ namespace CombatModCollection
             {
                 damage = attack.Melee / ArmorPoints;
             }
-            _cachedHit = attack;
             _cachedHitDamage = damage;
 
             if (IsHero)
@@ -366,7 +348,9 @@ namespace CombatModCollection
                 }
             }
 
-            AccumulatedDamage += damage;
+            // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks
+            AccumulatedDamage += damage * Alive;
+            _expectedHits = Alive - 1;
             CalculateExpectedDeathCounts(damage);
             if (ExpectedDeathCount > CurrentDeathCount)
             {
