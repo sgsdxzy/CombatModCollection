@@ -45,26 +45,26 @@ namespace CombatModCollection
                     return false;
                 }
             }
-            if (damageType == DamageTypes.Blunt)
+            
+            bool isFieldBattle = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
+            float damageTypeDeathRate = damageType == DamageTypes.Blunt ? 
+                SubModule.Settings.Battle_SurviveByArmor_BluntDeathRate : 1.0f;
+            
+            bool useMedicine;
+            bool useLevel;
+            bool useArmor;
+            float baseDeathRate;
+            if (isFieldBattle)
             {
-                __result = 1f;
-                return false;
-            }
-
-            bool useMedicine = SubModule.Settings.Battle_SurviveByArmor_ApplyMedicine;
-            bool useLevel = SubModule.Settings.Battle_SurviveByArmor_ApplyLevel;
-            bool useArmor = SubModule.Settings.Battle_SurviveByArmor_ApplyArmor;
-
-            bool hasDamageData = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
-            float baseDeathRate = 1.0f;
-            if (hasDamageData)
-            {
-                // SurviveByExcessiveDamage is on and is field battle
                 baseDeathRate = GetExcessiveDamageDeathRate(excessiveDamage);
+                useMedicine = SubModule.Settings.Battle_SurviveByArmor_ApplyMedicine;
+                useLevel = SubModule.Settings.Battle_SurviveByArmor_ApplyLevel;
+                useArmor = SubModule.Settings.Battle_SurviveByArmor_ApplyArmor;
+                
             }
             else
             {
-                // SurviveByExcessiveDamage is off or is simulation
+                baseDeathRate = 1.0f;
                 useMedicine = true;
                 useLevel = !SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
                 useArmor = SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
@@ -103,7 +103,7 @@ namespace CombatModCollection
                     stat.Add((float)character.Level * 0.03f, (TextObject)null);
                 }
             }
-            float deathRate = baseDeathRate / stat.ResultNumber;
+            float deathRate = damageTypeDeathRate * baseDeathRate / stat.ResultNumber;
 
             __result = 1.0f - deathRate;
             if (__result < 0f) __result = 0f;

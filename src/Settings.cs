@@ -9,6 +9,7 @@
         public bool Battle_SurviveByArmor_ApplyMedicine { get; set; } = true;
         public bool Battle_SurviveByArmor_ApplyLevel { get; set; } = false;
         public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;
+        public float Battle_SurviveByArmor_BluntDeathRate { get; set; } = 0.0f;
         public bool Battle_SurviveByArmor_SurviveByArmorValue { get; set; } = true;
         public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 100f;        
 
