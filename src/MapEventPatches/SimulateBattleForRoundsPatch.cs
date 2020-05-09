@@ -12,9 +12,9 @@ namespace CombatModCollection
         {
             int numAttackers = __instance.AttackerSide.NumRemainingSimulationTroops;
             int numDefenders = __instance.DefenderSide.NumRemainingSimulationTroops;
-            double ratio1 = (Math.Pow(numAttackers, -0.4) + Math.Pow(numDefenders, -0.4));
+            double ratio1 = (Math.Pow(numAttackers, -0.6) + Math.Pow(numDefenders, -0.6));
             double ratio2 = __instance.IsSiegeAssault && !SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel ? 0.3 : 1.0;
-            int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 20f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
+            int rounds = (int)Math.Round(Math.Max(ratio1 * ratio2 * 16f * SubModule.Settings.Battle_SendAllTroops_CombatSpeed, 1));
             simulationRoundsDefender = 0; // rounds;
             simulationRoundsAttacker = rounds;
         }

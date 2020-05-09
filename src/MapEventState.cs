@@ -24,7 +24,13 @@ namespace CombatModCollection
                 {
                     mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
                     mapEventState.IsSiege = mapEvent.IsSiegeAssault;
-                    mapEventState.BattleScale = mapEvent.IsSiegeAssault ? 3 : 2;
+                    if (mapEvent.IsSiegeAssault)
+                    {
+                        mapEventState.BattleScale = 3;
+                    } else
+                    {
+                        mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
+                    }
                 }
             }
             return mapEventState;

@@ -142,7 +142,7 @@ namespace CombatModCollection
                 }
             }
 
-            float bestHorse = 0.0f;
+            float bestHorse = Atheletics;
             if (equipment.Horse.Item != null)
             {
                 float proficiency = equipment.Horse.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipment.Horse.Item.RelevantSkill) / 300.0f * 0.7f;
@@ -163,7 +163,7 @@ namespace CombatModCollection
                 }
             }
 
-            Strength = ArmorPoints + (twoHanded ? 0 : bestShield) + bestWeapon + bestHorse;
+            Strength = (ArmorPoints + (twoHanded ? 0 : bestShield)) * bestWeapon * (1 + bestHorse);
         }
 
         private float GetMeleeWeaponStrength(ItemObject item)

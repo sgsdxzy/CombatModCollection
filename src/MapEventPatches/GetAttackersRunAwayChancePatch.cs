@@ -49,11 +49,9 @@ namespace CombatModCollection
         public static int GetNumberOfTroopsSacrificedForTryingToGetAway(
             MapEventSide mapEventSide,
             MapEventSide oppositeSide,
+            float powerRatio,
             int ofRegularMembers)
         {
-            float num1 = mapEventSide.RecalculateStrengthOfSide() + 1f;
-            float val1 = oppositeSide.RecalculateStrengthOfSide() / num1;
-
             int num2 = mapEventSide.CountTroops((Func<FlattenedTroopRosterElement, bool>)(x => x.State == RosterTroopState.Active && !x.Troop.IsHero));
             ExplainedNumber stat = new ExplainedNumber(1f, (StringBuilder)null);
             if (mapEventSide.LeaderParty.Leader != null)
@@ -61,7 +59,7 @@ namespace CombatModCollection
                 SkillHelper.AddSkillBonusForCharacter(DefaultSkills.Tactics, DefaultSkillEffects.TacticsTroopSacrificeReduction, mapEventSide.LeaderParty.Leader, ref stat, true);
             }
 
-            int num3 = Math.Max(((double)ofRegularMembers * Math.Pow((double)Math.Min(val1, 3f), 1.29999995231628) * 0.100000001490116 / (2.0 / (2.0 + ((double)stat.ResultNumber - 1.0) * 10.0)) + 5.0).Round(), 1);
+            int num3 = Math.Max(((double)ofRegularMembers * Math.Pow((double)Math.Min(powerRatio, 3f), 1.29999995231628) * 0.100000001490116 / (2.0 / (2.0 + ((double)stat.ResultNumber - 1.0) * 10.0)) + 5.0).Round(), 1);
             return num3 <= num2 ? num3 : -1;
         }
 
@@ -132,7 +130,7 @@ namespace CombatModCollection
                     {
                         ofRegularMembers += party.NumberOfRegularMembers;
                     }
-                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, ofRegularMembers);
+                    int forTryingToGetAway = GetNumberOfTroopsSacrificedForTryingToGetAway(__instance.DefenderSide, __instance.AttackerSide, 1 / powerRatio, ofRegularMembers);
                     if (forTryingToGetAway < 0 || ofRegularMembers < forTryingToGetAway)
                     {
                         // Not enough man

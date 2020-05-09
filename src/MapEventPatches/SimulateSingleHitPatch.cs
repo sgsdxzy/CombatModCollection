@@ -87,11 +87,11 @@ namespace CombatModCollection
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
 
             float siegePenalty = 1.0f;
-            if (__instance.IsSiegeAssault && !SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel && attackerNumber > 300)
+            if (__instance.IsSiegeAssault && attackerNumber > defenderNumber)
             {
-                siegePenalty = (float)Math.Pow(attackerNumber / 300, 1.0);
+                siegePenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.5);
             }
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage / siegePenalty;
+            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage * siegePenalty;
             AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber;
 
             bool finishedAnyone = false;
