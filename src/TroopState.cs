@@ -72,21 +72,48 @@ namespace CombatModCollection
 
         public AttackComposition GetWeaponAttack(Weapon weapon)
         {
-            if (weapon.Range + partyState.mapEventState.StageRounds < partyState.mapEventState.BattleScale)
+            int bonusRange = partyState.mapEventState.IsSiege && !partyState.IsAttacker ? 1 : 0;
+            if (weapon.Range + bonusRange + partyState.mapEventState.StageRounds < partyState.mapEventState.BattleScale)
             {
                 return new AttackComposition();
             }
 
             var attack = weapon.Attack;
-            if (Horse != null && !partyState.mapEventState.IsSiege)
+            if (partyState.mapEventState.IsSiege)
             {
-                attack.Melee *= (1 + Horse.Strength * 0.5f);
-                attack.Polearm *= (1 + Horse.Strength * 1.0f);
+                if (partyState.mapEventState.GateBreached)
+                {
+                    attack.Melee *= (1 + Atheletics);
+                    attack.Polearm *= (1 + Atheletics);
+                }
+                else
+                {
+                    if (partyState.IsAttacker)
+                    {
+                        attack.Melee *= (1 + Atheletics) * 0.7f;
+                        attack.Missile *= 0.8f;
+                        attack.Polearm *= (1 + Atheletics) * 0.5f;
+                    }
+                    else
+                    {
+                        attack.Melee *= (1 + Atheletics);
+                        attack.Missile *= 1.2f;
+                        attack.Polearm *= (1 + Atheletics);
+                    }
+                }
             }
             else
             {
-                attack.Melee *= (1 + Atheletics);
-                attack.Polearm *= (1 + Atheletics);
+                if (Horse != null)
+                {
+                    attack.Melee *= (1 + Horse.Strength * 0.5f);
+                    attack.Polearm *= (1 + Horse.Strength * 1.0f);
+                }
+                else
+                {
+                    attack.Melee *= (1 + Atheletics);
+                    attack.Polearm *= (1 + Atheletics);
+                }
             }
             return attack;
         }

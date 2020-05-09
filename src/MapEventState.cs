@@ -24,6 +24,7 @@ namespace CombatModCollection
                 {
                     mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
                     mapEventState.IsSiege = mapEvent.IsSiegeAssault;
+                    mapEventState.BattleScale = mapEvent.IsSiegeAssault ? 3 : 2;
                 }
             }
             return mapEventState;
@@ -37,9 +38,10 @@ namespace CombatModCollection
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
         public bool IsSiege = false;
-        public int BattleScale = 2;
-        public int StageRounds = 0;
+        public int BattleScale;
+        public int StageRounds;
         public bool IsDefenderRunAway = false;
+        public bool GateBreached { get { return StageRounds > 16; } }
 
         private PartyState GetPartyState(PartyBase party)
         {

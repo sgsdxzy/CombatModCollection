@@ -87,7 +87,7 @@ namespace CombatModCollection
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
 
             float siegePenalty = 1.0f;
-            if (__instance.IsSiegeAssault && attackerNumber > 300)
+            if (__instance.IsSiegeAssault && !SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel && attackerNumber > 300)
             {
                 siegePenalty = (float)Math.Pow(attackerNumber / 300, 1.0);
             }
