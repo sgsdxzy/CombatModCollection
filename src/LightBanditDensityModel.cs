@@ -11,7 +11,7 @@ namespace CombatModCollection
                 return (int)SubModule.Settings.Strategy_BanditMerger_MaximumBanditParties;
             }
         }
-        
+
         /*
         public override int NumberOfMinimumBanditPartiesInAHideoutToInfestIt
         {

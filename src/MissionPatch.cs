@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
@@ -25,7 +24,7 @@ namespace CombatModCollection
                     __result.BlowFlag &= ~BlowFlags.MakesRear;
                 }
             }
-            
+
             if (collisionData.IsHorseCharge && SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier != 1f)
             {
                 if (victimAgent.IsRunningAway || (double)Vec3.DotProduct(swingDir, victimAgent.Frame.rotation.f) > 0.5)

@@ -94,14 +94,14 @@ namespace CombatModCollection
                     {
                         side.OnTroopWounded(strikedTroopDescriptor);
                         battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
-                        if (strikedTroopParty.MobileParty != null) 
+                        if (strikedTroopParty.MobileParty != null)
                             SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 1f);
                     }
                     else
                     {
                         side.OnTroopKilled(strikedTroopDescriptor);
                         battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 1, 0, 0, 0, 0);
-                        if (strikedTroopParty.MobileParty != null) 
+                        if (strikedTroopParty.MobileParty != null)
                             SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
                     }
                     flag = true;

@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
 
 namespace CombatModCollection
 {

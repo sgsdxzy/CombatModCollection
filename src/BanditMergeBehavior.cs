@@ -13,7 +13,7 @@ namespace CombatModCollection
         }
 
         public override void SyncData(IDataStore dataStore)
-        {}
+        { }
 
         public void DailyTick()
         {
@@ -36,7 +36,7 @@ namespace CombatModCollection
                             mobileParty.Party.AddPrisoners(nearbyMobileParty.PrisonRoster.ToFlattenedRoster());
                             DestroyPartyAction.Apply(mobileParty.Party, nearbyMobileParty);
                         }
-                    }                    
+                    }
                 }
             }
         }

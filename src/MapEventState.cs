@@ -27,7 +27,8 @@ namespace CombatModCollection
                     if (mapEvent.IsSiegeAssault)
                     {
                         mapEventState.BattleScale = 3;
-                    } else
+                    }
+                    else
                     {
                         mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
                     }
@@ -62,7 +63,7 @@ namespace CombatModCollection
                     if (troop != null)
                     {
                         partyState.RegisterTroops(troop, (elementCopyAtIndex.Number - elementCopyAtIndex.WoundedNumber));
-                    }                       
+                    }
                 }
             }
             return partyState;
