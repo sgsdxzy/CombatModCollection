@@ -1,69 +1,43 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
 {
-    public class TroopState
+    public class TroopTemplate
     {
-        public string Name;
-        public bool IsHero = false;
-        public int TotalCount = 1;
-        public int ExpectedDeathCount = 0;
-        public int CurrentDeathCount = 0;
-        public int Alive { get { return TotalCount - CurrentDeathCount; } }
-        public float HitPoints;
-        public float AccumulatedDamage = 0;
+        private static readonly ConcurrentDictionary<MBGUID, TroopTemplate> CachedTemplates = new ConcurrentDictionary<MBGUID, TroopTemplate>();
 
-        private List<Weapon> Weapons = new List<Weapon>(4);
-        private Item Shield = null;
-        private Item Horse = null;
-        private float Atheletics = 0;
-
-        // cached defense points
-        private float ArmorPoints = 1.0f;      // against short melee weapons
-        private bool IsUsingShield = false;
-        private bool IsUsingRanged = false;
-
-        private Weapon ChosenWeapon = Weapon.Fist;
-        private Weapon FavorateWeapon = null;
-        private AttackComposition _preparedAttack;
-        private float _cachedHitDamage = 0;
-        private int _expectedHits = 0;
-
+        public List<Weapon> Weapons = new List<Weapon>(4);
+        public Item Shield = null;
+        public Item Horse = null;
+        public float Atheletics;
+        public float ArmorPoints;
         public float Strength;
 
-        // Debug
-        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt", true);
-        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt", true);
-
-        public TroopState(CharacterObject troop, bool isSeige = false)
+        public static TroopTemplate GetTroopTemplate(CharacterObject troop)
         {
-            Name = troop.Name.ToString();
-            IsHero = troop.IsHero;
-            HitPoints = troop.HitPoints;
-            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            if (!CachedTemplates.TryGetValue(troop.Id, out TroopTemplate template))
             {
-                CalculateStatesDetailedModel(troop, isSeige);
+                CachedTemplates[troop.Id] = new TroopTemplate(troop);
+                return CachedTemplates[troop.Id];
             }
             else
             {
-                Strength = troop.GetPower();
+                return template;
             }
         }
 
-        private void CalculateStatesDetailedModel(CharacterObject troop, bool isSiege = false, Equipment equipment = null)
+        private TroopTemplate(CharacterObject troop)
         {
-            Strength = troop.GetPower();
-            Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / 3000.0f;
-
-            if (equipment == null)
-                equipment = troop.Equipment;
-
+            Equipment equipment = troop.Equipment;
             float armorSum = equipment.GetArmArmorSum() + equipment.GetHeadArmorSum() + equipment.GetHumanBodyArmorSum() + equipment.GetLegArmorSum();
-            float num3 = armorSum * armorSum / (5 + equipment.GetTotalWeightOfArmor(true));
-            ArmorPoints = (num3 * 10f + 4000f) / 10000f;
+            float totalWeight = equipment.GetTotalWeightOfArmor(true) + equipment.GetTotalWeightOfWeapons();
+            Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / (totalWeight + 3f) * 0.01f;
+            ArmorPoints = (float)(0.2 + Math.Pow(armorSum, 0.5) / 12.5);
 
             for (EquipmentIndex index1 = EquipmentIndex.WeaponItemBeginSlot; index1 < EquipmentIndex.NumAllWeaponSlots; ++index1)
             {
@@ -106,7 +80,7 @@ namespace CombatModCollection
                                 weapon.Attack.Polearm = strength;
                                 break;
                             case WeaponClass.TwoHandedPolearm:
-                                weapon.IsTwohanded = false;
+                                weapon.IsTwohanded = true;
                                 weapon.Attack.Polearm = strength * 1.5f;
                                 break;
                         }
@@ -150,7 +124,7 @@ namespace CombatModCollection
                                 {
                                     Range = 2,
                                     IsTwohanded = true,
-                                    HasLimitedAmmo = isSiege ? false : true,
+                                    HasLimitedAmmo = true,
                                     RemainingAmmo = numAmmo
                                 };
                                 weapon.Attack.Missile = (strength + ammoStrength) * 1.5f;
@@ -160,17 +134,16 @@ namespace CombatModCollection
                         }
                     }
                 }
+
+                Strength = troop.GetPower();
             }
 
-            if (!isSiege && equipment.Horse.Item != null)
+            if (equipment.Horse.Item != null)
             {
                 float proficiency = equipment.Horse.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipment.Horse.Item.RelevantSkill) / 300.0f * 0.7f;
                 float Strength = GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item) * proficiency;
                 Horse = new Item { Strength = Strength };
             }
-
-            //InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() +
-            //    " " + MeleePoints + " " + RangedPoints + " " + ArmorPoints + " " + ShieldPoints + " " + RangedAmmo));
         }
 
         private float GetMeleeWeaponStrength(ItemObject item)
@@ -213,20 +186,85 @@ namespace CombatModCollection
 
             return (int)itemHorse.Tier * harnessStrength * 0.05f;
         }
+    }
 
-        public AttackComposition GetWeaponAttack(Weapon weapon, MapEventState mapEventState)
+    public class TroopState
+    {
+        public readonly string Name;
+        private readonly PartyState partyState;
+        private readonly bool IsHero;
+        private readonly int TotalCount;
+        private float HitPoints;
+
+        private List<Weapon> Weapons = new List<Weapon>(4);
+        private Item Shield = null;
+        private Item Horse = null;
+        private float Atheletics;
+        private float ArmorPoints;
+        public float Strength;
+
+        private float AccumulatedDamage = 0;
+        private int ExpectedDeathCount = 0;
+        private int CurrentDeathCount = 0;
+        private int Alive { get { return TotalCount - CurrentDeathCount; } }
+        private bool IsUsingShield = false;
+        private bool IsUsingRanged = false;
+        private Weapon ChosenWeapon = Weapon.Fist;
+
+        private AttackComposition _preparedAttack;
+        private float _cachedHitDamage = 0;
+        private int _expectedHits = 0;
+
+        // Debug
+        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt", true);
+        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt", true);
+
+        public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
         {
-            if (weapon.Range + mapEventState.StageRounds < mapEventState.BattleScale)
+            partyState = _partyState;
+            Name = troop.Name.ToString();
+            IsHero = troop.IsHero;
+            TotalCount = count;
+            HitPoints = troop.HitPoints;
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            {
+                var template = TroopTemplate.GetTroopTemplate(troop);
+                foreach (var weapon in template.Weapons)
+                {
+                    Weapons.Add(weapon.Clone());
+                }
+                if (template.Shield != null)
+                {
+                    Shield = template.Shield.Clone();
+                }
+                if (template.Horse != null)
+                {
+                    Horse = template.Horse.Clone();
+                }
+                Atheletics = template.Atheletics;
+                ArmorPoints = template.ArmorPoints;
+                Strength = template.Strength;
+            }
+            else
+            {
+                Strength = troop.GetPower();
+            }
+        }
+
+        public AttackComposition GetWeaponAttack(Weapon weapon)
+        {
+            if (weapon.Range + partyState.mapEventState.StageRounds < partyState.mapEventState.BattleScale)
             {
                 return new AttackComposition();
             }
 
             var attack = weapon.Attack;
-            if (Horse != null)
+            if (Horse != null && !partyState.mapEventState.IsSiege)
             {
                 attack.Melee *= (1 + Horse.Strength * 0.5f);
                 attack.Polearm *= (1 + Horse.Strength * 1.0f);
-            } else
+            }
+            else
             {
                 attack.Melee *= (1 + Atheletics);
                 attack.Polearm *= (1 + Atheletics);
@@ -234,41 +272,29 @@ namespace CombatModCollection
             return attack;
         }
 
-        public void PrepareWeapon(MapEventState mapEventState)
+        public void PrepareWeapon()
         {
             if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 return;
             }
 
-            if (FavorateWeapon != null && FavorateWeapon.IsUsable)
-            {
-                var attack = GetWeaponAttack(FavorateWeapon, mapEventState);
-                if (attack.Sum() > 0)
-                {
-                    _preparedAttack = attack;
-                    ChosenWeapon = FavorateWeapon;
-                }
-            }
-            else
-            {
-                ChosenWeapon = Weapon.Fist;
-                var attack = GetWeaponAttack(ChosenWeapon, mapEventState);
-                float highest = attack.Sum();
-                _preparedAttack = attack;
+            ChosenWeapon = Weapon.Fist;
+            var attack = GetWeaponAttack(ChosenWeapon);
+            float highest = attack.Sum();
+            _preparedAttack = attack;
 
-                foreach (var weapon in Weapons)
+            foreach (var weapon in Weapons)
+            {
+                if (weapon.IsUsable)
                 {
-                    if (weapon.IsUsable)
+                    attack = GetWeaponAttack(weapon);
+                    var preference = GetWeaponPreference(weapon);
+                    if (attack.Sum() * preference > highest)
                     {
-                        attack = GetWeaponAttack(weapon, mapEventState);
-                        var preference = GetWeaponPreference(weapon, mapEventState);
-                        if (attack.Sum() * preference > highest)
-                        {
-                            _preparedAttack = attack;
-                            highest = attack.Sum();
-                            ChosenWeapon = weapon;
-                        }
+                        _preparedAttack = attack;
+                        highest = attack.Sum();
+                        ChosenWeapon = weapon;
                     }
                 }
             }
@@ -291,15 +317,16 @@ namespace CombatModCollection
             weaponFile.Flush();
         }
 
-        private float GetWeaponPreference(Weapon weapon, MapEventState mapEventState)
+        private float GetWeaponPreference(Weapon weapon)
         {
-            if (Horse != null)
+            if (Horse != null && !partyState.mapEventState.IsSiege)
             {
                 if (weapon.IsRanged)
                 {
                     return 1.5f;
                 }
-            } else
+            }
+            else
             {
                 if (weapon.IsRanged)
                 {
@@ -312,7 +339,7 @@ namespace CombatModCollection
             {
                 preference *= 1.2f;
             }
-            if (!weapon.IsTwohanded)
+            if (Shield != null && !weapon.IsTwohanded)
             {
                 preference *= 1.2f;
             }
@@ -331,7 +358,7 @@ namespace CombatModCollection
             {
                 return new AttackComposition();
             }
-            if (ChosenWeapon.HasLimitedAmmo)
+            if (ChosenWeapon.HasLimitedAmmo && !partyState.mapEventState.IsSiege)
             {
                 ChosenWeapon.RemainingAmmo -= 1;
             }
@@ -353,7 +380,8 @@ namespace CombatModCollection
                 {
                     CurrentDeathCount += 1;
                     return true;
-                } else
+                }
+                else
                 {
                     return false;
                 }
@@ -370,30 +398,33 @@ namespace CombatModCollection
                     missileDefense += 4 * Shield.Strength;
                     polearmDefense += Shield.Strength;
                 }
-                if (Horse != null)
+                if (Horse != null && !partyState.mapEventState.IsSiege)
                 {
                     if (IsUsingRanged)
                     {
                         meleeDefense *= (1 + 3 * Horse.Strength);
                         missileDefense *= (1 + Horse.Strength);
                         polearmDefense *= (1 + 3 * Horse.Strength);
-                    } else
+                    }
+                    else
                     {
                         meleeDefense *= (1 + Horse.Strength);
                         missileDefense *= (1 + Horse.Strength);
                     }
-                } else
+                }
+                else
                 {
                     if (IsUsingRanged)
                     {
                         meleeDefense *= (1 + 6 * Atheletics);
                         polearmDefense *= (1 + 6 * Atheletics);
-                    } else
+                    }
+                    else
                     {
                         meleeDefense *= (1 + Atheletics);
                         polearmDefense *= (1 + Atheletics);
                     }
-                }                
+                }
 
                 damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
 
@@ -405,16 +436,13 @@ namespace CombatModCollection
             else
             {
                 damage = attack.Melee / Strength;
-            }            
+            }
 
-            if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
+            if (!SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
             {
-                damage *= 0.5f;
+                damage *= MBRandom.RandomFloat * 2f;
             }
-            else
-            {
-                damage *= MBRandom.RandomFloat;
-            }
+
             _cachedHitDamage = damage;
 
             if (IsHero)
@@ -450,7 +478,7 @@ namespace CombatModCollection
             // float hitCountsToKill = HitPoints / damage;
             float ratio = AccumulatedDamage / TotalCount / HitPoints;
             // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
-            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, 1.2) * TotalCount);
+            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, 1.5) * TotalCount);
         }
 
         public float GetCurrentStrength()
@@ -474,7 +502,18 @@ namespace CombatModCollection
         public bool IsTwohanded = false;
         public bool HasLimitedAmmo = false;
         public int RemainingAmmo = 0;
-        public float Preference = 1.0f;
+
+        public Weapon Clone()
+        {
+            return new Weapon
+            {
+                Attack = this.Attack,
+                Range = this.Range,
+                IsTwohanded = this.IsTwohanded,
+                HasLimitedAmmo = this.HasLimitedAmmo,
+                RemainingAmmo = this.RemainingAmmo
+            };
+        }
 
         public bool IsUsable
         {
@@ -504,6 +543,15 @@ namespace CombatModCollection
     {
         public float Strength;
         public float Health;
+
+        public Item Clone()
+        {
+            return new Item
+            {
+                Strength = this.Strength,
+                Health = this.Health
+            };
+        }
     }
 
     public struct AttackComposition
