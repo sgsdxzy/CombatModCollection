@@ -389,6 +389,15 @@ namespace CombatModCollection
             {
                 damage = attack.Melee / Strength;
             }
+
+            if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
+            {
+                damage *= 0.5f;
+            }
+            else
+            {
+                damage *= MBRandom.RandomFloat;
+            }
             _cachedHitDamage = damage;
 
             if (IsHero)

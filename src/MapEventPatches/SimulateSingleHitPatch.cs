@@ -93,17 +93,6 @@ namespace CombatModCollection
             AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage * siegePenalty;
             AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber;
 
-            if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
-            {
-                attackerDistributedAttack *= 0.5f;
-                defenderDistributedAttack *= 0.5f;
-            }
-            else
-            {
-                attackerDistributedAttack *= MBRandom.RandomFloat;
-                defenderDistributedAttack *= MBRandom.RandomFloat;
-            }
-
             bool finishedAnyone = false;
             finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttack, out float attackerTotalDamageDone);
             finishedAnyone |= StrikeOnce(__instance, battleObserver, defenderSide, attackerSide, defenderDistributedAttack, out float defenderTotalDamageDone);
