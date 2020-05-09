@@ -12,12 +12,12 @@ namespace CombatModCollection
         private static readonly ConcurrentDictionary<MBGUID, TroopTemplate> CachedTemplates = new ConcurrentDictionary<MBGUID, TroopTemplate>();
         private static readonly float AmmoMultiplier = 2.0f;
 
-        public List<Weapon> Weapons = new List<Weapon>(4);
-        public Item Shield = null;
-        public Item Horse = null;
-        public float Atheletics;
-        public float ArmorPoints;
-        public float Strength;
+        public readonly List<Weapon> Weapons = new List<Weapon>(4);
+        public readonly Item Shield = null;
+        public readonly Item Horse = null;
+        public readonly float Atheletics;
+        public readonly float ArmorPoints;
+        public readonly float Strength;
 
         public static TroopTemplate GetTroopTemplate(CharacterObject troop)
         {
@@ -40,6 +40,7 @@ namespace CombatModCollection
             Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / (totalWeight + 3f) * 0.01f;
             ArmorPoints = (float)(0.2 + Math.Pow(armorSum, 0.5) / 12.5);
 
+            float bestShield = 0.0f;
             for (EquipmentIndex index1 = EquipmentIndex.WeaponItemBeginSlot; index1 < EquipmentIndex.NumAllWeaponSlots; ++index1)
             {
                 EquipmentElement equipmentElement1 = equipment[index1];
@@ -49,7 +50,11 @@ namespace CombatModCollection
                     {
                         float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                         float strength = GetShieldStrength(equipmentElement1.Item) * proficiency;
-                        Shield = new Item { Strength = strength * 0.25f };
+                        if (strength > bestShield)
+                        {
+                            bestShield = strength;
+                            Shield = new Item { Strength = strength };
+                        }
                     }
                     else if (equipmentElement1.Item.PrimaryWeapon.IsMeleeWeapon)
                     {
@@ -135,16 +140,30 @@ namespace CombatModCollection
                         }
                     }
                 }
-
-                Strength = troop.GetPower();
             }
 
+            float bestHorse = 0.0f;
             if (equipment.Horse.Item != null)
             {
                 float proficiency = equipment.Horse.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipment.Horse.Item.RelevantSkill) / 300.0f * 0.7f;
-                float Strength = GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item) * proficiency;
-                Horse = new Item { Strength = Strength };
+                float strength = GetHorseStrength(equipment.Horse.Item, equipment[EquipmentIndex.HorseHarness].Item) * proficiency;
+                Horse = new Item { Strength = strength };
+                bestHorse = strength;
             }
+
+            float bestWeapon = 0.0f;
+            bool twoHanded = false;
+            foreach (var weapon in Weapons)
+            {
+                float damage = weapon.Attack.Sum();
+                if (damage > bestWeapon)
+                {
+                    bestWeapon = damage;
+                    twoHanded = weapon.IsTwohanded;
+                }
+            }
+
+            Strength = ArmorPoints + (twoHanded ? 0 : bestShield) + bestWeapon + bestHorse;
         }
 
         private float GetMeleeWeaponStrength(ItemObject item)
@@ -174,7 +193,7 @@ namespace CombatModCollection
 
         private float GetShieldStrength(ItemObject item)
         {
-            return (int)item.Tier * 0.2f + 0.8f;
+            return ((int)item.Tier * 0.2f + 0.8f) * 0.25f;
         }
 
         private float GetHorseStrength(ItemObject itemHorse, ItemObject itemHarness)

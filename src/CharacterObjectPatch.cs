@@ -10,18 +10,15 @@ namespace CombatModCollection
         public static bool Prefix(ref float __result,
             CharacterObject __instance)
         {
-            // TroopState troopState = new TroopState(__instance);
-            // __result = troopState.GetStrength(0);
+            TroopTemplate template = TroopTemplate.GetTroopTemplate(__instance);
+            __result = template.Strength;
 
             return false;
         }
 
         public static bool Prepare()
         {
-            return false;
             return SubModule.Settings.Battle_SendAllTroops && SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel;
         }
     }
-
-    // Probably should change CalculateStrength()
 }
