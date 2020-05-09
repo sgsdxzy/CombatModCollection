@@ -34,6 +34,10 @@ namespace CombatModCollection
 
         public float Strength;
 
+        // Debug
+        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt", true);
+        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt", true);
+
         public TroopState(CharacterObject troop, bool isSeige = false)
         {
             Name = troop.Name.ToString();
@@ -189,7 +193,7 @@ namespace CombatModCollection
             WeaponComponentData nweapon = item.WeaponComponent.PrimaryWeapon;
             if (nweapon.WeaponClass == WeaponClass.Stone)
             {
-                return 0.6f;
+                return 0.4f;
             }
             return (int)item.Tier * 0.2f + 0.8f;
         }
@@ -280,8 +284,11 @@ namespace CombatModCollection
 
             IsUsingRanged = ChosenWeapon.IsRanged;
 
-            // InformationManager.DisplayMessage(new InformationMessage(Name + " is using " + _preparedAttack.Melee + " "
-            //    + _preparedAttack.Missile + " " + _preparedAttack.Polearm));
+            // 
+            string debugString = Name + " is using (" + _preparedAttack.Melee + " "
+                + _preparedAttack.Missile + " " + _preparedAttack.Polearm + ")";
+            weaponFile.WriteLine(debugString);
+            weaponFile.Flush();
         }
 
         private float GetWeaponPreference(Weapon weapon, MapEventState mapEventState)
@@ -300,12 +307,17 @@ namespace CombatModCollection
                 }
             }
 
+            float preference = 1.0f;
             if (weapon.Attack.Polearm > 0)
             {
-                return 1.2f;
+                preference *= 1.2f;
+            }
+            if (!weapon.IsTwohanded)
+            {
+                preference *= 1.2f;
             }
 
-            return 1.0f;
+            return preference;
         }
 
         public AttackComposition DoSingleAttack()
@@ -363,12 +375,12 @@ namespace CombatModCollection
                     if (IsUsingRanged)
                     {
                         meleeDefense *= (1 + 3 * Horse.Strength);
-                        missileDefense += (1 + Horse.Strength);
+                        missileDefense *= (1 + Horse.Strength);
                         polearmDefense *= (1 + 3 * Horse.Strength);
                     } else
                     {
                         meleeDefense *= (1 + Horse.Strength);
-                        missileDefense += (1 + Horse.Strength);
+                        missileDefense *= (1 + Horse.Strength);
                     }
                 } else
                 {
@@ -384,11 +396,16 @@ namespace CombatModCollection
                 }                
 
                 damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
+
+                string debugString = Name + " defense is (" + ArmorPoints + " " + meleeDefense + " "
+                + missileDefense + " " + polearmDefense + ")";
+                defenseFile.WriteLine(debugString);
+                defenseFile.Flush();
             }
             else
             {
                 damage = attack.Melee / Strength;
-            }
+            }            
 
             if (SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
             {

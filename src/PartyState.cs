@@ -19,7 +19,7 @@ namespace CombatModCollection
         {
             if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
             {
-                InformationManager.DisplayMessage(new InformationMessage(troop.Name.ToString() + " is not registered for battle."));
+                InformationManager.DisplayMessage(new InformationMessage("Warning: " + troop.Name.ToString() + " is not registered for battle."));
                 TroopStates[troop.Id] = new TroopState(troop);
                 return TroopStates[troop.Id];
             }
