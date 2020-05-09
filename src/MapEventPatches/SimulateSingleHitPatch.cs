@@ -14,7 +14,7 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 5f;
+        private static readonly float DamageMultiplier = 2.5f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
@@ -49,14 +49,12 @@ namespace CombatModCollection
                     float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
                     attack *= damageMultiplier;
                 }
-                DamageTypes damageType = (double)MBRandom.RandomFloat < 0.300000011920929 ? DamageTypes.Blunt : DamageTypes.Cut;
+                DamageTypes damageType = (double)MBRandom.RandomFloat < 0.15 ? DamageTypes.Blunt : DamageTypes.Cut;
 
                 bool isFinishingStrike = MapEventSideHelper.ApplySimulationDamageToSelectedTroop(
                     strikedSide, strikedTroop, strikedTroopParty, strikedTroopDescriptor, index, strikedTroopList,
                     attack, damageType, strikerTroopParty, mapEventState, battleObserver, out float damage);
                 totalDamageDone += damage;
-                //InformationManager.DisplayMessage(new InformationMessage(strikedTroop.Name.ToString() + " took damage: "
-                //    + damage));
 
                 strikerSide.ApplySimulatedHitRewardToSelectedTroop(strikedTroop, 0, isFinishingStrike);
                 finishedAnyone = finishedAnyone || isFinishingStrike;
@@ -88,9 +86,13 @@ namespace CombatModCollection
 
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
-            float numberRatio = (float)defenderNumber / (float)attackerNumber;
-            float siegePenalty = __instance.IsSiegeAssault ? (float)Math.Pow(numberRatio, 0.5) : 1.0f;
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage * siegePenalty;
+
+            float siegePenalty = 1.0f;
+            if (__instance.IsSiegeAssault && attackerNumber > 300)
+            {
+                siegePenalty = (float)Math.Pow(attackerNumber / 300, 1.0);
+            }
+            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage / siegePenalty;
             AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber;
 
             bool finishedAnyone = false;
