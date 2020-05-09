@@ -10,6 +10,7 @@ namespace CombatModCollection
     public class TroopTemplate
     {
         private static readonly ConcurrentDictionary<MBGUID, TroopTemplate> CachedTemplates = new ConcurrentDictionary<MBGUID, TroopTemplate>();
+        private static readonly float AmmoMultiplier = 2.0f;
 
         public List<Weapon> Weapons = new List<Weapon>(4);
         public Item Shield = null;
@@ -97,7 +98,7 @@ namespace CombatModCollection
                                 Range = 1,
                                 IsTwohanded = false,
                                 HasLimitedAmmo = true,
-                                RemainingAmmo = equipmentElement1.Item.PrimaryWeapon.MaxDataValue
+                                RemainingAmmo = (int)Math.Round(equipmentElement1.Item.PrimaryWeapon.MaxDataValue * AmmoMultiplier)
                             };
                             weapon.Attack.Missile = strength * 1.5f;
                             Weapons.Add(weapon);
@@ -125,7 +126,7 @@ namespace CombatModCollection
                                     Range = 2,
                                     IsTwohanded = true,
                                     HasLimitedAmmo = true,
-                                    RemainingAmmo = numAmmo
+                                    RemainingAmmo = (int)Math.Round(numAmmo * AmmoMultiplier)
                                 };
                                 weapon.Attack.Missile = (strength + ammoStrength) * 1.5f;
                                 Weapons.Add(weapon);

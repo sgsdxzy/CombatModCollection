@@ -13,12 +13,12 @@ namespace CombatModCollection
         private readonly int TotalCount;
         private float HitPoints;
 
-        private List<Weapon> Weapons = new List<Weapon>(4);
-        private Item Shield = null;
-        private Item Horse = null;
-        private float Atheletics;
-        private float ArmorPoints;
-        public float Strength;
+        private readonly List<Weapon> Weapons = new List<Weapon>(4);
+        private readonly Item Shield = null;
+        private readonly Item Horse = null;
+        private readonly float Atheletics;
+        private readonly float ArmorPoints;
+        public readonly float Strength;
 
         private float AccumulatedDamage = 0;
         private int ExpectedDeathCount = 0;
@@ -33,13 +33,14 @@ namespace CombatModCollection
         private int _expectedHits = 0;
 
         // Debug
-        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt", true);
-        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt", true);
+        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt");
+        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt");
+        static System.IO.StreamWriter damageFile = new System.IO.StreamWriter(@"D:\Damages.txt");
 
         public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
         {
-            partyState = _partyState;
             Name = troop.Name.ToString();
+            partyState = _partyState;
             IsHero = troop.IsHero;
             TotalCount = count;
             HitPoints = troop.HitPoints;
@@ -259,7 +260,6 @@ namespace CombatModCollection
             {
                 damage *= MBRandom.RandomFloat * 2f;
             }
-
             _cachedHitDamage = damage;
 
             if (IsHero)
@@ -281,6 +281,12 @@ namespace CombatModCollection
             AccumulatedDamage += damage * Alive;
             _expectedHits = Alive - 1;
             CalculateExpectedDeathCounts(damage);
+
+            string damageString = Name + " took damage " + damage + " " + AccumulatedDamage + " " 
+                + TotalCount + " " + CurrentDeathCount + " " + ExpectedDeathCount;
+            damageFile.WriteLine(damageString);
+            damageFile.Flush();
+
             if (ExpectedDeathCount > CurrentDeathCount)
             {
                 CurrentDeathCount += 1;
@@ -293,9 +299,9 @@ namespace CombatModCollection
         private void CalculateExpectedDeathCounts(float damage)
         {
             // float hitCountsToKill = HitPoints / damage;
-            float ratio = AccumulatedDamage / TotalCount / HitPoints;
+            // float ratio = AccumulatedDamage / TotalCount / HitPoints;
             // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
-            ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, 1.5) * TotalCount);
+            ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
         }
 
         public float GetCurrentStrength()
