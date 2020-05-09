@@ -10,7 +10,7 @@ namespace CombatModCollection
         public static bool Prefix(ref float __result,
             CharacterObject __instance)
         {
-            TroopState troopState = new TroopState(__instance);
+            // TroopState troopState = new TroopState(__instance);
             // __result = troopState.GetStrength(0);
 
             return false;

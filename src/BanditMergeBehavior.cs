@@ -35,7 +35,6 @@ namespace CombatModCollection
                             mobileParty.Party.AddMembers(nearbyMobileParty.MemberRoster.ToFlattenedRoster());
                             mobileParty.Party.AddPrisoners(nearbyMobileParty.PrisonRoster.ToFlattenedRoster());
                             DestroyPartyAction.Apply(mobileParty.Party, nearbyMobileParty);
-                            // InformationManager.DisplayMessage(new InformationMessage("Merged: " + mobileParty.MapFaction.StringId));
                         }
                     }                    
                 }
