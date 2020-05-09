@@ -8,19 +8,22 @@ namespace CombatModCollection
     public class PartyState
     {
         private readonly ConcurrentDictionary<MBGUID, TroopState> TroopStates = new ConcurrentDictionary<MBGUID, TroopState>();
-        private readonly MapEventState mapEventState;
+        public readonly MapEventState mapEventState;
+        public readonly bool IsAttacker;
 
-        public PartyState(MapEventState _mapEventState)
+        public PartyState(MapEventState _mapEventState, bool _IsAttacker)
         {
             mapEventState = _mapEventState;
+            IsAttacker = _IsAttacker;
         }
 
         public TroopState GetTroopState(CharacterObject troop)
         {
             if (!TroopStates.TryGetValue(troop.Id, out TroopState troopState))
             {
-                InformationManager.DisplayMessage(new InformationMessage("Warning: " + troop.Name.ToString() + " is not registered for battle."));
-                TroopStates[troop.Id] = new TroopState(troop);
+                InformationManager.DisplayMessage(new InformationMessage(
+                    "Warning: " + troop.Name.ToString() + " is not registered for battle."));
+                TroopStates[troop.Id] = new TroopState(this, troop, 1);
                 return TroopStates[troop.Id];
             }
             else
@@ -41,7 +44,7 @@ namespace CombatModCollection
             if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 TroopState troopState = GetTroopState(troop);
-                troopState.PrepareWeapon(mapEventState);
+                troopState.PrepareWeapon();
                 return troopState.DoSingleAttack();
             }
             else
@@ -58,7 +61,7 @@ namespace CombatModCollection
             AttackComposition attack = new AttackComposition();
             foreach (var troopState in TroopStates.Values)
             {
-                troopState.PrepareWeapon(mapEventState);
+                troopState.PrepareWeapon();
                 attack += troopState.DoTotalAttack();
             }
             return attack;
@@ -74,10 +77,9 @@ namespace CombatModCollection
             return totalStrength;
         }
 
-        public void RegisterTroops(CharacterObject troop, int count, bool isSiege = false)
+        public void RegisterTroops(CharacterObject troop, int count)
         {
-            TroopStates[troop.Id] = new TroopState(troop, isSiege);
-            TroopStates[troop.Id].TotalCount += count;
+            TroopStates[troop.Id] = new TroopState(this, troop, count);
         }
     }
 }

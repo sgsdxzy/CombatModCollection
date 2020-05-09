@@ -23,7 +23,7 @@ namespace CombatModCollection
                 if (SubModule.Settings.Battle_SendAllTroops)
                 {
                     mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
-                    mapEventState.isSiege = mapEvent.IsSiegeAssault;
+                    mapEventState.IsSiege = mapEvent.IsSiegeAssault;
                 }
             }
             return mapEventState;
@@ -36,7 +36,7 @@ namespace CombatModCollection
 
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
-        private bool isSiege = false;
+        public bool IsSiege = false;
         public int BattleScale = 2;
         public int StageRounds = 0;
         public bool IsDefenderRunAway = false;
@@ -45,7 +45,7 @@ namespace CombatModCollection
         {
             if (!PartyStates.TryGetValue(party.Id, out PartyState partyState))
             {
-                partyState = new PartyState(this);
+                partyState = new PartyState(this, party.Side == BattleSideEnum.Attacker);
                 PartyStates[party.Id] = partyState;
                 for (int index = 0; index < party.MemberRoster.Count; ++index)
                 {
@@ -53,7 +53,7 @@ namespace CombatModCollection
                     CharacterObject troop = elementCopyAtIndex.Character;
                     if (troop != null)
                     {
-                        partyState.RegisterTroops(troop, (elementCopyAtIndex.Number - elementCopyAtIndex.WoundedNumber), isSiege);
+                        partyState.RegisterTroops(troop, (elementCopyAtIndex.Number - elementCopyAtIndex.WoundedNumber));
                     }                       
                 }
             }
