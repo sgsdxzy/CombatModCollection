@@ -20,8 +20,7 @@ namespace CombatModCollection
                 SubModule.Settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(configPath));
             }
             catch
-            {
-            }
+            { }
         }
 
 

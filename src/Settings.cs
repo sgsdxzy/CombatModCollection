@@ -29,6 +29,21 @@
         public float Battle_PowerThrust_kE { get; set; } = 0.125f;
         public float Battle_PowerThrust_kP { get; set; } = 0.1f;
         public float Battle_PowerThrust_kC { get; set; } = 0.067f;
+        public float Battle_PowerThrust_ThrustHitWithArmDamageMultiplier { get; set; } = 0.15f;
+        public float Battle_PowerThrust_NonTipThrustHitDamageMultiplier { get; set; } = 0.15f;
+
+        public bool Battle_RealisticBallistics { get; set; } = false;
+        public bool Battle_RealisticBallistics_ConsistantArrowSpeed { get; set; } = false;
+        public float Battle_RealisticBallistics_ArrowSpeedMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_BoltSpeedMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_ThrownSpeedMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_BowAccuracyMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_CrossbowAccuracyMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_ThrownAccuracyMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_AirFrictionJavelin { get; set; } = 0.002f;
+        public float Battle_RealisticBallistics_AirFrictionArrow { get; set; } = 0.003f;
+        public float Battle_RealisticBallistics_AirFrictionKnife { get; set; } = 0.007f;
+        public float Battle_RealisticBallistics_AirFrictionAxe { get; set; } = 0.007f;
 
 
         public bool Strategy_ModifyRespawnParty { get; set; } = false;
