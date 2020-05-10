@@ -1,8 +1,8 @@
 {
   "Battle_SurviveByArmor": false,
     "Battle_SurviveByArmor_SurviveByExcessiveDamage": true,
-      "Battle_SurviveByArmor_SafeExcessiveDamage": 10,
-      "Battle_SurviveByArmor_LethalExcessiveDamage": 50,
+      "Battle_SurviveByArmor_SafeExcessiveDamage": 0,
+      "Battle_SurviveByArmor_LethalExcessiveDamage": 30,
       "Battle_SurviveByArmor_ApplyMedicine": true,
       "Battle_SurviveByArmor_ApplyLevel": false,
       "Battle_SurviveByArmor_ApplyArmor": false,
@@ -17,7 +17,8 @@
     "Battle_SendAllTroops_XPMultiplier": 1.0,
 
   "Battle_WarStomp": false,
-    "Battle_WarStomp_UnstoppableCharge": true,
+    "Battle_WarStomp_UnstoppableWarHorseCharge": true,
+    "Battle_WarStomp_UnstoppableHorseCharge": false,
     "Battle_WarStomp_DamageMultiplierToHorse": 1.0,
     "Battle_WarStomp_WarStompDamageMultiplier": 4.0,
 
@@ -25,6 +26,21 @@
     "Battle_PowerThrust_kE": 0.125,
     "Battle_PowerThrust_kP": 0.10,
     "Battle_PowerThrust_kC": 0.067,
+    "Battle_PowerThrust_ThrustHitWithArmDamageMultiplier": 0.15,
+    "Battle_PowerThrust_NonTipThrustHitDamageMultiplier": 0.15,
+
+  "Battle_RealisticBallistics": false,
+    "Battle_RealisticBallistics_ConsistantArrowSpeed": false,
+    "Battle_RealisticBallistics_ArrowSpeedMultiplier": 1.0,
+    "Battle_RealisticBallistics_BoltSpeedMultiplier": 1.0,
+    "Battle_RealisticBallistics_ThrownSpeedMultiplier": 1.0,
+    "Battle_RealisticBallistics_BowAccuracyMultiplier": 1.0,
+    "Battle_RealisticBallistics_CrossbowAccuracyMultiplier": 1.0,
+    "Battle_RealisticBallistics_ThrownAccuracyMultiplier": 1.0,
+    "Battle_RealisticBallistics_AirFrictionJavelin": 0.002,
+    "Battle_RealisticBallistics_AirFrictionArrow": 0.003,
+    "Battle_RealisticBallistics_AirFrictionKnife": 0.007,
+    "Battle_RealisticBallistics_AirFrictionAxe": 0.007,
 
 
   "Strategy_ModifyRespawnParty": false,
@@ -37,6 +53,6 @@
 
   "Strategy_BanditMerger": false,
     "Strategy_BanditMerger_MergRadius": 15,
-    "Strategy_BanditMerger_MaxNumber": 100,
+    "Strategy_BanditMerger_MaxNumber": 40,
     "Strategy_BanditMerger_MaximumBanditParties": 200
 }
