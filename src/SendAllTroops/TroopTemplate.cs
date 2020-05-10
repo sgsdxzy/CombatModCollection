@@ -204,7 +204,7 @@ namespace CombatModCollection
                 harnessStrength = (float)Math.Pow(itemHarness.ArmorComponent.BodyArmor, 0.2);
             }
 
-            return (int)itemHorse.Tier * harnessStrength * 0.05f;
+            return (int)itemHorse.Tier * harnessStrength * 0.08f;
         }
     }
 }
