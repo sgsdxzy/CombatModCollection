@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using System.Reflection;
 using TaleWorlds.Core;
 
@@ -14,7 +15,55 @@ namespace CombatModCollection
 
         public static void PatchWeapon(WeaponComponentData weaponData)
         {
-            WeaponComponentData_Accuracy.SetValue(weaponData, 100);
+            switch (weaponData.WeaponClass)
+            {
+                case WeaponClass.Bow:
+                    float missileSpeed = weaponData.MissileSpeed;
+                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    {
+                        missileSpeed = weaponData.MissileDamage;
+                    }
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ArrowSpeedMultiplier;
+                    float accuracy = weaponData.Accuracy;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_BowAccuracyMultiplier;
+                    if (accuracy > 100)
+                    {
+                        accuracy = 100;
+                    }
+                    WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
+                    WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
+                    break;
+                case WeaponClass.Crossbow:
+                    missileSpeed = weaponData.MissileSpeed;
+                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    {
+                        missileSpeed = weaponData.MissileDamage;
+                    }
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_BoltSpeedMultiplier;
+                    accuracy = weaponData.Accuracy;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_CrossbowAccuracyMultiplier;
+                    if (accuracy > 100)
+                    {
+                        accuracy = 100;
+                    }
+                    WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
+                    WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
+                    break;
+                case WeaponClass.Javelin:
+                case WeaponClass.ThrowingAxe:
+                case WeaponClass.ThrowingKnife:
+                    missileSpeed = weaponData.MissileSpeed;
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ThrownSpeedMultiplier;
+                    accuracy = weaponData.Accuracy;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_ThrownAccuracyMultiplier;
+                    if (accuracy > 100)
+                    {
+                        accuracy = 100;
+                    }
+                    WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
+                    WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
+                    break;
+            }
         }
     }
 
