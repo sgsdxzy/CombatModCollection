@@ -10,7 +10,7 @@ namespace CombatModCollection
     public class TroopTemplate
     {
         private static readonly ConcurrentDictionary<MBGUID, TroopTemplate> CachedTemplates = new ConcurrentDictionary<MBGUID, TroopTemplate>();
-        private static readonly float AmmoMultiplier = 2.0f;
+        private static readonly float AmmoMultiplier = 1.0f;
 
         public readonly List<Weapon> Weapons = new List<Weapon>(4);
         public readonly Item Shield = null;
@@ -38,7 +38,7 @@ namespace CombatModCollection
             float armorSum = equipment.GetArmArmorSum() + equipment.GetHeadArmorSum() + equipment.GetHumanBodyArmorSum() + equipment.GetLegArmorSum();
             float totalWeight = equipment.GetTotalWeightOfArmor(true) + equipment.GetTotalWeightOfWeapons();
             Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / (totalWeight + 3f) * 0.01f;
-            ArmorPoints = (float)(0.2 + Math.Pow(armorSum, 0.5) / 12.5);
+            ArmorPoints = (float)(0.3 + Math.Pow(armorSum, 0.75) / 40.0);
 
             float bestShield = 0.0f;
             for (EquipmentIndex index1 = EquipmentIndex.WeaponItemBeginSlot; index1 < EquipmentIndex.NumAllWeaponSlots; ++index1)
@@ -112,7 +112,7 @@ namespace CombatModCollection
                         {
                             float proficiency = equipmentElement1.Item.RelevantSkill == null ? 1f : 0.3f + troop.GetSkillValue(equipmentElement1.Item.RelevantSkill) / 300.0f * 0.7f;
                             float strength = GetRangedWeaponStrength(equipmentElement1.Item) * proficiency;
-                            int numAmmo = 0;
+                            float numAmmo = 0;
                             float ammoStrength = 0;
                             for (EquipmentIndex index2 = EquipmentIndex.WeaponItemBeginSlot; index2 < EquipmentIndex.NumAllWeaponSlots; ++index2)
                             {
@@ -126,9 +126,13 @@ namespace CombatModCollection
                             }
                             if (numAmmo > 0)
                             {
+                                if (equipmentElement1.Item.Type == ItemObject.ItemTypeEnum.Crossbow)
+                                {
+                                    numAmmo *= 1.5f;
+                                }
                                 Weapon weapon = new Weapon
                                 {
-                                    Range = 2,
+                                    Range = 3,
                                     IsTwohanded = true,
                                     HasLimitedAmmo = true,
                                     RemainingAmmo = (int)Math.Round(numAmmo * AmmoMultiplier)

@@ -26,11 +26,17 @@ namespace CombatModCollection
                     mapEventState.IsSiege = mapEvent.IsSiegeAssault;
                     if (mapEvent.IsSiegeAssault)
                     {
-                        mapEventState.BattleScale = 3;
+                        mapEventState.BattleScale = 4;
                     }
                     else
                     {
-                        mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
+                        if (mapEvent.GetNumberOfInvolvedMen() > 100)
+                        {
+                            mapEventState.BattleScale = 3;
+                        } else
+                        {
+                            mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
+                        }                           
                     }
                 }
             }
