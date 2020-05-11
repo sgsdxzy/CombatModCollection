@@ -7,7 +7,7 @@ namespace CombatModCollection
 {
     public class TroopState
     {
-        public readonly string Name;
+        // public readonly string Name;
         private readonly PartyState partyState;
         private readonly bool IsHero;
         private readonly int TotalCount;
@@ -32,15 +32,9 @@ namespace CombatModCollection
         private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
 
-        /* Debug
-        static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt");
-        static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt");
-        static System.IO.StreamWriter damageFile = new System.IO.StreamWriter(@"D:\Damages.txt");
-        */
-
         public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
         {
-            Name = troop.Name.ToString();
+            // Name = troop.Name.ToString();
             partyState = _partyState;
             IsHero = troop.IsHero;
             TotalCount = count;
@@ -155,13 +149,6 @@ namespace CombatModCollection
             }
 
             IsUsingRanged = ChosenWeapon.IsRanged;
-
-            /*
-            string debugString = Name + " is using (" + _preparedAttack.Melee + " "
-                + _preparedAttack.Missile + " " + _preparedAttack.Polearm + ")";
-            weaponFile.WriteLine(debugString);
-            weaponFile.Flush();
-            */
         }
 
         private float GetWeaponPreference(Weapon weapon)
@@ -274,13 +261,6 @@ namespace CombatModCollection
                 }
 
                 damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
-
-                /*
-                string debugString = Name + " defense is (" + ArmorPoints + " " + meleeDefense + " "
-                + missileDefense + " " + polearmDefense + ")";
-                defenseFile.WriteLine(debugString);
-                defenseFile.Flush();
-                */
             }
             else
             {
@@ -312,13 +292,6 @@ namespace CombatModCollection
             AccumulatedDamage += damage * Alive;
             _expectedHits = Alive - 1;
             CalculateExpectedDeathCounts(damage);
-
-            /*
-            string damageString = Name + " took damage " + damage + " " + AccumulatedDamage + " " 
-                + TotalCount + " " + CurrentDeathCount + " " + ExpectedDeathCount;
-            damageFile.WriteLine(damageString);
-            damageFile.Flush();
-            */
 
             if (ExpectedDeathCount > CurrentDeathCount)
             {
