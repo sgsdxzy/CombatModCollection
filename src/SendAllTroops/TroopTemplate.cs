@@ -21,6 +21,11 @@ namespace CombatModCollection
 
         public static TroopTemplate GetTroopTemplate(CharacterObject troop)
         {
+            if (troop.IsHero)
+            {
+                return new TroopTemplate(troop);
+            }
+
             if (!CachedTemplates.TryGetValue(troop.Id, out TroopTemplate template))
             {
                 CachedTemplates[troop.Id] = new TroopTemplate(troop);
