@@ -85,14 +85,24 @@ namespace CombatModCollection
 
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
-
-            float siegePenalty = 1.0f;
-            if (__instance.IsSiegeAssault && attackerNumber > defenderNumber)
+           
+            float attackerNumberPenalty = 1.0f;
+            float defenderNumberPenalty = 1.0f;
+            if (attackerNumber > defenderNumber)
             {
-                siegePenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.5);
+                if (__instance.IsSiegeAssault)
+                {
+                    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.5);
+                } else
+                {
+                    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.2);
+                }
+            } else
+            {
+                defenderNumberPenalty = (float)Math.Pow((double)attackerNumber / defenderNumber, 0.2);
             }
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * DamageMultiplier / defenderNumber * strikerAdvantage * siegePenalty;
-            AttackComposition defenderDistributedAttack = defenderTotalAttack * DamageMultiplier / attackerNumber;
+            AttackComposition attackerDistributedAttack = attackerTotalAttack * (DamageMultiplier / defenderNumber * strikerAdvantage * attackerNumberPenalty);
+            AttackComposition defenderDistributedAttack = defenderTotalAttack * (DamageMultiplier / attackerNumber * defenderNumberPenalty);
 
             bool finishedAnyone = false;
             finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttack, out float attackerTotalDamageDone);
