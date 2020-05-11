@@ -84,7 +84,7 @@ namespace CombatModCollection
                 if (partyState.mapEventState.GateBreached)
                 {
                     attack.Melee *= (1 + Atheletics);
-                    attack.Polearm *= (1 + Atheletics);
+                    attack.Polearm *= (1 + Atheletics) * 0.8f;
                 }
                 else
                 {
@@ -98,7 +98,7 @@ namespace CombatModCollection
                     {
                         attack.Melee *= (1 + Atheletics);
                         attack.Missile *= 1.2f;
-                        attack.Polearm *= (1 + Atheletics);
+                        attack.Polearm *= (1 + Atheletics) * 0.8f;
                     }
                 }
             }
@@ -242,7 +242,7 @@ namespace CombatModCollection
                 if (IsUsingShield && Shield != null)
                 {
                     meleeDefense += Shield.Strength;
-                    missileDefense += 4 * Shield.Strength;
+                    missileDefense += 6 * Shield.Strength;
                     polearmDefense += Shield.Strength;
                 }
                 if (Horse != null && !partyState.mapEventState.IsSiege)
