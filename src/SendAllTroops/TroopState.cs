@@ -32,7 +32,7 @@ namespace CombatModCollection
         private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
 
-        /* Debug 
+        /* Debug
         static System.IO.StreamWriter weaponFile = new System.IO.StreamWriter(@"D:\WeaponChoices.txt");
         static System.IO.StreamWriter defenseFile = new System.IO.StreamWriter(@"D:\Defenses.txt");
         static System.IO.StreamWriter damageFile = new System.IO.StreamWriter(@"D:\Damages.txt");
@@ -139,7 +139,7 @@ namespace CombatModCollection
                     if (attack.Sum() * preference > highest)
                     {
                         _preparedAttack = attack;
-                        highest = attack.Sum();
+                        highest = attack.Sum() * preference;
                         ChosenWeapon = weapon;
                     }
                 }
