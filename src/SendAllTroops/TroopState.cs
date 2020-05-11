@@ -157,25 +157,25 @@ namespace CombatModCollection
             {
                 if (weapon.IsRanged)
                 {
-                    return 1.5f;
+                    return 2.0f;
                 }
             }
             else
             {
                 if (weapon.IsRanged)
                 {
-                    return 1.2f;
+                    return 1.5f;
                 }
             }
 
             float preference = 1.0f;
             if (weapon.Attack.Polearm > 0)
             {
-                preference *= 1.2f;
+                preference *= 1.1f;
             }
             if (Shield != null && !weapon.IsTwohanded)
             {
-                preference *= 1.2f;
+                preference *= 1 + 2 * Shield.Strength / ArmorPoints;
             }
 
             return preference;
