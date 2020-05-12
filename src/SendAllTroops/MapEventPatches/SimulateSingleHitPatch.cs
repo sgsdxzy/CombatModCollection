@@ -13,7 +13,8 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 5f;
+        private static readonly float DamageMultiplier = 2.5f;
+        private static readonly float RangedAverageDamagePerHit = 6.0f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
@@ -74,35 +75,35 @@ namespace CombatModCollection
             MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
             IBattleObserver battleObserver = (IBattleObserver)MapEvent_BattleObserver.GetValue(__instance);
 
+            int attackerNumber = attackerSide.NumRemainingSimulationTroops;
+            int defenderNumber = defenderSide.NumRemainingSimulationTroops;
+
+            float battleSpeedMultiplier = DamageMultiplier;
+            if (SubModule.Settings.Battle_SendAllTroops_StrengthInNumber != 0.6f)
+            {
+                double biggerPartyNumber = Math.Max(attackerNumber, defenderNumber);
+                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - SubModule.Settings.Battle_SendAllTroops_StrengthInNumber);
+            }
+
+            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, SubModule.Settings.Battle_SendAllTroops_StrengthInNumber - 1.0);
+            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, SubModule.Settings.Battle_SendAllTroops_StrengthInNumber - 1.0);
+
             foreach (var party in attackerSide.Parties)
             {
-                attackerTotalAttack += mapEventState.GetPartyAttack(party);
+                attackerTotalAttack += mapEventState.MakePartyAttack(party, battleSpeedMultiplier * attackerNumberPenalty / RangedAverageDamagePerHit);
             }
             foreach (var party in defenderSide.Parties)
             {
-                defenderTotalAttack += mapEventState.GetPartyAttack(party);
+                defenderTotalAttack += mapEventState.MakePartyAttack(party, battleSpeedMultiplier * defenderNumberPenalty / RangedAverageDamagePerHit);
             }
 
-            int attackerNumber = attackerSide.NumRemainingSimulationTroops;
-            int defenderNumber = defenderSide.NumRemainingSimulationTroops;
-           
-            float attackerNumberPenalty = 1.0f;
-            float defenderNumberPenalty = 1.0f;
-            if (attackerNumber > defenderNumber)
-            {
-                if (__instance.IsSiegeAssault)
-                {
-                    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.5);
-                } else
-                {
-                    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.2);
-                }
-            } else
-            {
-                defenderNumberPenalty = (float)Math.Pow((double)attackerNumber / defenderNumber, 0.2);
-            }
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * (DamageMultiplier / defenderNumber * strikerAdvantage * attackerNumberPenalty);
-            AttackComposition defenderDistributedAttack = defenderTotalAttack * (DamageMultiplier / attackerNumber * defenderNumberPenalty);
+            //if (__instance.IsSiegeAssault)
+            //{
+            //    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.6);
+            //}
+
+            AttackComposition attackerDistributedAttack = attackerTotalAttack * (battleSpeedMultiplier * attackerNumberPenalty / defenderNumber * strikerAdvantage);
+            AttackComposition defenderDistributedAttack = defenderTotalAttack * (battleSpeedMultiplier * defenderNumberPenalty / attackerNumber);
 
             bool finishedAnyone = false;
             finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttack, out float attackerTotalDamageDone);

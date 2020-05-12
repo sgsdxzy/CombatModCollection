@@ -16,6 +16,7 @@
         public bool Battle_SendAllTroops { get; set; } = false;
         public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;
         public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = false;
+        public float Battle_SendAllTroops_StrengthInNumber { get; set; } = 0.6f;
         public float Battle_SendAllTroops_CombatSpeed { get; set; } = 1.0f;
         public float Battle_SendAllTroops_XPMultiplier { get; set; } = 1.0f;
 

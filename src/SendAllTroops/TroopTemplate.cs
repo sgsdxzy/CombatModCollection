@@ -264,7 +264,7 @@ namespace CombatModCollection
             float num1 = (float)weaponData.ThrustDamage * GetFactor(weaponData.ThrustDamageType)
                 * MathF.Pow((float)weaponData.ThrustSpeed * 0.01f, 1.5f);
             float tierf = (float)(0.072 * ((double)num1 - 3.5));
-            tierf = MathF.Clamp(tierf, 0, 10);
+            tierf = MathF.Clamp(tierf, 0, 12);
             return tierf * 0.2f + 0.8f;
         }
 
