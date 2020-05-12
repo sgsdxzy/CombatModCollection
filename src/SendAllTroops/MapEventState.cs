@@ -54,7 +54,7 @@ namespace CombatModCollection
         public int BattleScale;
         public int StageRounds;
         public bool IsDefenderRunAway = false;
-        public bool GateBreached { get { return StageRounds > 16; } }
+        public bool GateBreached { get { return StageRounds > 20; } }
 
         private PartyState GetPartyState(PartyBase party)
         {
