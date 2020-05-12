@@ -81,22 +81,16 @@ namespace CombatModCollection
             return partyState.GetCurrentStrength();
         }
 
-        public AttackComposition GetPartyAttack(PartyBase party)
+        public AttackComposition MakePartyAttack(PartyBase party, float consumption)
         {
             PartyState partyState = GetPartyState(party);
-            return partyState.GetPartyAttack();
+            return partyState.MakePartyAttack(consumption);
         }
 
         public bool ApplyDamageToPartyTroop(AttackComposition attack, PartyBase party, CharacterObject troop, out float damage)
         {
             PartyState partyState = GetPartyState(party);
             return partyState.ApplyDamageToTroop(attack, troop, out damage);
-        }
-
-        public AttackComposition GetAttack(PartyBase party, CharacterObject troop)
-        {
-            PartyState partyState = GetPartyState(party);
-            return partyState.GetAttack(troop);
         }
     }
 }

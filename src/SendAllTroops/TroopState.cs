@@ -181,7 +181,7 @@ namespace CombatModCollection
             return preference;
         }
 
-        public AttackComposition DoSingleAttack()
+        private AttackComposition MakeSingleAttack(float consumption)
         {
             if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
@@ -194,14 +194,14 @@ namespace CombatModCollection
             }
             if (ChosenWeapon.HasLimitedAmmo && !partyState.mapEventState.IsSiege)
             {
-                ChosenWeapon.RemainingAmmo -= 1;
+                ChosenWeapon.RemainingAmmo -= consumption;
             }
             return _preparedAttack;
         }
 
-        public AttackComposition DoTotalAttack()
+        public AttackComposition MakeTotalAttack(float consumption)
         {
-            return DoSingleAttack() * Alive;
+            return MakeSingleAttack(consumption) * Alive;
         }
 
         public bool TakeHit(AttackComposition attack, out float damage)
@@ -314,119 +314,6 @@ namespace CombatModCollection
         {
             float totalStrength = Math.Max((TotalCount - AccumulatedDamage / HitPoints) * Strength, 0);
             return totalStrength;
-        }
-    }
-
-    public class Weapon
-    {
-        public static Weapon Fist;
-        static Weapon()
-        {
-            Weapon.Fist = new Weapon();
-            Weapon.Fist.Attack.Melee = 0.1f;
-        }
-
-        public AttackComposition Attack;
-        public int Range = 0;
-        public bool IsTwohanded = false;
-        public bool HasLimitedAmmo = false;
-        public int RemainingAmmo = 0;
-
-        public Weapon Clone()
-        {
-            return new Weapon
-            {
-                Attack = this.Attack,
-                Range = this.Range,
-                IsTwohanded = this.IsTwohanded,
-                HasLimitedAmmo = this.HasLimitedAmmo,
-                RemainingAmmo = this.RemainingAmmo
-            };
-        }
-
-        public bool IsUsable
-        {
-            get
-            {
-                if (HasLimitedAmmo && RemainingAmmo <= 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
-        public bool IsRanged
-        {
-            get
-            {
-                return Range > 0;
-            }
-        }
-    }
-
-    public class Item
-    {
-        public float Strength;
-        public float Health;
-
-        public Item Clone()
-        {
-            return new Item
-            {
-                Strength = this.Strength,
-                Health = this.Health
-            };
-        }
-    }
-
-    public struct AttackComposition
-    {
-        public float Melee;
-        public float Missile;
-        public float Polearm;
-
-        public float Sum()
-        {
-            return Melee + Missile + Polearm;
-        }
-
-        public static AttackComposition operator *(AttackComposition a, float b)
-        {
-            return new AttackComposition
-            {
-                Melee = a.Melee * b,
-                Missile = a.Missile * b,
-                Polearm = a.Polearm * b,
-            };
-        }
-
-        public static AttackComposition operator /(AttackComposition a, float b)
-        {
-            return new AttackComposition
-            {
-                Melee = a.Melee / b,
-                Missile = a.Missile / b,
-                Polearm = a.Polearm / b,
-            };
-        }
-
-        public static AttackComposition operator +(AttackComposition a, AttackComposition b)
-        {
-            return new AttackComposition
-            {
-                Melee = a.Melee + b.Melee,
-                Missile = a.Missile + b.Missile,
-                Polearm = a.Polearm + b.Polearm,
-            };
-        }
-
-        public bool Equals(AttackComposition b)
-        {
-            return Melee == b.Melee && Missile == b.Missile && Polearm == b.Polearm;
         }
     }
 }

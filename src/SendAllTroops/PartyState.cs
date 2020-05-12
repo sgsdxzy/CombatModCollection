@@ -39,30 +39,13 @@ namespace CombatModCollection
             return isFinishingBlow;
         }
 
-        public AttackComposition GetAttack(CharacterObject troop)
-        {
-            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
-            {
-                TroopState troopState = GetTroopState(troop);
-                troopState.PrepareWeapon();
-                return troopState.DoSingleAttack();
-            }
-            else
-            {
-                return new AttackComposition
-                {
-                    Melee = troop.GetPower()
-                };
-            }
-        }
-
-        public AttackComposition GetPartyAttack()
+        public AttackComposition MakePartyAttack(float consumption)
         {
             AttackComposition attack = new AttackComposition();
             foreach (var troopState in TroopStates.Values)
             {
                 troopState.PrepareWeapon();
-                attack += troopState.DoTotalAttack();
+                attack += troopState.MakeTotalAttack(consumption);
             }
             return attack;
         }
