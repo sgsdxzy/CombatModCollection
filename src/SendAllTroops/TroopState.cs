@@ -317,12 +317,16 @@ namespace CombatModCollection
 
         private void CalculateExpectedDeathCounts(float damage)
         {
+            // float hitCountsToKill = HitPoints / damage;
+            // float ratio = AccumulatedDamage / TotalCount / HitPoints;
+            // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
             ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
         }
 
         public float GetCurrentStrength()
         {
-            float totalStrength = Math.Max((TotalCount - AccumulatedDamage / HitPoints) * Strength, 0);
+            // float totalStrength = Math.Max((TotalCount - AccumulatedDamage / HitPoints) * Strength, 0);
+            float totalStrength = Alive * Strength;
             return totalStrength;
         }
     }
