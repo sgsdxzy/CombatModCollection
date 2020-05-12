@@ -42,6 +42,11 @@
         public float Battle_RealisticBallistics_BowAccuracyMultiplier { get; set; } = 1.0f;
         public float Battle_RealisticBallistics_CrossbowAccuracyMultiplier { get; set; } = 1.0f;
         public float Battle_RealisticBallistics_ThrownAccuracyMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_BowDamageMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_CrossbowDamageMultiplier { get; set; } = 1.0f;
+        public float Battle_RealisticBallistics_ThrownDamageMultiplier { get; set; } = 1.0f;
+        public bool Battle_RealisticBallistics_BowToCut { get; set; } = false;
+        public bool Battle_RealisticBallistics_CrossbowToCut { get; set; } = false;
         public float Battle_RealisticBallistics_AirFrictionJavelin { get; set; } = 0.002f;
         public float Battle_RealisticBallistics_AirFrictionArrow { get; set; } = 0.003f;
         public float Battle_RealisticBallistics_AirFrictionKnife { get; set; } = 0.007f;
