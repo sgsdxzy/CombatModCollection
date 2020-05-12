@@ -20,7 +20,7 @@ namespace CombatModCollection
         public readonly float ArmorPoints;
         public readonly float Strength;
 
-        // private static System.IO.StreamWriter templateFile = new System.IO.StreamWriter(@"D:\TroopTemplates.txt");
+        //private static System.IO.StreamWriter templateFile = new System.IO.StreamWriter(@"D:\TroopTemplates.txt");
 
         public static TroopTemplate GetTroopTemplate(CharacterObject troop)
         {
@@ -74,11 +74,11 @@ namespace CombatModCollection
                             registered.Add(index1);
                         }
                         //templateFile.WriteLine(String.Format("Shield: {0} {1:G3}*{2:G3}={3:G3}",
-                        //    equipmentElement1.Item.Name, strength, proficiency, strength * proficiency));
+                        //    equipment1.Item.Name, strength, proficiency, strength * proficiency));
                     }
                     else if (equipment1.Item.PrimaryWeapon.IsMeleeWeapon)
                     {
-                        //templateFile.WriteLine("Melee Weapon: " + equipmentElement1.Item.Name);
+                        //templateFile.WriteLine("Melee Weapon: " + equipment1.Item.Name);
                         foreach (var weaponData in equipment1.Item.Weapons)
                         {
                             float proficiency = GetProficiency(troop, weaponData.RelevantSkill);
@@ -140,7 +140,7 @@ namespace CombatModCollection
                                 }
                             }
                             //templateFile.WriteLine(String.Format("Thrown: {0}*{1} {2:G3}*{3:G3}={4:G3}",
-                            //    equipmentElement1.Item.Name, numAmmo, strength, proficiency, strength * proficiency));
+                                //equipment1.Item.Name, numAmmo, strength, proficiency, strength * proficiency));
                             Weapon weapon = new Weapon
                             {
                                 Range = 1,
@@ -190,7 +190,7 @@ namespace CombatModCollection
                                 Weapons.Add(weapon);
                                 registered.Add(index1);
                                 //templateFile.WriteLine(String.Format("Ranged: {0}*{1} ({2:G3}+{3:G3})*{4:G3}={5:G3}",
-                                //    equipmentElement1.Item.Name, numAmmo, strength, ammoStrength, proficiency, (strength + ammoStrength) * proficiency));
+                                //    equipment1.Item.Name, numAmmo, strength, ammoStrength, proficiency, (strength + ammoStrength) * proficiency));
                             }
                         }
                     }
