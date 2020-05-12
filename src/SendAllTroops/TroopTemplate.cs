@@ -52,29 +52,34 @@ namespace CombatModCollection
             //templateFile.WriteLine("Atheletics: " + Atheletics);
             //templateFile.WriteLine("ArmorPoints: " + ArmorPoints);
 
+            List<EquipmentIndex> registered = new List<EquipmentIndex>(4);
             float bestShield = 0;
             for (EquipmentIndex index1 = EquipmentIndex.WeaponItemBeginSlot; index1 < EquipmentIndex.NumAllWeaponSlots; ++index1)
             {
-                EquipmentElement equipmentElement1 = equipment[index1];
-                if (!equipmentElement1.IsEmpty)
+                if (registered.Contains(index1))
                 {
-                    if (equipmentElement1.Item.PrimaryWeapon.IsShield)
+                    continue;
+                }
+                EquipmentElement equipment1 = equipment[index1];
+                if (!equipment1.IsEmpty)
+                {
+                    if (equipment1.Item.PrimaryWeapon.IsShield)
                     {
-                        float proficiency = GetProficiency(troop, equipmentElement1.Item.RelevantSkill);
-                        float strength = GetShieldStrength(equipmentElement1.Item);
+                        float proficiency = GetProficiency(troop, equipment1.Item.RelevantSkill);
+                        float strength = GetShieldStrength(equipment1.Item);
                         if (strength * proficiency > bestShield)
                         {
                             bestShield = strength * proficiency;
                             Shield = new Item { Strength = strength * proficiency };
+                            registered.Add(index1);
                         }
-
                         //templateFile.WriteLine(String.Format("Shield: {0} {1:G3}*{2:G3}={3:G3}",
                         //    equipmentElement1.Item.Name, strength, proficiency, strength * proficiency));
                     }
-                    else if (equipmentElement1.Item.PrimaryWeapon.IsMeleeWeapon)
+                    else if (equipment1.Item.PrimaryWeapon.IsMeleeWeapon)
                     {
                         //templateFile.WriteLine("Melee Weapon: " + equipmentElement1.Item.Name);
-                        foreach (var weaponData in equipmentElement1.Item.Weapons)
+                        foreach (var weaponData in equipment1.Item.Weapons)
                         {
                             float proficiency = GetProficiency(troop, weaponData.RelevantSkill);
                             float strength = GetMeleeWeaponStrength(weaponData);
@@ -112,44 +117,65 @@ namespace CombatModCollection
                             }
                             Weapons.Add(weapon);
                         }
+                        registered.Add(index1);
                     }
-                    else if (equipmentElement1.Item.PrimaryWeapon.IsRangedWeapon)
+                    else if (equipment1.Item.PrimaryWeapon.IsRangedWeapon)
                     {
-                        if (equipmentElement1.Item.Type == ItemObject.ItemTypeEnum.Thrown)
+                        if (equipment1.Item.Type == ItemObject.ItemTypeEnum.Thrown)
                         {
-                            float proficiency = GetProficiency(troop, equipmentElement1.Item.RelevantSkill);
-                            float strength = GetThrownWeaponStrength(equipmentElement1.Item.PrimaryWeapon);
-                            //templateFile.WriteLine(String.Format("Thrown: {0} {1:G3}*{2:G3}={3:G3}",
-                            //    equipmentElement1.Item.Name, strength, proficiency, strength * proficiency));
+                            float proficiency = GetProficiency(troop, equipment1.Item.RelevantSkill);
+                            float strength = GetThrownWeaponStrength(equipment1.Item.PrimaryWeapon);
+                            float numAmmo = equipment1.Item.PrimaryWeapon.MaxDataValue;
+                            for (EquipmentIndex index2 = index1 + 1; index2 < EquipmentIndex.NumAllWeaponSlots; ++index2)
+                            {
+                                if (registered.Contains(index2))
+                                {
+                                    continue;
+                                }
+                                EquipmentElement equipment2 = equipment[index2];
+                                if (!equipment2.IsEmpty && equipment1.Item.Id == equipment2.Item.Id)
+                                {
+                                    numAmmo += equipment2.Item.PrimaryWeapon.MaxDataValue;
+                                    registered.Add(index2);
+                                }
+                            }
+                            //templateFile.WriteLine(String.Format("Thrown: {0}*{1} {2:G3}*{3:G3}={4:G3}",
+                            //    equipmentElement1.Item.Name, numAmmo, strength, proficiency, strength * proficiency));
                             Weapon weapon = new Weapon
                             {
                                 Range = 1,
                                 IsTwohanded = false,
                                 HasLimitedAmmo = true,
-                                RemainingAmmo = (int)Math.Round(equipmentElement1.Item.PrimaryWeapon.MaxDataValue * AmmoMultiplier)
+                                RemainingAmmo = (int)Math.Round(numAmmo * AmmoMultiplier)
                             };
                             weapon.Attack.Missile = strength * proficiency;
                             Weapons.Add(weapon);
+                            registered.Add(index1);
                         }
                         else
                         {
-                            float proficiency = GetProficiency(troop, equipmentElement1.Item.RelevantSkill);
-                            float strength = GetRangedWeaponStrength(equipmentElement1.Item);
+                            float proficiency = GetProficiency(troop, equipment1.Item.RelevantSkill);
+                            float strength = GetRangedWeaponStrength(equipment1.Item);
                             float numAmmo = 0;
                             float ammoStrength = 0;
                             for (EquipmentIndex index2 = EquipmentIndex.WeaponItemBeginSlot; index2 < EquipmentIndex.NumAllWeaponSlots; ++index2)
                             {
-                                EquipmentElement equipmentElement2 = equipment[index2];
-                                if (index1 != index2 && !equipmentElement2.IsEmpty
-                                    && equipmentElement1.Item.WeaponComponent.PrimaryWeapon.AmmoClass == equipmentElement2.Item.WeaponComponent.PrimaryWeapon.WeaponClass)
+                                if (registered.Contains(index2))
                                 {
-                                    numAmmo += equipmentElement2.Item.PrimaryWeapon.MaxDataValue;
-                                    ammoStrength = GetRangedAmmoStrength(equipmentElement2.Item);
+                                    continue;
+                                }
+                                EquipmentElement equipment2 = equipment[index2];
+                                if (index1 != index2 && !equipment2.IsEmpty
+                                    && equipment1.Item.WeaponComponent.PrimaryWeapon.AmmoClass == equipment2.Item.WeaponComponent.PrimaryWeapon.WeaponClass)
+                                {
+                                    numAmmo += equipment2.Item.PrimaryWeapon.MaxDataValue;
+                                    ammoStrength = GetRangedAmmoStrength(equipment2.Item);
+                                    registered.Add(index2);
                                 }
                             }
                             if (numAmmo > 0)
                             {
-                                if (equipmentElement1.Item.Type == ItemObject.ItemTypeEnum.Crossbow)
+                                if (equipment1.Item.Type == ItemObject.ItemTypeEnum.Crossbow)
                                 {
                                     numAmmo *= 1.5f;
                                 }
@@ -162,8 +188,9 @@ namespace CombatModCollection
                                 };
                                 weapon.Attack.Missile = (strength + ammoStrength) * proficiency;
                                 Weapons.Add(weapon);
-                                //templateFile.WriteLine(String.Format("Ranged: {0} ({1:G3}+{2:G3})*{3:G3}={4:G3}",
-                                //    equipmentElement1.Item.Name, strength, ammoStrength, proficiency, (strength + ammoStrength) * proficiency));
+                                registered.Add(index1);
+                                //templateFile.WriteLine(String.Format("Ranged: {0}*{1} ({2:G3}+{3:G3})*{4:G3}={5:G3}",
+                                //    equipmentElement1.Item.Name, numAmmo, strength, ammoStrength, proficiency, (strength + ammoStrength) * proficiency));
                             }
                         }
                     }
@@ -187,6 +214,10 @@ namespace CombatModCollection
             foreach (var weapon in Weapons)
             {
                 float weaponStrength = weapon.Attack.Sum();
+                if (weapon.HasLimitedAmmo && weapon.RemainingAmmo < 10)
+                {
+                    weaponStrength *= weapon.RemainingAmmo / 10.0f;
+                }
                 if (weaponStrength > bestWeaponStrength)
                 {
                     bestWeaponStrength = weaponStrength;
@@ -232,7 +263,7 @@ namespace CombatModCollection
             }
             float num1 = (float)weaponData.ThrustDamage * GetFactor(weaponData.ThrustDamageType)
                 * MathF.Pow((float)weaponData.ThrustSpeed * 0.01f, 1.5f);
-            float tierf = (float)(0.045 * ((double)num1 - 3.5));
+            float tierf = (float)(0.072 * ((double)num1 - 3.5));
             tierf = MathF.Clamp(tierf, 0, 10);
             return tierf * 0.2f + 0.8f;
         }
