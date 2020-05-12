@@ -58,7 +58,7 @@
 
         public bool Strategy_BanditMerger { get; set; } = false;
         public float Strategy_BanditMerger_MergRadius { get; set; } = 15f;
-        public float Strategy_BanditMerger_MaxNumber { get; set; } = 100f;
+        public float Strategy_BanditMerger_MaxNumber { get; set; } = 40f;
         public float Strategy_BanditMerger_MaximumBanditParties { get; set; } = 300f;
     }
 }
