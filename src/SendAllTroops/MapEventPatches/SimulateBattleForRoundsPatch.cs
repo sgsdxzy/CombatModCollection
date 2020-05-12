@@ -17,7 +17,7 @@ namespace CombatModCollection
                 rounds *= 0.4f;
             }
             rounds = Math.Max(rounds, 1);
-            simulationRoundsDefender = 0; // rounds;
+            simulationRoundsDefender = 0;
             simulationRoundsAttacker = (int)Math.Round(rounds); 
         }
 

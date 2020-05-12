@@ -267,9 +267,9 @@ namespace CombatModCollection
                 damage = attack.Melee / Strength;
             }
 
-            if (!SubModule.Settings.Battle_SendAllTroops_AbsoluteZeroRandomness)
+            if (SubModule.Settings.Battle_SendAllTroops_RandomDamage)
             {
-                damage *= MBRandom.RandomFloat * 2f;
+                damage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
             }
             _cachedHitDamage = damage;
 
@@ -289,9 +289,22 @@ namespace CombatModCollection
             }
 
             // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks
-            AccumulatedDamage += damage * Alive;
-            _expectedHits = Alive - 1;
-            CalculateExpectedDeathCounts(damage);
+            if (SubModule.Settings.Battle_SendAllTroops_RandomDeath)
+            {
+                for (int i = 0; i < Alive; i++)
+                {
+                    if (MBRandom.RandomFloat * HitPoints < damage)
+                    {
+                        ExpectedDeathCount += 1;
+                    }
+                }
+
+            } else
+            {                
+                AccumulatedDamage += damage * Alive;
+                CalculateExpectedDeathCounts(damage);
+            }          
+            _expectedHits = Alive - 1;           
 
             if (ExpectedDeathCount > CurrentDeathCount)
             {
@@ -304,9 +317,6 @@ namespace CombatModCollection
 
         private void CalculateExpectedDeathCounts(float damage)
         {
-            // float hitCountsToKill = HitPoints / damage;
-            // float ratio = AccumulatedDamage / TotalCount / HitPoints;
-            // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
             ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
         }
 

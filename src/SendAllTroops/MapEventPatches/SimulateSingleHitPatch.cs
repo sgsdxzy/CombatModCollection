@@ -13,8 +13,8 @@ namespace CombatModCollection
         private static readonly PropertyInfo MapEvent_BattleObserver = typeof(MapEvent).GetProperty(
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-        private static readonly float DamageMultiplier = 2.5f;
-        private static readonly float RangedAverageDamagePerHit = 6.0f;
+        private static readonly float DamageMultiplier = 5.0f;
+        private static readonly float RangedAverageDamagePerHit = 10.0f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
@@ -79,14 +79,14 @@ namespace CombatModCollection
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
 
             float battleSpeedMultiplier = DamageMultiplier;
-            if (SubModule.Settings.Battle_SendAllTroops_StrengthInNumber != 0.6f)
+            if (SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber != 0.6f)
             {
                 double biggerPartyNumber = Math.Max(attackerNumber, defenderNumber);
-                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - SubModule.Settings.Battle_SendAllTroops_StrengthInNumber);
+                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber);
             }
 
-            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, SubModule.Settings.Battle_SendAllTroops_StrengthInNumber - 1.0);
-            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, SubModule.Settings.Battle_SendAllTroops_StrengthInNumber - 1.0);
+            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber - 1.0);
+            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber - 1.0);
 
             foreach (var party in attackerSide.Parties)
             {

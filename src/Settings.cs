@@ -14,9 +14,10 @@
         public float Battle_SurviveByArmor_ArmorValueThreshold { get; set; } = 100f;
 
         public bool Battle_SendAllTroops { get; set; } = false;
-        public bool Battle_SendAllTroops_AbsoluteZeroRandomness { get; set; } = false;
+        public bool Battle_SendAllTroops_RandomDamage { get; set; } = false;
+        public bool Battle_SendAllTroops_RandomDeath { get; set; } = false;      
         public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = false;
-        public float Battle_SendAllTroops_StrengthInNumber { get; set; } = 0.6f;
+        public float Battle_SendAllTroops_StrengthOfNumber { get; set; } = 0.6f;
         public float Battle_SendAllTroops_CombatSpeed { get; set; } = 1.0f;
         public float Battle_SendAllTroops_XPMultiplier { get; set; } = 1.0f;
 
