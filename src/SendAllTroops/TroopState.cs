@@ -75,24 +75,32 @@ namespace CombatModCollection
             var attack = weapon.Attack;
             if (partyState.mapEventState.IsSiege)
             {
-                if (partyState.mapEventState.GateBreached)
+                attack.Melee *= (1 + Atheletics);
+                attack.Polearm *= (1 + Atheletics) * 0.7f;
+                if (!partyState.mapEventState.GateBreached)
                 {
-                    attack.Melee *= (1 + Atheletics);
-                    attack.Polearm *= (1 + Atheletics) * 0.8f;
+                    if (partyState.IsAttacker)
+                    {
+                        attack.Melee *= 1 - partyState.mapEventState.MeleePenaltyForAttacker;
+                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Polearm *= 1 - partyState.mapEventState.MeleePenaltyForAttacker;
+                    }
+                    else
+                    {
+                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.25f;
+                    }
                 }
                 else
                 {
                     if (partyState.IsAttacker)
                     {
-                        attack.Melee *= (1 + Atheletics) * 0.7f;
-                        attack.Missile *= 0.8f;
-                        attack.Polearm *= (1 + Atheletics) * 0.5f;
+                        attack.Melee *= 1 - partyState.mapEventState.MeleePenaltyForAttacker / 2;
+                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Polearm *= 1 - partyState.mapEventState.MeleePenaltyForAttacker / 2;
                     }
                     else
                     {
-                        attack.Melee *= (1 + Atheletics);
-                        attack.Missile *= 1.2f;
-                        attack.Polearm *= (1 + Atheletics) * 0.8f;
+                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.25f;
                     }
                 }
             }

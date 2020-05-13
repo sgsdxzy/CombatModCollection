@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CombatModCollection.SendAllTroops;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -122,8 +123,13 @@ namespace CombatModCollection
                 defenderTotalAttack += mapEventState.MakePartyAttack(party, battleSpeedMultiplier * defenderNumberPenalty / RangedAverageDamagePerHit);
             }
 
-            AttackComposition attackerDistributedAttack = attackerTotalAttack * (battleSpeedMultiplier * attackerNumberPenalty / defenderNumber * strikerAdvantage);
-            AttackComposition defenderDistributedAttack = defenderTotalAttack * (battleSpeedMultiplier * defenderNumberPenalty / attackerNumber);
+            float attackerAdvantage = BattleAdvantageModel.PartyBattleAdvantage(attackerSide.LeaderParty);
+            float defenderAdvantage = BattleAdvantageModel.PartyBattleAdvantage(defenderSide.LeaderParty);
+
+            AttackComposition attackerDistributedAttack = attackerTotalAttack
+                * (battleSpeedMultiplier * attackerNumberPenalty * attackerAdvantage * mapEventState.SettlementPenalty / defenderNumber);
+            AttackComposition defenderDistributedAttack = defenderTotalAttack
+                * (battleSpeedMultiplier * defenderNumberPenalty * defenderAdvantage / attackerNumber);
 
             bool finishedAnyone = false;
             finishedAnyone |= StrikeOnce(__instance, battleObserver, attackerSide, defenderSide, attackerDistributedAttack, out float attackerTotalDamageDone);

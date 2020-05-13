@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using CombatModCollection.SendAllTroops;
+using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -17,28 +19,8 @@ namespace CombatModCollection
         {
             if (!AllMapEventStates.TryGetValue(mapEvent.Id, out MapEventState mapEventState))
             {
-                mapEventState = new MapEventState();
+                mapEventState = new MapEventState(mapEvent);
                 AllMapEventStates[mapEvent.Id] = mapEventState;
-                if (SubModule.Settings.Battle_SendAllTroops)
-                {
-                    mapEventState.StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
-                    mapEventState.IsSiege = mapEvent.IsSiegeAssault;
-                    if (mapEvent.IsSiegeAssault)
-                    {
-                        mapEventState.BattleScale = 4;
-                    }
-                    else
-                    {
-                        if (mapEvent.GetNumberOfInvolvedMen() > 100)
-                        {
-                            mapEventState.BattleScale = 3;
-                        }
-                        else
-                        {
-                            mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
-                        }
-                    }
-                }
             }
             return mapEventState;
         }
@@ -51,13 +33,81 @@ namespace CombatModCollection
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
         public bool IsSiege = false;
-        public int WallLevel = 0;
-        public int Ram = 0;
-        public int SiegeTower = 0;
+        public float SettlementPenalty = 1;
+
+        // For DetailedCombatModel
         public int BattleScale;
         public int StageRounds;
+        public readonly int WallLevel;
+        public readonly float MeleePenaltyForAttacker;
+        private readonly int NumberOfRoundsBeforeGateBreach;
+        public bool GateBreached { get { return StageRounds > NumberOfRoundsBeforeGateBreach; } }
+
+        // For LearnToQuit
         public bool IsDefenderRunAway = false;
-        public bool GateBreached { get { return StageRounds > 30; } }
+
+        private MapEventState(MapEvent mapEvent)
+        {
+            if (SubModule.Settings.Battle_SendAllTroops)
+            {
+                StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
+                IsSiege = mapEvent.IsSiegeAssault;
+                if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+                {
+                    if (IsSiege)
+                    {
+                        BattleScale = 4;
+                        WallLevel = mapEvent.MapEventSettlement.Town.GetWallLevel();
+
+                        int Ram = 0;
+                        int SiegeTower = 0;
+                        int Other = 0;
+                        foreach (SiegeEvent.SiegeEngineConstructionProgress allSiegeEngine in mapEvent.MapEventSettlement.SiegeEvent.GetSiegeEventSide(BattleSideEnum.Attacker).SiegeEngines.AllSiegeEngines())
+                        {
+                            if (allSiegeEngine.IsConstructed)
+                            {
+                                if (allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.Ram)
+                                    Ram += 1;
+                                else if (allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.SiegeTower)
+                                    SiegeTower += 1;
+                                else if (allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.Trebuchet || allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.Onager || allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.Ballista)
+                                    Other += 1;
+                                else if (allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.FireOnager || allSiegeEngine.SiegeEngine == DefaultSiegeEngineTypes.FireBallista)
+                                    Other += 1;
+                            }
+                        }
+                        if (mapEvent.MapEventSettlement.SettlementTotalWallHitPoints < 1e-5)
+                        {
+                            NumberOfRoundsBeforeGateBreach = 5 + BattleScale;
+                        }
+                        else
+                        {
+                            NumberOfRoundsBeforeGateBreach = Math.Max(WallLevel * 10 - Ram * 15 - SiegeTower * 5 - Other * 3, 0) + 10 + BattleScale;
+                        }
+
+                        MeleePenaltyForAttacker = WallLevel * 0.3f - SiegeTower * 0.15f;
+                    }
+                    else
+                    {
+                        if (mapEvent.GetNumberOfInvolvedMen() > 100)
+                        {
+                            BattleScale = 3;
+                        }
+                        else
+                        {
+                            BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
+                        }
+                    }
+                }
+                else
+                {
+                    if (IsSiege)
+                    {
+                        SettlementPenalty = 1.0f / BattleAdvantageModel.GetSettlementAdvantage(mapEvent.MapEventSettlement);
+                    }
+                }
+            }
+        }
 
         private PartyState GetPartyState(PartyBase party)
         {
