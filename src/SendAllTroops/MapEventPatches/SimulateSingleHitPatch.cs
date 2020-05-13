@@ -78,15 +78,37 @@ namespace CombatModCollection
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
 
-            float battleSpeedMultiplier = DamageMultiplier;
-            if (SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber != 0.6f)
+            float strengthOfNumber;
+            if (mapEventState.IsSiege)
             {
+                if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+                {
+                    if (mapEventState.GateBreached)
+                    {
+                        strengthOfNumber = (SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber 
+                            + SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber) / 2;
+                    } else
+                    {
+                        strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                    }                   
+                } else
+                {
+                    strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                }                
+            } else
+            {
+                strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber;
+            }
+            float battleSpeedMultiplier = DamageMultiplier;
+            if (strengthOfNumber != 0.6f)
+            {
+                // Normalized battle speed to that of 0.6
                 double biggerPartyNumber = Math.Max(attackerNumber, defenderNumber);
-                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber);
+                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - strengthOfNumber);
             }
 
-            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber - 1.0);
-            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber - 1.0);
+            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, strengthOfNumber - 1.0);
+            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, strengthOfNumber - 1.0);
 
             foreach (var party in attackerSide.Parties)
             {
@@ -96,11 +118,6 @@ namespace CombatModCollection
             {
                 defenderTotalAttack += mapEventState.MakePartyAttack(party, battleSpeedMultiplier * defenderNumberPenalty / RangedAverageDamagePerHit);
             }
-
-            //if (__instance.IsSiegeAssault)
-            //{
-            //    attackerNumberPenalty = (float)Math.Pow((double)defenderNumber / attackerNumber, 0.6);
-            //}
 
             AttackComposition attackerDistributedAttack = attackerTotalAttack * (battleSpeedMultiplier * attackerNumberPenalty / defenderNumber * strikerAdvantage);
             AttackComposition defenderDistributedAttack = defenderTotalAttack * (battleSpeedMultiplier * defenderNumberPenalty / attackerNumber);
