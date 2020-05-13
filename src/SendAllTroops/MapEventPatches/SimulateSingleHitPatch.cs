@@ -85,17 +85,20 @@ namespace CombatModCollection
                 {
                     if (mapEventState.GateBreached)
                     {
-                        strengthOfNumber = (SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber 
+                        strengthOfNumber = (SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber
                             + SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber) / 2;
-                    } else
+                    }
+                    else
                     {
                         strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
-                    }                   
-                } else
+                    }
+                }
+                else
                 {
                     strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
-                }                
-            } else
+                }
+            }
+            else
             {
                 strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber;
             }

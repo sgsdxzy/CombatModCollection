@@ -299,12 +299,13 @@ namespace CombatModCollection
                     }
                 }
 
-            } else
-            {                
+            }
+            else
+            {
                 AccumulatedDamage += damage * Alive;
                 CalculateExpectedDeathCounts(damage);
-            }          
-            _expectedHits = Alive - 1;           
+            }
+            _expectedHits = Alive - 1;
 
             if (ExpectedDeathCount > CurrentDeathCount)
             {

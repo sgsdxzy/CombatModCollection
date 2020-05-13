@@ -6,7 +6,6 @@ using TaleWorlds.ObjectSystem;
 
 namespace CombatModCollection
 {
-
     public class MapEventState
     {
         private static readonly FieldInfo MapEvent__mapEventUpdateCount = typeof(MapEvent).GetField(
@@ -33,10 +32,11 @@ namespace CombatModCollection
                         if (mapEvent.GetNumberOfInvolvedMen() > 100)
                         {
                             mapEventState.BattleScale = 3;
-                        } else
+                        }
+                        else
                         {
                             mapEventState.BattleScale = mapEvent.GetNumberOfInvolvedMen() > 50 ? 2 : 1;
-                        }                           
+                        }
                     }
                 }
             }
@@ -51,6 +51,9 @@ namespace CombatModCollection
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
         public bool IsSiege = false;
+        public int WallLevel = 0;
+        public int Ram = 0;
+        public int SiegeTower = 0;
         public int BattleScale;
         public int StageRounds;
         public bool IsDefenderRunAway = false;

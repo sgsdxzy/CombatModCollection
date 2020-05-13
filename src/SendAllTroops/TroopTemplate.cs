@@ -140,7 +140,7 @@ namespace CombatModCollection
                                 }
                             }
                             //templateFile.WriteLine(String.Format("Thrown: {0}*{1} {2:G3}*{3:G3}={4:G3}",
-                                //equipment1.Item.Name, numAmmo, strength, proficiency, strength * proficiency));
+                            //equipment1.Item.Name, numAmmo, strength, proficiency, strength * proficiency));
                             Weapon weapon = new Weapon
                             {
                                 Range = 1,
