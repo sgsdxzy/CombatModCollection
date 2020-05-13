@@ -79,13 +79,13 @@ namespace CombatModCollection
                         if (mapEvent.MapEventSettlement.SettlementTotalWallHitPoints < 1e-5)
                         {
                             NumberOfRoundsBeforeGateBreach = 5 + BattleScale;
+                            MeleePenaltyForAttacker = WallLevel * 0.15f - SiegeTower * 0.05f;
                         }
                         else
                         {
                             NumberOfRoundsBeforeGateBreach = Math.Max(WallLevel * 10 - Ram * 15 - SiegeTower * 5 - Other * 3, 0) + 10 + BattleScale;
+                            MeleePenaltyForAttacker = WallLevel * 0.3f - SiegeTower * 0.10f;
                         }
-
-                        MeleePenaltyForAttacker = WallLevel * 0.3f - SiegeTower * 0.15f;
                     }
                     else
                     {

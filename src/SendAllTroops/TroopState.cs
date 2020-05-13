@@ -82,12 +82,12 @@ namespace CombatModCollection
                     if (partyState.IsAttacker)
                     {
                         attack.Melee *= 1 - partyState.mapEventState.MeleePenaltyForAttacker;
-                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.2f;
                         attack.Polearm *= 1 - partyState.mapEventState.MeleePenaltyForAttacker;
                     }
                     else
                     {
-                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.2f;
                     }
                 }
                 else
@@ -95,12 +95,12 @@ namespace CombatModCollection
                     if (partyState.IsAttacker)
                     {
                         attack.Melee *= 1 - partyState.mapEventState.MeleePenaltyForAttacker / 2;
-                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Missile *= 1 - partyState.mapEventState.WallLevel * 0.2f;
                         attack.Polearm *= 1 - partyState.mapEventState.MeleePenaltyForAttacker / 2;
                     }
                     else
                     {
-                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.25f;
+                        attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.2f;
                     }
                 }
             }
@@ -184,6 +184,10 @@ namespace CombatModCollection
             if (Shield != null && !weapon.IsTwohanded)
             {
                 preference *= 1 + 2 * Shield.Strength / ArmorPoints;
+                if (partyState.mapEventState.IsSiege && partyState.IsAttacker && !partyState.mapEventState.GateBreached)
+                {
+                    preference *= 1.5f;
+                }
             }
 
             return preference;
