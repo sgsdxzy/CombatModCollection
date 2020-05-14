@@ -24,7 +24,7 @@ namespace CombatModCollection
                     && mobileParty.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNumberForMerge)
                 {
                     foreach (MobileParty nearbyMobileParty in Campaign.Current.GetNearbyMobileParties(
-                        mobileParty.Position2D, Settings.Instance.Strategy_BanditMerger_MergRadius, (Func<MobileParty, bool>)(x => true)).ToList())
+                        mobileParty.Position2D, Settings.Instance.Strategy_BanditMerger_MergeRadius, (Func<MobileParty, bool>)(x => true)).ToList())
                     {
                         if (nearbyMobileParty != null && nearbyMobileParty != mobileParty && nearbyMobileParty.IsActive
                             && nearbyMobileParty.IsBandit && !nearbyMobileParty.IsCurrentlyUsedByAQuest
