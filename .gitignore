@@ -2,4 +2,4 @@ src/.vs/
 src/obj/
 *.7z
 cover.png
-CombatModCollection/bin/Win64_Shipping_Client/CombatModCollection.dll
+*.dll
