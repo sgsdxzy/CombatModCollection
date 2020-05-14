@@ -41,7 +41,7 @@ namespace CombatModCollection
 
         [SettingPropertyBool(displayName: "ApplyArmor", Order = 5, RequireRestart = false, HintText = "Use excessive damage to determine survival rate. Excessive damage is the excessive part of the killing blow.")]
         [SettingPropertyGroup("SurviveByArmor/SurviveByExcessiveDamage")]
-        public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;       
+        public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;
 
         [SettingPropertyBool(displayName: "Enable", Order = 0, RequireRestart = false, HintText = "Use excessive damage to determine survival rate. Excessive damage is the excessive part of the killing blow.")]
         [SettingPropertyGroup("SurviveByArmor/SurviveByArmorValue")]

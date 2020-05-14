@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
@@ -42,7 +41,7 @@ namespace CombatModCollection
                 var harmony = new Harmony("mod.bannerlord.lightcombat");
                 harmony.PatchAll();
                 Patched = true;
-            }          
+            }
         }
 
 
