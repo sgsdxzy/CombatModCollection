@@ -82,26 +82,26 @@ namespace CombatModCollection
             float strengthOfNumber;
             if (mapEventState.IsSiege)
             {
-                if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+                if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
                 {
                     if (mapEventState.GateBreached)
                     {
-                        strengthOfNumber = (SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber
-                            + SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber) / 2;
+                        strengthOfNumber = (Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber
+                            + Settings.Instance.Battle_SendAllTroops_StrengthOfNumber) / 2;
                     }
                     else
                     {
-                        strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                        strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
                     }
                 }
                 else
                 {
-                    strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                    strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
                 }
             }
             else
             {
-                strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber;
+                strengthOfNumber = Settings.Instance.Battle_SendAllTroops_StrengthOfNumber;
             }
             float battleSpeedMultiplier = DamageMultiplier;
             if (strengthOfNumber != 0.6f)
@@ -164,7 +164,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops;
+            return Settings.Instance.Battle_SendAllTroops;
         }
 
     }

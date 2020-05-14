@@ -21,16 +21,16 @@ namespace CombatModCollection
             {
                 if (mobileParty != null && mobileParty.IsActive && mobileParty.IsBandit && !mobileParty.IsCurrentlyUsedByAQuest
                     && mobileParty.CurrentSettlement == null && mobileParty.MapEvent == null
-                    && mobileParty.Party.NumberOfAllMembers < SubModule.Settings.Strategy_BanditMerger_MaxNumber)
+                    && mobileParty.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNumberForMerge)
                 {
                     foreach (MobileParty nearbyMobileParty in Campaign.Current.GetNearbyMobileParties(
-                        mobileParty.Position2D, SubModule.Settings.Strategy_BanditMerger_MergRadius, (Func<MobileParty, bool>)(x => true)).ToList())
+                        mobileParty.Position2D, Settings.Instance.Strategy_BanditMerger_MergRadius, (Func<MobileParty, bool>)(x => true)).ToList())
                     {
                         if (nearbyMobileParty != null && nearbyMobileParty != mobileParty && nearbyMobileParty.IsActive
                             && nearbyMobileParty.IsBandit && !nearbyMobileParty.IsCurrentlyUsedByAQuest
                             && nearbyMobileParty.CurrentSettlement == null && nearbyMobileParty.MapEvent == null
                             && nearbyMobileParty.MapFaction.StringId == mobileParty.MapFaction.StringId
-                            && nearbyMobileParty.Party.NumberOfAllMembers < SubModule.Settings.Strategy_BanditMerger_MaxNumber)
+                            && nearbyMobileParty.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNumberForMerge)
                         {
                             mobileParty.Party.AddMembers(nearbyMobileParty.MemberRoster.ToFlattenedRoster());
                             mobileParty.Party.AddPrisoners(nearbyMobileParty.PrisonRoster.ToFlattenedRoster());

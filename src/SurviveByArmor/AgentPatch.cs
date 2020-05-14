@@ -20,7 +20,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SurviveByArmor && SubModule.Settings.Battle_SurviveByArmor_SurviveByExcessiveDamage;
+            return Settings.Instance.Battle_SurviveByArmor;
         }
     }
 }

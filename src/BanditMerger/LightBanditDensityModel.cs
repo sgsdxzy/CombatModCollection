@@ -8,7 +8,7 @@ namespace CombatModCollection
         {
             get
             {
-                return (int)SubModule.Settings.Strategy_BanditMerger_MaximumBanditParties;
+                return (int)Settings.Instance.Strategy_BanditMerger_MaximumLooterParties;
             }
         }
 

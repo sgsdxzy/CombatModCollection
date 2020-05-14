@@ -47,7 +47,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops || SubModule.Settings.Strategy_LearnToQuit;
+            return Settings.Instance.Battle_SendAllTroops || Settings.Instance.Strategy_LearnToQuit;
         }
     }
 }

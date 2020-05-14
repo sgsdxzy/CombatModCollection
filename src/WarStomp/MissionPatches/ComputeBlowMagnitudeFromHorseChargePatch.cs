@@ -23,7 +23,7 @@ namespace CombatModCollection
                 if (Vec3.DotProduct(attackerAgentVelocity, victimAgentVelocity) /
                     (attackerAgentVelocity.Length * victimAgentVelocity.Length) > 0.5)
                 {
-                    specialMagnitude *= SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier;
+                    specialMagnitude *= Settings.Instance.Battle_WarStomp_WarStompDamageMultiplier;
                 }
             }
 
@@ -31,7 +31,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_WarStomp && SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier != 1.0f;
+            return Settings.Instance.Battle_WarStomp;
         }
     }
 }

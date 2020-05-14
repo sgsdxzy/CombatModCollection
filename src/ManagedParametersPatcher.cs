@@ -9,24 +9,24 @@ namespace CombatModCollection
     {
         public static void Postfix()
         {
-            if (SubModule.Settings.Battle_RealisticBallistics)
+            if (Settings.Instance.Battle_RealisticBallistics)
             {
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow,
-                     SubModule.Settings.Battle_RealisticBallistics_AirFrictionArrow);
+                     Settings.Instance.Battle_RealisticBallistics_AirFrictionArrow);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin,
-                    SubModule.Settings.Battle_RealisticBallistics_AirFrictionJavelin);
+                    Settings.Instance.Battle_RealisticBallistics_AirFrictionJavelin);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe,
-                     SubModule.Settings.Battle_RealisticBallistics_AirFrictionAxe);
+                     Settings.Instance.Battle_RealisticBallistics_AirFrictionAxe);
                 ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife,
-                     SubModule.Settings.Battle_RealisticBallistics_AirFrictionKnife);
+                     Settings.Instance.Battle_RealisticBallistics_AirFrictionKnife);
             }
 
-            if (SubModule.Settings.Battle_PowerThrust)
+            if (Settings.Instance.Battle_PowerThrust)
             {
                 ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier,
-                    SubModule.Settings.Battle_PowerThrust_NonTipThrustHitDamageMultiplier);
+                    Settings.Instance.Battle_PowerThrust_NonTipThrustHitDamageMultiplier);
                 ManagedParameters.SetParameter(ManagedParametersEnum.ThrustHitWithArmDamageMultiplier,
-                    SubModule.Settings.Battle_PowerThrust_ThrustHitWithArmDamageMultiplier);
+                    Settings.Instance.Battle_PowerThrust_ThrustHitWithArmDamageMultiplier);
                 ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphZeroProgressValue, 1.0f);
             }
 
@@ -34,7 +34,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_PowerThrust || SubModule.Settings.Battle_RealisticBallistics;
+            return Settings.Instance.Battle_PowerThrust || Settings.Instance.Battle_RealisticBallistics;
         }
     }
 }

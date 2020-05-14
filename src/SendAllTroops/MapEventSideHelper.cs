@@ -115,7 +115,7 @@ namespace CombatModCollection
 
         public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
         {
-            if (!SubModule.Settings.Battle_SendAllTroops)
+            if (!Settings.Instance.Battle_SendAllTroops)
             {
                 return side.RecalculateStrengthOfSide();
             }

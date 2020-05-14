@@ -49,7 +49,7 @@ namespace CombatModCollection
                     num2 = 1.0;
                     break;
             }
-            float f = (float)(num1 * num2 * SubModule.Settings.Battle_SendAllTroops_XPMultiplier);
+            float f = (float)(num1 * num2 * Settings.Instance.Battle_SendAllTroops_XPMultiplier);
             xpAmount = MathF.Round(f);
 
             return false;
@@ -57,7 +57,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops;
+            return Settings.Instance.Battle_SendAllTroops;
         }
     }
 }

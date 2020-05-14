@@ -96,14 +96,14 @@ namespace CombatModCollection
                 // Attacker Runaway
                 if (powerRatio > 1.2)
                 {
-                    float baseChance = (powerRatio - 1.2f) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
+                    float baseChance = (powerRatio - 1.2f) * 1.5f * Settings.Instance.Strategy_LearnToQuit_RetreatChance;
                     float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                     AttackerRunaway = MBRandom.RandomFloat < baseChance + bonus;
                 }
             }
             if (AttackerRunaway)
             {
-                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
+                if (Settings.Instance.Strategy_LearnToQuit_Verbose)
                 {
                     string information = __instance.AttackerSide.LeaderParty.Name.ToString() +
                         " withdrew from battle against " +
@@ -139,7 +139,7 @@ namespace CombatModCollection
                     else
                     {
                         sacrificeRatio = (float)forTryingToGetAway / (float)ofRegularMembers;
-                        float baseChance = (1f - 1.25f * powerRatio) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
+                        float baseChance = (1f - 1.25f * powerRatio) * 1.5f * Settings.Instance.Strategy_LearnToQuit_RetreatChance;
                         float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
@@ -149,7 +149,7 @@ namespace CombatModCollection
             {
                 mapEventState.IsDefenderRunAway = true;
 
-                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
+                if (Settings.Instance.Strategy_LearnToQuit_Verbose)
                 {
                     string information = __instance.DefenderSide.LeaderParty.Name.ToString() +
                         " was forced to retreat against " +
@@ -169,7 +169,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Strategy_LearnToQuit;
+            return Settings.Instance.Strategy_LearnToQuit;
         }
     }
 }

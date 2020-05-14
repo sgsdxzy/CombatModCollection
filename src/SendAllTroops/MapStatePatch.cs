@@ -13,7 +13,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops;
+            return Settings.Instance.Battle_SendAllTroops;
         }
     }
 }

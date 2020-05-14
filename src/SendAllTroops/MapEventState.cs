@@ -33,6 +33,7 @@ namespace CombatModCollection
 
         private readonly ConcurrentDictionary<string, PartyState> PartyStates = new ConcurrentDictionary<string, PartyState>();
         public bool IsSiege = false;
+        // Only when DCM is off, when DCM is on, the penalty is applied in TroopState.GetWeaponDamage
         public float SettlementPenalty = 1;
 
         // For DetailedCombatModel
@@ -48,11 +49,11 @@ namespace CombatModCollection
 
         private MapEventState(MapEvent mapEvent)
         {
-            if (SubModule.Settings.Battle_SendAllTroops)
+            if (Settings.Instance.Battle_SendAllTroops)
             {
                 StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
                 IsSiege = mapEvent.IsSiegeAssault;
-                if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+                if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
                 {
                     if (IsSiege)
                     {

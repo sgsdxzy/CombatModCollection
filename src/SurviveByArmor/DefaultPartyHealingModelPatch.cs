@@ -18,8 +18,8 @@ namespace CombatModCollection
 
         public static float GetExcessiveDamageDeathRate(float excessiveDamage)
         {
-            float deathRate = (excessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage)
-                / (SubModule.Settings.Battle_SurviveByArmor_LethalExcessiveDamage - SubModule.Settings.Battle_SurviveByArmor_SafeExcessiveDamage);
+            float deathRate = (excessiveDamage - Settings.Instance.Battle_SurviveByArmor_SafeExcessiveDamage)
+                / (Settings.Instance.Battle_SurviveByArmor_LethalExcessiveDamage - Settings.Instance.Battle_SurviveByArmor_SafeExcessiveDamage);
 
             deathRate = Math.Max(deathRate, 0);
 
@@ -48,7 +48,7 @@ namespace CombatModCollection
 
             bool isFieldBattle = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
             float damageTypeDeathRate = damageType == DamageTypes.Blunt ?
-                SubModule.Settings.Battle_SurviveByArmor_BluntDeathRate : 1.0f;
+                Settings.Instance.Battle_SurviveByArmor_BluntDeathRate : 1.0f;
 
             bool useMedicine;
             bool useLevel;
@@ -57,17 +57,17 @@ namespace CombatModCollection
             if (isFieldBattle)
             {
                 baseDeathRate = GetExcessiveDamageDeathRate(excessiveDamage);
-                useMedicine = SubModule.Settings.Battle_SurviveByArmor_ApplyMedicine;
-                useLevel = SubModule.Settings.Battle_SurviveByArmor_ApplyLevel;
-                useArmor = SubModule.Settings.Battle_SurviveByArmor_ApplyArmor;
+                useMedicine = Settings.Instance.Battle_SurviveByArmor_ApplyMedicine;
+                useLevel = Settings.Instance.Battle_SurviveByArmor_ApplyLevel;
+                useArmor = Settings.Instance.Battle_SurviveByArmor_ApplyArmor;
 
             }
             else
             {
                 baseDeathRate = 1.0f;
                 useMedicine = true;
-                useLevel = !SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
-                useArmor = SubModule.Settings.Battle_SurviveByArmor_SurviveByArmorValue;
+                useLevel = !Settings.Instance.Battle_SurviveByArmor_SurviveByArmorValue;
+                useArmor = Settings.Instance.Battle_SurviveByArmor_SurviveByArmorValue;
             }
 
             ExplainedNumber stat = new ExplainedNumber(character.IsHero ? 10f : 1f, (StringBuilder)null);
@@ -90,7 +90,7 @@ namespace CombatModCollection
                         float arm = character.GetArmArmorSum();
                         float leg = character.GetLegArmorSum();
                         float totalArmor = head + body + arm + leg;
-                        stat.Add(totalArmor / SubModule.Settings.Battle_SurviveByArmor_ArmorValueThreshold * 16 * 0.03f, (TextObject)null);
+                        stat.Add(totalArmor / Settings.Instance.Battle_SurviveByArmor_ArmorValueThreshold * 16f * 0.03f, (TextObject)null);
                     }
                     catch (NullReferenceException)
                     {
@@ -114,7 +114,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SurviveByArmor;
+            return Settings.Instance.Battle_SurviveByArmor;
         }
     }
 }

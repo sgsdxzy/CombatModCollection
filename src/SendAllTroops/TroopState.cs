@@ -39,7 +39,7 @@ namespace CombatModCollection
             IsHero = troop.IsHero;
             TotalCount = count;
             HitPoints = troop.HitPoints;
-            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 var template = TroopTemplate.GetTroopTemplate(troop);
                 foreach (var weapon in template.Weapons)
@@ -122,7 +122,7 @@ namespace CombatModCollection
 
         public void PrepareWeapon()
         {
-            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            if (!Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 return;
             }
@@ -195,7 +195,7 @@ namespace CombatModCollection
 
         private AttackComposition MakeSingleAttack(float consumption)
         {
-            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            if (!Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 return new AttackComposition { Melee = Strength };
             }
@@ -233,7 +233,7 @@ namespace CombatModCollection
                 }
             }
 
-            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
+            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 float meleeDefense = ArmorPoints;
                 float missileDefense = ArmorPoints;
@@ -279,7 +279,7 @@ namespace CombatModCollection
                 damage = attack.Melee / Strength;
             }
 
-            if (SubModule.Settings.Battle_SendAllTroops_RandomDamage)
+            if (Settings.Instance.Battle_SendAllTroops_RandomDamage)
             {
                 damage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
             }
@@ -301,7 +301,7 @@ namespace CombatModCollection
             }
 
             // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks
-            if (SubModule.Settings.Battle_SendAllTroops_RandomDeath)
+            if (Settings.Instance.Battle_SendAllTroops_RandomDeath)
             {
                 for (int i = 0; i < Alive; i++)
                 {

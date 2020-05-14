@@ -17,16 +17,16 @@ namespace CombatModCollection
             float num = thrustWeaponSpeed + extraLinearSpeed;
             if (!isThrown)
                 weaponWeight += 2.5f;
-            __result = SubModule.Settings.Battle_PowerThrust_kE * (0.5f * weaponWeight * num * num)
-                + SubModule.Settings.Battle_PowerThrust_kP * weaponWeight * num
-                + SubModule.Settings.Battle_PowerThrust_kC;
+            __result = Settings.Instance.Battle_PowerThrust_kE * (0.5f * weaponWeight * num * num)
+                + Settings.Instance.Battle_PowerThrust_kP * weaponWeight * num
+                + Settings.Instance.Battle_PowerThrust_kC;
 
             return false;
         }
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_PowerThrust;
+            return Settings.Instance.Battle_PowerThrust;
         }
     }
 }

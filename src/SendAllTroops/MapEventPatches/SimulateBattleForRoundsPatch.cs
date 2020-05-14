@@ -11,7 +11,7 @@ namespace CombatModCollection
         public static void Prefix(MapEvent __instance,
             ref int simulationRoundsDefender, ref int simulationRoundsAttacker)
         {
-            double rounds = RoundsPrecision * SubModule.Settings.Battle_SendAllTroops_CombatSpeed;
+            double rounds = RoundsPrecision * Settings.Instance.Battle_SendAllTroops_CombatSpeed;
             if (__instance.IsSiegeAssault)
             {
                 rounds *= 0.4f;
@@ -29,7 +29,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_SendAllTroops;
+            return Settings.Instance.Battle_SendAllTroops;
         }
     }
 }

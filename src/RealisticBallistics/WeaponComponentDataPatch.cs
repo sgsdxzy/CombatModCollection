@@ -25,46 +25,46 @@ namespace CombatModCollection
             {
                 case WeaponClass.Bow:
                     float missileSpeed = weaponData.MissileSpeed;
-                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    if (Settings.Instance.Battle_RealisticBallistics_ConsistantArrowSpeed)
                     {
                         missileSpeed = weaponData.MissileDamage;
                     }
-                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ArrowSpeedMultiplier;
+                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_ArrowSpeedMultiplier;
                     float accuracy = weaponData.Accuracy;
-                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_BowAccuracyMultiplier;
+                    accuracy *= Settings.Instance.Battle_RealisticBallistics_BowAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     float damage = weaponData.ThrustDamage;
-                    damage *= SubModule.Settings.Battle_RealisticBallistics_BowDamageMultiplier;
+                    damage *= Settings.Instance.Battle_RealisticBallistics_BowDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
-                    if (SubModule.Settings.Battle_RealisticBallistics_BowToCut)
+                    if (Settings.Instance.Battle_RealisticBallistics_BowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
                     break;
                 case WeaponClass.Crossbow:
                     missileSpeed = weaponData.MissileSpeed;
-                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    if (Settings.Instance.Battle_RealisticBallistics_ConsistantArrowSpeed)
                     {
                         missileSpeed = weaponData.MissileDamage;
                     }
-                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_BoltSpeedMultiplier;
+                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_BoltSpeedMultiplier;
                     accuracy = weaponData.Accuracy;
-                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_CrossbowAccuracyMultiplier;
+                    accuracy *= Settings.Instance.Battle_RealisticBallistics_CrossbowAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     damage = weaponData.ThrustDamage;
-                    damage *= SubModule.Settings.Battle_RealisticBallistics_CrossbowDamageMultiplier;
+                    damage *= Settings.Instance.Battle_RealisticBallistics_CrossbowDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
-                    if (SubModule.Settings.Battle_RealisticBallistics_CrossbowToCut)
+                    if (Settings.Instance.Battle_RealisticBallistics_CrossbowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
@@ -73,27 +73,27 @@ namespace CombatModCollection
                 case WeaponClass.ThrowingAxe:
                 case WeaponClass.ThrowingKnife:
                     missileSpeed = weaponData.MissileSpeed;
-                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ThrownSpeedMultiplier;
+                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_ThrownSpeedMultiplier;
                     accuracy = weaponData.Accuracy;
-                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_ThrownAccuracyMultiplier;
+                    accuracy *= Settings.Instance.Battle_RealisticBallistics_ThrownAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     damage = weaponData.ThrustDamage;
-                    damage *= SubModule.Settings.Battle_RealisticBallistics_ThrownDamageMultiplier;
+                    damage *= Settings.Instance.Battle_RealisticBallistics_ThrownDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
                     break;
                 case WeaponClass.Arrow:
-                    if (SubModule.Settings.Battle_RealisticBallistics_BowToCut)
+                    if (Settings.Instance.Battle_RealisticBallistics_BowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
                     break;
                 case WeaponClass.Bolt:
-                    if (SubModule.Settings.Battle_RealisticBallistics_CrossbowToCut)
+                    if (Settings.Instance.Battle_RealisticBallistics_CrossbowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
@@ -112,7 +112,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_RealisticBallistics;
+            return Settings.Instance.Battle_RealisticBallistics;
         }
     }
 
@@ -126,7 +126,7 @@ namespace CombatModCollection
 
         public static bool Prepare()
         {
-            return SubModule.Settings.Battle_RealisticBallistics;
+            return Settings.Instance.Battle_RealisticBallistics;
         }
     }
 }
