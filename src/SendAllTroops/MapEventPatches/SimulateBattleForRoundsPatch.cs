@@ -7,7 +7,7 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
     [HarmonyPatch(typeof(MapEvent), "SimulateBattleForRounds")]
     public class SimulateBattleForRoundsPatch
     {
-        public static readonly float RoundsPrecision = 10;
+        public static readonly float RoundsPrecision = 3;
         public static void Prefix(MapEvent __instance,
             ref int simulationRoundsDefender, ref int simulationRoundsAttacker)
         {
