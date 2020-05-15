@@ -64,7 +64,7 @@ namespace CombatModCollection
         [SettingPropertyGroup(groupName: "SendAllTroops")]
         public bool Battle_SendAllTroops_RandomDeath { get; set; } = false;
 
-        [SettingPropertyBool(displayName: "Detailed Combat Model", Order = 3, RequireRestart = false, HintText = "Whether to use equpiments and skill levels of a soldier to determine his strength, and simulate the progression of battles. If set to false, the vanilla Power is used.")]
+        [SettingPropertyBool(displayName: "Detailed Combat Model", Order = 3, RequireRestart = false, HintText = "Whether to use equipments and skill levels of a soldier to determine his strength, and simulate the progression of battles. If set to false, the vanilla Power is used.")]
         [SettingPropertyGroup(groupName: "SendAllTroops")]
         public bool Battle_SendAllTroops_DetailedCombatModel { get; set; } = true;
 
