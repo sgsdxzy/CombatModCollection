@@ -24,20 +24,19 @@ namespace CombatModCollection.SendAllTroops
 
         public static TroopTemplate GetTroopTemplate(CharacterObject troop)
         {
-            if (troop.IsHero && troop.HeroObject.Clan == Clan.PlayerClan)
-            {
-                return new TroopTemplate(troop);
-            }
-
             if (!CachedTemplates.TryGetValue(troop.Id, out TroopTemplate template))
             {
-                CachedTemplates[troop.Id] = new TroopTemplate(troop);
-                return CachedTemplates[troop.Id];
+                template = new TroopTemplate(troop);
+                CachedTemplates[troop.Id] = template;
             }
-            else
-            {
-                return template;
-            }
+            return template;
+        }
+
+        public static TroopTemplate GetRefreshedTemplate(CharacterObject troop)
+        {
+            TroopTemplate template = new TroopTemplate(troop);
+            CachedTemplates[troop.Id] = template;
+            return template;
         }
 
         private TroopTemplate(CharacterObject troop)

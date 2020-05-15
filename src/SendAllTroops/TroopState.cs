@@ -41,7 +41,7 @@ namespace CombatModCollection.SendAllTroops
             HitPoints = troop.HitPoints;
             if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
-                var template = TroopTemplate.GetTroopTemplate(troop);
+                var template = troop.IsHero ? TroopTemplate.GetRefreshedTemplate(troop) : TroopTemplate.GetTroopTemplate(troop);
                 foreach (var weapon in template.Weapons)
                 {
                     Weapons.Add(weapon.Clone());

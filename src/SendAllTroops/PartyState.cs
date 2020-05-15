@@ -23,13 +23,10 @@ namespace CombatModCollection.SendAllTroops
             {
                 InformationManager.DisplayMessage(new InformationMessage(
                     "Warning: " + troop.Name.ToString() + " is not registered for battle."));
-                TroopStates[troop.Id] = new TroopState(this, troop, 1);
-                return TroopStates[troop.Id];
+                troopState = new TroopState(this, troop, 1);
+                TroopStates[troop.Id] = troopState;
             }
-            else
-            {
-                return troopState;
-            }
+            return troopState;
         }
 
         public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, out float damage)
