@@ -30,7 +30,7 @@ namespace CombatModCollection
         {
             if (Settings.Instance.Strategy_BanditMerger)
             {
-                gameStarter?.AddModel(new LightBanditDensityModel());
+                gameStarter?.AddModel(new BanditMerger.LightBanditDensityModel());
             }
         }
 
@@ -38,7 +38,7 @@ namespace CombatModCollection
         {
             if (Settings.Instance.Strategy_BanditMerger)
             {
-                gameStarter?.AddBehavior(new BanditMergeBehavior());
+                gameStarter?.AddBehavior(new BanditMerger.BanditMergeBehavior());
             }
         }
     }
