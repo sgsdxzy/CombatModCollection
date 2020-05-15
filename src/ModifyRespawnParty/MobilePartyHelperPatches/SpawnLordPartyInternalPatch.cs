@@ -7,7 +7,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.ModifyRespawnParty.MobilePartyHelperPatches
 {
     [HarmonyPatch(typeof(MobilePartyHelper), "SpawnLordPartyInternal")]
     public class SpawnLordPartyInternalPatch

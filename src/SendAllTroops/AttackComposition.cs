@@ -1,4 +1,4 @@
-﻿namespace CombatModCollection
+﻿namespace CombatModCollection.SendAllTroops
 {
     public struct AttackComposition
     {

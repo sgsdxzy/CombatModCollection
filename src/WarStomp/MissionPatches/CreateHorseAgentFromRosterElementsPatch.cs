@@ -3,7 +3,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace CombatModCollection
+namespace CombatModCollection.WarStomp.MissionPatches
 {
     [HarmonyPatch(typeof(Mission), "CreateHorseAgentFromRosterElements")]
     public class CreateHorseAgentFromRosterElementsPatch

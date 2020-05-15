@@ -2,7 +2,7 @@
 using System;
 using TaleWorlds.CampaignSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops.MapEventPatches
 {
     [HarmonyPatch(typeof(MapEvent), "SimulateBattleForRounds")]
     public class SimulateBattleForRoundsPatch

@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
 using TaleWorlds.Core;
 
-
-namespace CombatModCollection
+namespace CombatModCollection.PowerThrust.CombatStatCalculatorPatches
 {
     [HarmonyPatch(typeof(CombatStatCalculator), "CalculateStrikeMagnitudeForThrust")]
     public class CalculateStrikeMagnitudeForThrustPatch

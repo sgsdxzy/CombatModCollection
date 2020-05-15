@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 
-namespace CombatModCollection
+namespace CombatModCollection.SurviveByArmor.AgentPatches
 {
     [HarmonyPatch(typeof(Agent), "HandleBlow")]
     public class HandleBlowPatch
@@ -13,7 +13,7 @@ namespace CombatModCollection
                 float excessiveDamage = (float)b.InflictedDamage - __instance.Health + 1f;
                 if (excessiveDamage > 0)
                 {
-                    GetSurvivalChancePatch.ExcessiveDamages[__instance.Character.Id] = excessiveDamage;
+                    BasicCharacterObjectCustomMembers.ExcessiveDamages[__instance.Character.Id] = excessiveDamage;
                 }
             }
         }

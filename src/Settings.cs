@@ -43,7 +43,7 @@ namespace CombatModCollection
         [SettingPropertyGroup(groupName: "SurviveByArmor/Survive By Excessive Damage")]
         public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;
 
-        [SettingPropertyBool(displayName: "Enable", Order = 0, RequireRestart = false, HintText = "Use Armor value instead of character level to determine survival chance when \"Survive By ExcessiveDamage\" is off, or in battle simulations")]
+        [SettingPropertyBool(displayName: "Survive By Armor Value", Order = 0, RequireRestart = false, HintText = "Use Armor value instead of character level to determine survival chance when \"Survive By ExcessiveDamage\" is off, or in battle simulations")]
         [SettingPropertyGroup(groupName: "SurviveByArmor/Survive By Armor Value", order: 3, isMainToggle: true)]
         public bool Battle_SurviveByArmor_SurviveByArmorValue { get; set; } = true;
 

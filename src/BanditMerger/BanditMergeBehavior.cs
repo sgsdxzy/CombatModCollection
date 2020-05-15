@@ -3,7 +3,7 @@ using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 
-namespace CombatModCollection
+namespace CombatModCollection.BanditMerger
 {
     class BanditMergeBehavior : CampaignBehaviorBase
     {

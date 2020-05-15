@@ -1,6 +1,6 @@
 ﻿using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 
-namespace CombatModCollection
+namespace CombatModCollection.BanditMerger
 {
     class LightBanditDensityModel : DefaultBanditDensityModel
     {

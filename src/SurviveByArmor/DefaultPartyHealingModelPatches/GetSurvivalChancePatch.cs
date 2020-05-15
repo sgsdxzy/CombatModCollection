@@ -1,21 +1,17 @@
 ﻿using HarmonyLib;
 using Helpers;
 using System;
-using System.Collections.Concurrent;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Core;
 using TaleWorlds.Localization;
-using TaleWorlds.ObjectSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.SurviveByArmor.DefaultPartyHealingModelPatches
 {
     [HarmonyPatch(typeof(DefaultPartyHealingModel), "GetSurvivalChance")]
     public class GetSurvivalChancePatch
     {
-        public static readonly ConcurrentDictionary<MBGUID, float> ExcessiveDamages = new ConcurrentDictionary<MBGUID, float>();
-
         public static float GetExcessiveDamageDeathRate(float excessiveDamage)
         {
             float deathRate = (excessiveDamage - Settings.Instance.Battle_SurviveByArmor_SafeExcessiveDamage)
@@ -46,7 +42,7 @@ namespace CombatModCollection
                 }
             }
 
-            bool isFieldBattle = ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
+            bool hasDamageData = BasicCharacterObjectCustomMembers.ExcessiveDamages.TryRemove(character.Id, out float excessiveDamage);
             float damageTypeDeathRate = damageType == DamageTypes.Blunt ?
                 Settings.Instance.Battle_SurviveByArmor_BluntDeathRate : 1.0f;
 
@@ -54,13 +50,12 @@ namespace CombatModCollection
             bool useLevel;
             bool useArmor;
             float baseDeathRate;
-            if (isFieldBattle)
+            if (Settings.Instance.Battle_SurviveByArmor_SurviveByExcessiveDamage && hasDamageData)
             {
                 baseDeathRate = GetExcessiveDamageDeathRate(excessiveDamage);
                 useMedicine = Settings.Instance.Battle_SurviveByArmor_ApplyMedicine;
                 useLevel = Settings.Instance.Battle_SurviveByArmor_ApplyLevel;
                 useArmor = Settings.Instance.Battle_SurviveByArmor_ApplyArmor;
-
             }
             else
             {

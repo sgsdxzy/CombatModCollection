@@ -2,7 +2,7 @@
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace CombatModCollection
+namespace CombatModCollection.WarStomp.MissionPatches
 {
     [HarmonyPatch(typeof(Mission), "ComputeBlowMagnitudeFromHorseCharge")]
     public class ComputeBlowMagnitudeFromHorseChargePatch

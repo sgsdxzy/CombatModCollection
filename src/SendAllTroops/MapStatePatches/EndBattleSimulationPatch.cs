@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops.MapStatePatches
 {
     [HarmonyPatch(typeof(MapState), "EndBattleSimulation")]
     public class EndBattleSimulationPatch

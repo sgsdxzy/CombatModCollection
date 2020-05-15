@@ -3,7 +3,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.ObjectSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops
 {
     public class PartyState
     {

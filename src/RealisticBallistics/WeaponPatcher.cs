@@ -1,9 +1,8 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Reflection;
 using TaleWorlds.Core;
 
-namespace CombatModCollection
+namespace CombatModCollection.RealisticBallistics
 {
     public class WeaponPatcher
     {
@@ -99,34 +98,6 @@ namespace CombatModCollection
                     }
                     break;
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(WeaponComponentData), "Deserialize")]
-    public class DeserializePatch
-    {
-        public static void Postfix(ref WeaponComponentData __instance)
-        {
-            WeaponPatcher.PatchWeapon(__instance);
-        }
-
-        public static bool Prepare()
-        {
-            return Settings.Instance.Battle_RealisticBallistics;
-        }
-    }
-
-    [HarmonyPatch(typeof(WeaponComponentData), "Init")]
-    public class InitPatch
-    {
-        public static void Postfix(ref WeaponComponentData __instance)
-        {
-            WeaponPatcher.PatchWeapon(__instance);
-        }
-
-        public static bool Prepare()
-        {
-            return Settings.Instance.Battle_RealisticBallistics;
         }
     }
 }

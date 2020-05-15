@@ -6,7 +6,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.ObjectSystem;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops
 {
     public class TroopTemplate
     {

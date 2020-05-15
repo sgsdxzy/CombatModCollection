@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
 using TaleWorlds.Core;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops
 {
     public class MapEventSideHelper
     {

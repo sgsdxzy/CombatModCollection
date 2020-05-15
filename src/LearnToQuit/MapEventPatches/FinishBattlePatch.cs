@@ -5,7 +5,7 @@ using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
-namespace CombatModCollection
+namespace CombatModCollection.LearnToQuit.MapEventPatches
 {
     [HarmonyPatch(typeof(MapEvent), "FinishBattle")]
     public class FinishBattlePatch
@@ -15,8 +15,7 @@ namespace CombatModCollection
 
         public static void Prefix(MapEvent __instance)
         {
-            MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
-            if (mapEventState.IsDefenderRunAway)
+            if (MapEventCustomMembers.DefendersRanAway.TryRemove(__instance.Id, out _))
             {
                 // Defender ran away
                 // this._attackersRanAway = false;
@@ -40,14 +39,11 @@ namespace CombatModCollection
                     }
                 }
             }
-
-            MapEventState.RemoveMapEventState(__instance);
         }
-
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_SendAllTroops || Settings.Instance.Strategy_LearnToQuit;
+            return Settings.Instance.Strategy_LearnToQuit;
         }
     }
 }

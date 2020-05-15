@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops
 {
     public class TroopState
     {
