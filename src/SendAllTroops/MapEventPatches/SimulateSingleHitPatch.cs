@@ -1,12 +1,11 @@
-﻿using CombatModCollection.SendAllTroops;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 
-namespace CombatModCollection
+namespace CombatModCollection.SendAllTroops.MapEventPatches
 {
     [HarmonyPatch(typeof(MapEvent), "SimulateSingleHit")]
     public class SimulateSingleHitPatch
@@ -15,7 +14,7 @@ namespace CombatModCollection
             "BattleObserver", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
         private static readonly float DamageMultiplier = 5.0f;
-        private static readonly float RangedAverageDamagePerHit = 10.0f;
+        private static readonly float RangedAverageDamagePerHit = 6.0f;
 
         private static bool StrikeOnce(MapEvent mapEvent,
             IBattleObserver battleObserver,
