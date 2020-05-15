@@ -200,8 +200,26 @@ namespace CombatModCollection
         public float Battle_RealisticBallistics_AirFrictionAxe { get; set; } = 0.007f;
 
 
+        [SettingPropertyBool(displayName: "Uninterrupted", Order = 0, RequireRestart = true, HintText = "Enable Uninterrupted.")]
+        [SettingPropertyGroup(groupName: "Uninterrupted", order: 5, isMainToggle: true)]
+        public bool Battle_Uninterrupted { get; set; } = false;
+
+        [SettingPropertyFloatingInteger(displayName: "Damage Interrupt Attack Threshold Pierce", minValue: 0f, maxValue: 50f, valueFormat: "0.0", Order = 1, RequireRestart = false, HintText = "Required pierce damage to interrupt attacks.")]
+        [SettingPropertyGroup(groupName: "Uninterrupted")]
+        public float Battle_Uninterrupted_DamageInterruptAttackthresholdPierce { get; set; } = 5.0f;
+
+        [SettingPropertyFloatingInteger(displayName: "Damage Interrupt Attack Threshold Cut", minValue: 0f, maxValue: 50f, valueFormat: "0.0", Order = 2, RequireRestart = false, HintText = "Required cut damage to interrupt attacks.")]
+        [SettingPropertyGroup(groupName: "Uninterrupted")]
+        public float Battle_Uninterrupted_DamageInterruptAttackthresholdCut { get; set; } = 5.0f;
+
+        [SettingPropertyFloatingInteger(displayName: "Damage Interrupt Attack Threshold Blunt", minValue: 0f, maxValue: 50f, valueFormat: "0.0", Order = 3, RequireRestart = false, HintText = "Required blunt damage to interrupt attacks.")]
+        [SettingPropertyGroup(groupName: "Uninterrupted")]
+        public float Battle_Uninterrupted_DamageInterruptAttackthresholdBlunt { get; set; } = 5.0f;
+
+
+
         [SettingPropertyBool(displayName: "ModifyRespawnParty", Order = 0, RequireRestart = true, HintText = "Enable ModifyRespawnParty.")]
-        [SettingPropertyGroup(groupName: "ModifyRespawnParty", order: 5, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "ModifyRespawnParty", order: 6, isMainToggle: true)]
         public bool Strategy_ModifyRespawnParty { get; set; } = false;
 
         [SettingPropertyInteger(displayName: "AI Lord Party Size on Respawn", minValue: 0, maxValue: 200, Order = 1, RequireRestart = false, HintText = "The number of soldiers AI lords respawn with.")]
@@ -214,7 +232,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "LearnToQuit", Order = 0, RequireRestart = true, HintText = "Enable LearnToQuit.")]
-        [SettingPropertyGroup(groupName: "LearnToQuit", order: 6, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "LearnToQuit", order: 7, isMainToggle: true)]
         public bool Strategy_LearnToQuit { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "Retreat Chance Multiplier", minValue: 0f, maxValue: 5f, Order = 1, RequireRestart = false, HintText = "Multiplier to the chance of successful retreat.")]
@@ -227,7 +245,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "BanditMerger", Order = 0, RequireRestart = true, HintText = "Enable BanditMerger.")]
-        [SettingPropertyGroup(groupName: "BanditMerger", order: 7, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "BanditMerger", order: 8, isMainToggle: true)]
         public bool Strategy_BanditMerger { get; set; } = false;
 
         [SettingPropertyInteger(displayName: "Merge Radius", minValue: 0, maxValue: 100, Order = 1, RequireRestart = false, HintText = "The distance between two bandit groups to be merged.")]
