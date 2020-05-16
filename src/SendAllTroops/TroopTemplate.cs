@@ -45,7 +45,7 @@ namespace CombatModCollection.SendAllTroops
             float armorSum = equipment.GetArmArmorSum() + equipment.GetHeadArmorSum() + equipment.GetHumanBodyArmorSum() + equipment.GetLegArmorSum();
             float totalWeight = equipment.GetTotalWeightOfArmor(true) + equipment.GetTotalWeightOfWeapons();
             Atheletics = troop.GetSkillValue(DefaultSkills.Athletics) / (totalWeight + 3f) * 0.01f;
-            ArmorPoints = (float)(0.3 + Math.Pow(armorSum, 0.75) / 40.0);
+            ArmorPoints = (float)(0.4 + armorSum / 160.0);
 
             //templateFile.WriteLine(troop.Name);
             //templateFile.WriteLine("Atheletics: " + Atheletics);
