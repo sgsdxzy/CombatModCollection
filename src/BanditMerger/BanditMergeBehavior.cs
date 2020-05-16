@@ -21,7 +21,7 @@ namespace CombatModCollection.BanditMerger
             {
                 if (mobileParty != null && mobileParty.IsActive && mobileParty.IsBandit && !mobileParty.IsCurrentlyUsedByAQuest
                     && mobileParty.CurrentSettlement == null && mobileParty.MapEvent == null
-                    && mobileParty.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNumberForMerge)
+                    && NumberCanBeMerged(mobileParty))
                 {
                     foreach (MobileParty nearbyMobileParty in Campaign.Current.GetNearbyMobileParties(
                         mobileParty.Position2D, Settings.Instance.Strategy_BanditMerger_MergeRadius, (Func<MobileParty, bool>)(x => true)).ToList())
@@ -30,7 +30,7 @@ namespace CombatModCollection.BanditMerger
                             && nearbyMobileParty.IsBandit && !nearbyMobileParty.IsCurrentlyUsedByAQuest
                             && nearbyMobileParty.CurrentSettlement == null && nearbyMobileParty.MapEvent == null
                             && nearbyMobileParty.MapFaction.StringId == mobileParty.MapFaction.StringId
-                            && nearbyMobileParty.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNumberForMerge)
+                            && NumberCanBeMerged(nearbyMobileParty))
                         {
                             mobileParty.Party.AddMembers(nearbyMobileParty.MemberRoster.ToFlattenedRoster());
                             mobileParty.Party.AddPrisoners(nearbyMobileParty.PrisonRoster.ToFlattenedRoster());
@@ -38,6 +38,18 @@ namespace CombatModCollection.BanditMerger
                         }
                     }
                 }
+            }
+        }
+
+        private bool NumberCanBeMerged(MobileParty party)
+        {
+            if (party.MapFaction.StringId == "looters")
+            {
+                return party.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxLooterNumberForMerge;
+            }
+            else
+            {
+                return party.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNonLooterNumberForMerge;
             }
         }
     }

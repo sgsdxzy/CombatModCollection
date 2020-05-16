@@ -252,12 +252,16 @@ namespace CombatModCollection
         [SettingPropertyGroup(groupName: "BanditMerger")]
         public int Strategy_BanditMerger_MergeRadius { get; set; } = 15;
 
-        [SettingPropertyInteger(displayName: "Max Number For Merge", minValue: 0, maxValue: 300, Order = 2, RequireRestart = false, HintText = "The maximum number of bandits in the same group to be allowed to merge more.")]
+        [SettingPropertyInteger(displayName: "Max Non Looter Number For Merge", minValue: 0, maxValue: 300, Order = 2, RequireRestart = false, HintText = "The maximum number of non-looter bandits in the same group to be allowed to merge more.")]
         [SettingPropertyGroup(groupName: "BanditMerger")]
-        public int Strategy_BanditMerger_MaxNumberForMerge { get; set; } = 40;
+        public int Strategy_BanditMerger_MaxNonLooterNumberForMerge { get; set; } = 20;
 
-        [SettingPropertyInteger(displayName: "Maximum Looter Parties", minValue: 0, maxValue: 1000, Order = 3, RequireRestart = false, HintText = "The maximum total number of looter parties.")]
+        [SettingPropertyInteger(displayName: "Max Looter Number For Merge", minValue: 0, maxValue: 300, Order = 3, RequireRestart = false, HintText = "The maximum number of looters in the same group to be allowed to merge more.")]
         [SettingPropertyGroup(groupName: "BanditMerger")]
-        public int Strategy_BanditMerger_MaximumLooterParties { get; set; } = 300;
+        public int Strategy_BanditMerger_MaxLooterNumberForMerge { get; set; } = 20;
+
+        [SettingPropertyInteger(displayName: "Maximum Looter Parties", minValue: 0, maxValue: 500, Order = 4, RequireRestart = false, HintText = "The maximum total number of looter parties.")]
+        [SettingPropertyGroup(groupName: "BanditMerger")]
+        public int Strategy_BanditMerger_MaximumLooterParties { get; set; } = 100;
     }
 }
