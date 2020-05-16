@@ -26,9 +26,9 @@ namespace CombatModCollection.SendAllTroops
         private int Alive { get { return TotalCount - CurrentDeathCount; } }
         private bool IsUsingShield = false;
         private bool IsUsingRanged = false;
+        private bool IsMounted = false;
         private Weapon ChosenWeapon = Weapon.Fist;
 
-        private AttackComposition _preparedAttack;
         private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
 
@@ -50,9 +50,10 @@ namespace CombatModCollection.SendAllTroops
                 {
                     Shield = template.Shield.Clone();
                 }
-                if (template.Horse != null)
+                if (template.Horse != null && !partyState.mapEventState.IsSiege)
                 {
                     Horse = template.Horse.Clone();
+                    IsMounted = true;
                 }
                 Atheletics = template.Atheletics;
                 ArmorPoints = template.ArmorPoints;
@@ -64,12 +65,12 @@ namespace CombatModCollection.SendAllTroops
             }
         }
 
-        public AttackComposition GetWeaponAttack(Weapon weapon)
+        public PartyAttackComposition GetWeaponAttack(Weapon weapon)
         {
             int bonusRange = partyState.mapEventState.IsSiege && !partyState.IsAttacker ? 1 : 0;
             if (weapon.Range + bonusRange + partyState.mapEventState.StageRounds < partyState.mapEventState.BattleScale)
             {
-                return new AttackComposition();
+                return new PartyAttackComposition();
             }
 
             var attack = weapon.Attack;
@@ -103,6 +104,10 @@ namespace CombatModCollection.SendAllTroops
                         attack.Missile *= 1 + partyState.mapEventState.WallLevel * 0.2f;
                     }
                 }
+                return new PartyAttackComposition
+                {
+                    Infantry = attack,
+                };
             }
             else
             {
@@ -110,27 +115,29 @@ namespace CombatModCollection.SendAllTroops
                 {
                     attack.Melee *= (1 + Horse.Strength * 0.5f);
                     attack.Polearm *= (1 + Horse.Strength * 1.0f);
+                    return new PartyAttackComposition
+                    {
+                        Mounted = attack,
+                    };
                 }
                 else
                 {
                     attack.Melee *= (1 + Atheletics);
                     attack.Polearm *= (1 + Atheletics);
+                    return new PartyAttackComposition
+                    {
+                        Infantry = attack,
+                    };
                 }
             }
-            return attack;
         }
 
-        public void PrepareWeapon()
+        private PartyAttackComposition PrepareWeapon()
         {
-            if (!Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
-            {
-                return;
-            }
-
             ChosenWeapon = Weapon.Fist;
             var attack = GetWeaponAttack(ChosenWeapon);
             float highest = attack.Sum();
-            _preparedAttack = attack;
+            var preparedAttack = attack;
 
             foreach (var weapon in Weapons)
             {
@@ -140,28 +147,18 @@ namespace CombatModCollection.SendAllTroops
                     var preference = GetWeaponPreference(weapon);
                     if (attack.Sum() * preference > highest)
                     {
-                        _preparedAttack = attack;
+                        preparedAttack = attack;
                         highest = attack.Sum() * preference;
                         ChosenWeapon = weapon;
                     }
                 }
             }
-
-            if (!ChosenWeapon.IsTwohanded && Shield != null)
-            {
-                IsUsingShield = true;
-            }
-            else
-            {
-                IsUsingShield = false;
-            }
-
-            IsUsingRanged = ChosenWeapon.IsRanged;
+            return preparedAttack;
         }
 
         private float GetWeaponPreference(Weapon weapon)
         {
-            if (Horse != null && !partyState.mapEventState.IsSiege)
+            if (IsMounted)
             {
                 if (weapon.IsRanged)
                 {
@@ -193,30 +190,38 @@ namespace CombatModCollection.SendAllTroops
             return preference;
         }
 
-        private AttackComposition MakeSingleAttack(float consumption)
+        private PartyAttackComposition MakeSingleAttack(float consumption)
         {
             if (!Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
-                return new AttackComposition { Melee = Strength };
+                PartyAttackComposition attack = new PartyAttackComposition();
+                attack.Infantry.Melee = Strength;
+                return attack;
             }
 
-            if (!ChosenWeapon.IsUsable)
+            var preparedAttack = PrepareWeapon();
+            if (!ChosenWeapon.IsTwohanded && Shield != null)
             {
-                return new AttackComposition();
+                IsUsingShield = true;
             }
+            else
+            {
+                IsUsingShield = false;
+            }
+            IsUsingRanged = ChosenWeapon.IsRanged;
             if (ChosenWeapon.HasLimitedAmmo && !partyState.mapEventState.IsSiege)
             {
                 ChosenWeapon.RemainingAmmo -= consumption;
             }
-            return _preparedAttack;
+            return preparedAttack;
         }
 
-        public AttackComposition MakeTotalAttack(float consumption)
+        public PartyAttackComposition MakeTotalAttack(float consumption)
         {
             return MakeSingleAttack(consumption) * Alive;
         }
 
-        public bool TakeHit(AttackComposition attack, out float damage)
+        public bool TakeHit(PartyAttackComposition attack, out float damage)
         {
             if (_expectedHits > 0)
             {
@@ -235,48 +240,64 @@ namespace CombatModCollection.SendAllTroops
 
             if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
-                float meleeDefense = ArmorPoints;
-                float missileDefense = ArmorPoints;
-                float polearmDefense = ArmorPoints;
+                float infantryMeleeDefense = ArmorPoints;
+                float infantryMissileDefense = ArmorPoints;
+                float infantryPolearmDefense = ArmorPoints;
+
+                float mountedMeleeDefense = ArmorPoints;
+                float mountedMissileDefense = ArmorPoints;
+                float mountedPolearmDefense = ArmorPoints;
                 if (IsUsingShield && Shield != null)
                 {
-                    meleeDefense += Shield.Strength;
-                    missileDefense += 6 * Shield.Strength;
-                    polearmDefense += Shield.Strength;
+                    infantryMeleeDefense += Shield.Strength;
+                    infantryMissileDefense += 6 * Shield.Strength;
+                    infantryPolearmDefense += Shield.Strength;
+
+                    mountedMeleeDefense += Shield.Strength;
+                    mountedMissileDefense += 6 * Shield.Strength;
+                    mountedPolearmDefense += Shield.Strength;
                 }
-                if (Horse != null && !partyState.mapEventState.IsSiege)
+                if (IsMounted)
                 {
                     if (IsUsingRanged)
                     {
-                        meleeDefense *= (1 + 3 * Horse.Strength);
-                        missileDefense *= (1 + Horse.Strength);
-                        polearmDefense *= (1 + 3 * Horse.Strength);
+                        infantryMeleeDefense *= (1 + 3 * Horse.Strength);
+                        infantryMissileDefense *= (1 + Horse.Strength);
+                        infantryPolearmDefense *= (1 + 3 * Horse.Strength);
                     }
                     else
                     {
-                        meleeDefense *= (1 + Horse.Strength);
-                        missileDefense *= (1 + Horse.Strength);
+                        infantryMeleeDefense *= (1 + Horse.Strength);
+                        infantryMissileDefense *= (1 + Horse.Strength);
                     }
+
+                    mountedMeleeDefense *= (1 + Horse.Strength);
+                    mountedMissileDefense *= (1 + Horse.Strength);
+                    mountedPolearmDefense *= (1 + Horse.Strength);
                 }
                 else
                 {
                     if (IsUsingRanged)
                     {
-                        meleeDefense *= (1 + 6 * Atheletics);
-                        polearmDefense *= (1 + 6 * Atheletics);
+                        infantryMeleeDefense *= (1 + 6 * Atheletics);
+                        infantryPolearmDefense *= (1 + 6 * Atheletics);
                     }
                     else
                     {
-                        meleeDefense *= (1 + Atheletics);
-                        polearmDefense *= (1 + Atheletics);
+                        infantryMeleeDefense *= (1 + Atheletics);
+                        infantryPolearmDefense *= (1 + Atheletics);
                     }
+                    mountedMeleeDefense *= (1 + Atheletics);
+                    mountedPolearmDefense *= (1 + Atheletics);
                 }
 
-                damage = attack.Melee / meleeDefense + attack.Missile / missileDefense + attack.Polearm / polearmDefense;
+                damage = attack.Infantry.Melee / infantryMeleeDefense + attack.Infantry.Missile / infantryMissileDefense
+                    + attack.Infantry.Polearm / infantryPolearmDefense + attack.Mounted.Melee / mountedMeleeDefense
+                    + attack.Mounted.Missile / mountedMissileDefense + attack.Mounted.Polearm / mountedPolearmDefense;
             }
             else
             {
-                damage = attack.Melee / Strength;
+                damage = attack.Infantry.Melee / Strength;
             }
 
             if (Settings.Instance.Battle_SendAllTroops_RandomDamage)

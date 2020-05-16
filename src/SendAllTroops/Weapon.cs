@@ -9,7 +9,7 @@
             Weapon.Fist.Attack.Melee = 0.1f;
         }
 
-        public AttackComposition Attack;
+        public WeaponAttackComposition Attack;
         public int Range = 0;
         public bool IsTwohanded = false;
         public bool HasLimitedAmmo = false;

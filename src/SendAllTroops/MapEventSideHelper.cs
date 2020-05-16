@@ -47,7 +47,7 @@ namespace CombatModCollection.SendAllTroops
             // this._simulationTroopList[this._selectedSimulationTroopIndex] = this._simulationTroopList[this._simulationTroopList.Count - 1];
             // this._simulationTroopList.RemoveAt(this._simulationTroopList.Count - 1);
             // int selectedSimulationTroopIndex = (int)MapEventSide__selectedSimulationTroopIndex.GetValue(side);
-            // List<UniqueTroopDescriptor> simulationTroopList = (List<UniqueTroopDescriptor>)MapEventSide__simulationTroopList.GetValue(side);
+            // List<UniqueTroopDescriptor> simulationTroopList = (List<UniqueTroopDescriptor>)MapEventSide_PartyAttackComposition_simulationTroopList.GetValue(side);
             simulationTroopList[selectedSimulationTroopIndex] = simulationTroopList[simulationTroopList.Count - 1];
             simulationTroopList.RemoveAt(simulationTroopList.Count - 1);
 
@@ -67,7 +67,7 @@ namespace CombatModCollection.SendAllTroops
             UniqueTroopDescriptor strikedTroopDescriptor,
             int selectedSimulationTroopIndex,
             List<UniqueTroopDescriptor> strikedTroopList,
-            AttackComposition attack,
+            PartyAttackComposition attack,
             DamageTypes damageType,
             PartyBase strikerParty,
             MapEventState mapEventState,

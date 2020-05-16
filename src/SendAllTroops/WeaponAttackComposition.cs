@@ -1,6 +1,6 @@
 ﻿namespace CombatModCollection.SendAllTroops
 {
-    public struct AttackComposition
+    public struct WeaponAttackComposition
     {
         public float Melee;
         public float Missile;
@@ -11,9 +11,9 @@
             return Melee + Missile + Polearm;
         }
 
-        public static AttackComposition operator *(AttackComposition a, float b)
+        public static WeaponAttackComposition operator *(WeaponAttackComposition a, float b)
         {
-            return new AttackComposition
+            return new WeaponAttackComposition
             {
                 Melee = a.Melee * b,
                 Missile = a.Missile * b,
@@ -21,9 +21,9 @@
             };
         }
 
-        public static AttackComposition operator /(AttackComposition a, float b)
+        public static WeaponAttackComposition operator /(WeaponAttackComposition a, float b)
         {
-            return new AttackComposition
+            return new WeaponAttackComposition
             {
                 Melee = a.Melee / b,
                 Missile = a.Missile / b,
@@ -31,9 +31,9 @@
             };
         }
 
-        public static AttackComposition operator +(AttackComposition a, AttackComposition b)
+        public static WeaponAttackComposition operator +(WeaponAttackComposition a, WeaponAttackComposition b)
         {
-            return new AttackComposition
+            return new WeaponAttackComposition
             {
                 Melee = a.Melee + b.Melee,
                 Missile = a.Missile + b.Missile,
@@ -41,7 +41,7 @@
             };
         }
 
-        public bool Equals(AttackComposition b)
+        public bool Equals(WeaponAttackComposition b)
         {
             return Melee == b.Melee && Missile == b.Missile && Polearm == b.Polearm;
         }

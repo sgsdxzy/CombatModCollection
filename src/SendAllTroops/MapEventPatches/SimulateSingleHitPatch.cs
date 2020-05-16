@@ -20,7 +20,7 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
             IBattleObserver battleObserver,
             MapEventSide strikerSide,
             MapEventSide strikedSide,
-            AttackComposition attack,
+            PartyAttackComposition attack,
             out float totalDamageDone)
         {
             int strikerNumber = strikerSide.NumRemainingSimulationTroops;
@@ -69,9 +69,6 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
         {
             MapEventSide attackerSide = __instance.AttackerSide;
             MapEventSide defenderSide = __instance.DefenderSide;
-            AttackComposition attackerTotalAttack = new AttackComposition();
-            AttackComposition defenderTotalAttack = new AttackComposition();
-
             MapEventState mapEventState = MapEventState.GetMapEventState(__instance);
             IBattleObserver battleObserver = (IBattleObserver)MapEvent_BattleObserver.GetValue(__instance);
 
@@ -113,6 +110,8 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
             float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, strengthOfNumber - 1.0);
             float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, strengthOfNumber - 1.0);
 
+            PartyAttackComposition attackerTotalAttack = new PartyAttackComposition();
+            PartyAttackComposition defenderTotalAttack = new PartyAttackComposition();
             foreach (var party in attackerSide.Parties)
             {
                 attackerTotalAttack += mapEventState.MakePartyAttack(party, battleSpeedMultiplier * attackerNumberPenalty / RangedAverageDamagePerHit);
@@ -125,9 +124,9 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
             float attackerAdvantage = BattleAdvantageModel.PartyBattleAdvantage(attackerSide.LeaderParty);
             float defenderAdvantage = BattleAdvantageModel.PartyBattleAdvantage(defenderSide.LeaderParty);
 
-            AttackComposition attackerDistributedAttack = attackerTotalAttack
+            PartyAttackComposition attackerDistributedAttack = attackerTotalAttack
                 * (battleSpeedMultiplier * attackerNumberPenalty * attackerAdvantage * mapEventState.SettlementPenalty / defenderNumber);
-            AttackComposition defenderDistributedAttack = defenderTotalAttack
+            PartyAttackComposition defenderDistributedAttack = defenderTotalAttack
                 * (battleSpeedMultiplier * defenderNumberPenalty * defenderAdvantage / attackerNumber);
 
             bool finishedAnyone = false;

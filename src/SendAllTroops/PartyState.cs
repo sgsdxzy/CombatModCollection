@@ -29,19 +29,18 @@ namespace CombatModCollection.SendAllTroops
             return troopState;
         }
 
-        public bool ApplyDamageToTroop(AttackComposition attack, CharacterObject troop, out float damage)
+        public bool ApplyDamageToTroop(PartyAttackComposition attack, CharacterObject troop, out float damage)
         {
             TroopState troopState = GetTroopState(troop);
             bool isFinishingBlow = troopState.TakeHit(attack, out damage);
             return isFinishingBlow;
         }
 
-        public AttackComposition MakePartyAttack(float consumption)
+        public PartyAttackComposition MakePartyAttack(float consumption)
         {
-            AttackComposition attack = new AttackComposition();
+            PartyAttackComposition attack = new PartyAttackComposition();
             foreach (var troopState in TroopStates.Values)
             {
-                troopState.PrepareWeapon();
                 attack += troopState.MakeTotalAttack(consumption);
             }
             return attack;
