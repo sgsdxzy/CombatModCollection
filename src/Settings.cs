@@ -250,7 +250,7 @@ namespace CombatModCollection
 
         [SettingPropertyInteger(displayName: "Merge Radius", minValue: 0, maxValue: 100, Order = 1, RequireRestart = false, HintText = "The distance between two bandit groups to be merged.")]
         [SettingPropertyGroup(groupName: "BanditMerger")]
-        public int Strategy_BanditMerger_MergeRadius { get; set; } = 15;
+        public int Strategy_BanditMerger_MergeRadius { get; set; } = 12;
 
         [SettingPropertyInteger(displayName: "Max Non Looter Number For Merge", minValue: 0, maxValue: 300, Order = 2, RequireRestart = false, HintText = "The maximum number of non-looter bandits in the same group to be allowed to merge more.")]
         [SettingPropertyGroup(groupName: "BanditMerger")]
