@@ -7,7 +7,7 @@ namespace CombatModCollection.SendAllTroops
 {
     public class TroopState
     {
-        // public readonly string Name;
+        //public readonly string Name;
         private readonly PartyState partyState;
         private readonly bool IsHero;
         private readonly int TotalCount;
@@ -32,9 +32,12 @@ namespace CombatModCollection.SendAllTroops
         private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
 
+        //private static System.IO.StreamWriter attackFile = new System.IO.StreamWriter(@"D:\Attacks.txt");
+        //private static System.IO.StreamWriter damageFile = new System.IO.StreamWriter(@"D:\Damages.txt");
+
         public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
         {
-            // Name = troop.Name.ToString();
+            //Name = troop.Name.ToString();
             partyState = _partyState;
             IsHero = troop.IsHero;
             TotalCount = count;
@@ -213,6 +216,11 @@ namespace CombatModCollection.SendAllTroops
             {
                 ChosenWeapon.RemainingAmmo -= consumption;
             }
+
+            //attackFile.WriteLine(String.Format("{0} made attack: {1:G3} {2:G3} {3:G3} {4:G3} {5:G3} {6:G3}",
+            //               Name, preparedAttack.Infantry.Melee, preparedAttack.Infantry.Missile, preparedAttack.Infantry.Polearm,
+            //               preparedAttack.Mounted.Melee, preparedAttack.Mounted.Missile, preparedAttack.Mounted.Polearm));
+
             return preparedAttack;
         }
 
@@ -298,6 +306,10 @@ namespace CombatModCollection.SendAllTroops
             {
                 damage = attack.Infantry.Melee / Strength;
             }
+
+            //damageFile.WriteLine(String.Format("{0} took attack: {1:G3} {2:G3} {3:G3} {4:G3} {5:G3} {6:G3}, total damage: {7:G3}",
+            //               Name, attack.Infantry.Melee, attack.Infantry.Missile, attack.Infantry.Polearm,
+            //               attack.Mounted.Melee, attack.Mounted.Missile, attack.Mounted.Polearm, damage));
 
             if (Settings.Instance.Battle_SendAllTroops_RandomDamage)
             {
