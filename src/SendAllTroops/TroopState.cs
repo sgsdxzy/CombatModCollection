@@ -270,7 +270,6 @@ namespace CombatModCollection.SendAllTroops
                         infantryMeleeDefense *= (1 + Horse.Strength);
                         infantryMissileDefense *= (1 + Horse.Strength);
                     }
-
                     mountedMeleeDefense *= (1 + Horse.Strength);
                     mountedMissileDefense *= (1 + Horse.Strength);
                     mountedPolearmDefense *= (1 + Horse.Strength);
