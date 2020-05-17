@@ -29,7 +29,7 @@ namespace CombatModCollection
 
         [SettingPropertyInteger(displayName: "Lethal Excessive Damage", minValue: 0, maxValue: 100, Order = 2, RequireRestart = false, HintText = "If excessive damage is beyond this value, one is guaranteed to die unless saved by surgeon.")]
         [SettingPropertyGroup(groupName: "SurviveByArmor/Survive By Excessive Damage")]
-        public int Battle_SurviveByArmor_LethalExcessiveDamage { get; set; } = 40;
+        public int Battle_SurviveByArmor_LethalExcessiveDamage { get; set; } = 30;
 
         [SettingPropertyBool(displayName: "Apply Medicine Bonus", Order = 3, RequireRestart = false, HintText = "Apply survival bonus from the medicine level of party surgeon.")]
         [SettingPropertyGroup(groupName: "SurviveByArmor/Survive By Excessive Damage")]
