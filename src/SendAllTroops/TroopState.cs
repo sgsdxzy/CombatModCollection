@@ -29,11 +29,7 @@ namespace CombatModCollection.SendAllTroops
         private bool IsMounted = false;
         private Weapon ChosenWeapon = Weapon.Fist;
 
-        private float _cachedHitDamage = 0;
         private int _expectedHits = 0;
-
-        //private static System.IO.StreamWriter attackFile = new System.IO.StreamWriter(@"D:\Attacks.txt");
-        //private static System.IO.StreamWriter damageFile = new System.IO.StreamWriter(@"D:\Damages.txt");
 
         public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
         {
@@ -217,10 +213,6 @@ namespace CombatModCollection.SendAllTroops
                 ChosenWeapon.RemainingAmmo -= consumption;
             }
 
-            //attackFile.WriteLine(String.Format("{0} made attack: {1:G3} {2:G3} {3:G3} {4:G3} {5:G3} {6:G3}",
-            //               Name, preparedAttack.Infantry.Melee, preparedAttack.Infantry.Missile, preparedAttack.Infantry.Polearm,
-            //               preparedAttack.Mounted.Melee, preparedAttack.Mounted.Missile, preparedAttack.Mounted.Polearm));
-
             return preparedAttack;
         }
 
@@ -229,11 +221,17 @@ namespace CombatModCollection.SendAllTroops
             return MakeSingleAttack(consumption) * Alive;
         }
 
-        public bool TakeHit(PartyAttackComposition attack, out float damage)
+        public bool TakeHit(PartyAttackComposition attack, out float totalDamage)
         {
+            if (Alive <= 0)
+            {
+                totalDamage = 0;
+                return true;
+            }
+
             if (_expectedHits > 0)
             {
-                damage = _cachedHitDamage;
+                totalDamage = 0;
                 _expectedHits -= 1;
                 if (ExpectedDeathCount > CurrentDeathCount)
                 {
@@ -246,6 +244,7 @@ namespace CombatModCollection.SendAllTroops
                 }
             }
 
+            float singleDamage;
             if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 float infantryMeleeDefense = ArmorPoints;
@@ -298,29 +297,25 @@ namespace CombatModCollection.SendAllTroops
                     mountedPolearmDefense *= (1 + Atheletics);
                 }
 
-                damage = attack.Infantry.Melee / infantryMeleeDefense + attack.Infantry.Missile / infantryMissileDefense
+                singleDamage = attack.Infantry.Melee / infantryMeleeDefense + attack.Infantry.Missile / infantryMissileDefense
                     + attack.Infantry.Polearm / infantryPolearmDefense + attack.Mounted.Melee / mountedMeleeDefense
                     + attack.Mounted.Missile / mountedMissileDefense + attack.Mounted.Polearm / mountedPolearmDefense;
             }
             else
             {
-                damage = attack.Infantry.Melee / Strength;
+                singleDamage = attack.Infantry.Melee / Strength;
             }
-
-            //damageFile.WriteLine(String.Format("{0} took attack: {1:G3} {2:G3} {3:G3} {4:G3} {5:G3} {6:G3}, total damage: {7:G3}",
-            //               Name, attack.Infantry.Melee, attack.Infantry.Missile, attack.Infantry.Polearm,
-            //               attack.Mounted.Melee, attack.Mounted.Missile, attack.Mounted.Polearm, damage));
 
             if (Settings.Instance.Battle_SendAllTroops_RandomDamage)
             {
-                damage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
+                singleDamage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
             }
-            _cachedHitDamage = damage;
-
+            
             if (IsHero)
             {
                 // Uses the vanilla hero health system
-                HitPoints -= damage;
+                totalDamage = Math.Min(singleDamage, HitPoints);
+                HitPoints -= singleDamage;
                 if (HitPoints <= 20)
                 {
                     CurrentDeathCount = 1;
@@ -332,22 +327,22 @@ namespace CombatModCollection.SendAllTroops
                 }
             }
 
-            // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks
+            // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks  
+            totalDamage = Math.Min(singleDamage * Alive, HitPoints * TotalCount - AccumulatedDamage);
+            AccumulatedDamage += totalDamage;
             if (Settings.Instance.Battle_SendAllTroops_RandomDeath)
             {
                 for (int i = 0; i < Alive; i++)
                 {
-                    if (MBRandom.RandomFloat * HitPoints < damage)
+                    if (MBRandom.RandomFloat * HitPoints < singleDamage)
                     {
                         ExpectedDeathCount += 1;
                     }
                 }
-
             }
             else
             {
-                AccumulatedDamage += damage * Alive;
-                CalculateExpectedDeathCounts(damage);
+                ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
             }
             _expectedHits = Alive - 1;
 
@@ -358,14 +353,6 @@ namespace CombatModCollection.SendAllTroops
             }
 
             return false;
-        }
-
-        private void CalculateExpectedDeathCounts(float damage)
-        {
-            // float hitCountsToKill = HitPoints / damage;
-            // float ratio = AccumulatedDamage / TotalCount / HitPoints;
-            // ExpectedDeathCount = (int)Math.Round(Math.Pow(ratio, Math.Pow(hitCountsToKill, 0.7)) * TotalCount);
-            ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
         }
 
         public float GetCurrentStrength()
