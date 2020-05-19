@@ -44,11 +44,11 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
                 PartyBase strikedTroopParty = strikedSide.GetAllocatedTroopParty(strikedTroopDescriptor);
 
                 // MapEvents.GetSimulatedDamage and CombatSimulationModel.SimulateHit
-                if (mapEvent.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
-                {
-                    float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
-                    attack *= damageMultiplier;
-                }
+                //if (mapEvent.IsPlayerSimulation && strikedTroopParty == PartyBase.MainParty)
+                //{
+                //    float damageMultiplier = Campaign.Current.Models.DifficultyModel.GetPlayerTroopsReceivedDamageMultiplier();
+                //    attack *= damageMultiplier;
+                //}
                 DamageTypes damageType = (double)MBRandom.RandomFloat < 0.15 ? DamageTypes.Blunt : DamageTypes.Cut;
 
                 bool isFinishingStrike = MapEventSideHelper.ApplySimulationDamageToSelectedTroop(
@@ -74,16 +74,33 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
 
             int attackerNumber = attackerSide.NumRemainingSimulationTroops;
             int defenderNumber = defenderSide.NumRemainingSimulationTroops;
+            int biggerPartyNumber = Math.Max(attackerNumber, defenderNumber);
+            int smallerPartyNumber = Math.Min(attackerNumber, defenderNumber);
 
-            float strengthOfNumber;
-            if (mapEventState.IsSiege)
+            float attackerNumberPenalty;
+            float defenderNumberPenalty;
+            float battleSpeedMultiplier = DamageMultiplier;
+            if (smallerPartyNumber < 10)
             {
-                if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+                attackerNumberPenalty = 1.0f;
+                defenderNumberPenalty = 1.0f;
+            }
+            else
+            {
+                float strengthOfNumber;
+                if (mapEventState.IsSiege)
                 {
-                    if (mapEventState.GateBreached)
+                    if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
                     {
-                        strengthOfNumber = (Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber
-                            + Settings.Instance.Battle_SendAllTroops_StrengthOfNumber) / 2;
+                        if (mapEventState.GateBreached)
+                        {
+                            strengthOfNumber = (Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber
+                                + Settings.Instance.Battle_SendAllTroops_StrengthOfNumber) / 2;
+                        }
+                        else
+                        {
+                            strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                        }
                     }
                     else
                     {
@@ -92,23 +109,16 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
                 }
                 else
                 {
-                    strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                    strengthOfNumber = Settings.Instance.Battle_SendAllTroops_StrengthOfNumber;
                 }
+                if (strengthOfNumber != 0.6f)
+                {
+                    // Normalized battle speed to that of 0.6
+                    battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - strengthOfNumber);
+                }
+                attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, strengthOfNumber - 1.0);
+                defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, strengthOfNumber - 1.0);
             }
-            else
-            {
-                strengthOfNumber = Settings.Instance.Battle_SendAllTroops_StrengthOfNumber;
-            }
-            float battleSpeedMultiplier = DamageMultiplier;
-            if (strengthOfNumber != 0.6f)
-            {
-                // Normalized battle speed to that of 0.6
-                double biggerPartyNumber = Math.Max(attackerNumber, defenderNumber);
-                battleSpeedMultiplier *= (float)Math.Pow(biggerPartyNumber, 0.6 - strengthOfNumber);
-            }
-
-            float attackerNumberPenalty = (float)Math.Pow((double)attackerNumber, strengthOfNumber - 1.0);
-            float defenderNumberPenalty = (float)Math.Pow((double)defenderNumber, strengthOfNumber - 1.0);
 
             PartyAttackComposition attackerTotalAttack = new PartyAttackComposition();
             PartyAttackComposition defenderTotalAttack = new PartyAttackComposition();
