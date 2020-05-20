@@ -310,7 +310,7 @@ namespace CombatModCollection.SendAllTroops
             {
                 singleDamage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
             }
-            
+
             if (IsHero)
             {
                 // Uses the vanilla hero health system
