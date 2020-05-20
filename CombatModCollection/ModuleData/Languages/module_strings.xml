@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English"/>
+  </tags>
+  <strings>
+    <string id="TUkzZ4" text="SurviveByArmor"/>
+    <string id="qbaoGX" text="Enable SurviveByArmor."/>
+    <string id="G8UbtR" text="Blunt Death Rate"/>
+    <string id="aASlgg" text="The death rate of blunt weapons."/>
+    <string id="FFtdLT" text="Survive By ExcessiveDamage"/>
+    <string id="z5oYR8" text="Use excessive damage to determine survival rate. Excessive damage is the excessive part of the killing blow."/>
+    <string id="yWuPAT" text="Survive By Excessive Damage"/>
+    <string id="Nbv5e2" text="Safe Excessive Damage"/>
+    <string id="o7jTMR" text="If excessive damage is within this value, one is guaranteed to survive."/>
+    <string id="dteLyD" text="Lethal Excessive Damage"/>
+    <string id="qLy4nz" text="If excessive damage is beyond this value, one is guaranteed to die unless saved by surgeon."/>
+    <string id="1CyVUE" text="Apply Medicine Bonus"/>
+    <string id="G1miJd" text="Apply survival bonus from the medicine level of party surgeon."/>
+    <string id="S0TV5w" text="Apply Level Bonus"/>
+    <string id="ufMrjL" text="Apply survival bonus from one's character level."/>
+    <string id="2IqGzK" text="Apply Armor Bonus"/>
+    <string id="UOU4JL" text="Apply survival bonus from one's armor value."/>
+    <string id="9D1mkX" text="Survive By Armor Value"/>
+    <string id="AFJ03H" text="Use Armor value instead of character level to determine survival chance when Survive By Excessive Damage is off, or in battle simulations."/>
+    <string id="sSG34d" text="Armor Value Threshold"/>
+    <string id="ivmSs1" text="The armor value threshold to give a medium survival chance."/>
+    <string id="ITpg8n" text="SendAllTroops"/>
+    <string id="myZoTQ" text="Enable SendAllTroops."/>
+    <string id="4aqVhB" text="Random Damage"/>
+    <string id="ZrqDEF" text="If set to false, the damage value is fixed. If true, it will randomly fluctuate around the center points."/>
+    <string id="DGJxvz" text="Random Death"/>
+    <string id="ex9Bix" text="If set to false, the death of soldier is determined by hitpoints reach 0. If true, the vanilla instant-death-by-chance is used."/>
+    <string id="na7hDa" text="Detailed Combat Model"/>
+    <string id="ReaYvH" text="Whether to use equipments and skill levels of a soldier to determine his strength, and simulate the progression of battles. If set to false, the vanilla Power is used."/>
+    <string id="h1rTcI" text="Combat Speed"/>
+    <string id="A4sffk" text="Multiply the combat speed between AIs."/>
+    <string id="IALEm6" text="Combat Experience Multiplier"/>
+    <string id="rMT98d" text="Multiply global experience points gained for everyone."/>
+    <string id="cO5EoB" text="Strength of Number"/>
+    <string id="Kg9oy2" text="Controls the penalty applied to the side with more members. A higher value makes the side with more members stronger."/>
+    <string id="l7RZ2J" text="Advanced Settings"/>
+    <string id="TopudX" text="Siege Strength of Number"/>
+    <string id="9djOfH" text="Controls the penalty applied to the side with more members in sieges. A higher value makes the side with more members stronger."/>
+    <string id="1RYg7H" text="WarStomp"/>
+    <string id="9XnXjr" text="Enable WarStomp."/>
+    <string id="b218nG" text="Unstoppable War Horse Charge"/>
+    <string id="hMCreW" text="Whether warhorse charges are stoppable by thrust attacks."/>
+    <string id="Xe8k75" text="Unstoppable Other Horse Charge"/>
+    <string id="R78PyF" text="Whether other types of horse and camel charges are stoppable by thrust attacks."/>
+    <string id="4tLPR7" text="Damage Multiplier to Horse"/>
+    <string id="IIwiJr" text="The damage multiplier to horses from pierce attacks."/>
+    <string id="mtsOlw" text="WarStomp Damage Multiplier"/>
+    <string id="dNcNpx" text="Charge damage multiplier when charging from the back."/>
+    <string id="4s3EnO" text="PowerThrust"/>
+    <string id="IH4Opq" text="Enable PowerThrust. The total magnitude = kE * (0.5 * weight * speed^2) + kP * (weight * speed) + kC."/>
+    <string id="6HDWN0" text="kE"/>
+    <string id="DJD6ps" text="The coefficient for energy when calculating magnitude."/>
+    <string id="GbJfTq" text="kP"/>
+    <string id="kqjPv1" text="The coefficient for momentum when calculating magnitude."/>
+    <string id="ym5ln0" text="kC"/>
+    <string id="B9z8Rf" text="The constant coefficient when calculating magnitude."/>
+    <string id="EWbPbo" text="Thrust Hit With Arm Damage Multiplier"/>
+    <string id="HCeN37" text="Damage multiplier when it is the handguard part of the thrust weapon that hit enemy."/>
+    <string id="rQSUc5" text="Non Tip Thrust Hit Damage Multiplier"/>
+    <string id="NzBZEU" text="Damage multiplier when it is the not the tip of the spear that hit enemy."/>
+    <string id="GUT10Z" text="RealisticBallistics"/>
+    <string id="346ex2" text="Enable RealisticBallistics."/>
+    <string id="j7cmtP" text="Consistant Arrow Speed"/>
+    <string id="r3x53T" text="Change the missile speed of every bow and crossbow to match its damage."/>
+    <string id="f0MQ6b" text="Arrow Speed Multiplier"/>
+    <string id="cxEZom" text="Multiply the missile speed of arrows."/>
+    <string id="ZK8HFi" text="Bows"/>
+    <string id="0xKaDd" text="Bow Accuracy Multiplier"/>
+    <string id="5T1Oir" text="Multiple the accuracy of bows."/>
+    <string id="MwDSUM" text="Bow Damage Multiplier"/>
+    <string id="wt8yxn" text="Multiple the damage of bows."/>
+    <string id="Mu5Csz" text="Bow to Cut"/>
+    <string id="XdfLfX" text="Change the damage type of all bows and arrows to cut."/>
+    <string id="u97Mjd" text="Bolt Speed Multiplier"/>
+    <string id="A29Q87" text="Multiple the missile speed of bolts."/>
+    <string id="wWbzF5" text="Crossbows"/>
+    <string id="RS9Q5r" text="Crossbow Accuracy Multiplier"/>
+    <string id="0TxJ7V" text="Multiple the accuracy of crossbows."/>
+    <string id="O6Def8" text="Crossbow Damage Multiplier"/>
+    <string id="EHRZB4" text="Multiple the damage of crossbows."/>
+    <string id="hYsrxk" text="Crossbow to Cut"/>
+    <string id="ToDlUG" text="Change the damage type of all crossbows and bolts to cut."/>
+    <string id="FkTyl1" text="Thrown Speed Multiplier"/>
+    <string id="fAlgaM" text="Multiple the missile speed of thrown weapons."/>
+    <string id="OwEq8g" text="Thrown Weapons"/>
+    <string id="hEepCK" text="Thrown Accuracy Multiplier"/>
+    <string id="4wpBgt" text="Multiple the accuracy of thrown weapons."/>
+    <string id="Afhn07" text="Thrown Damage Multiplier"/>
+    <string id="vvOGJR" text="Multiple the damage of thrown weapons."/>
+    <string id="vtk5qm" text="Air Friction of Javelins"/>
+    <string id="sIzIQe" text="The air friction coefficient of javelins. The higher the value, the shorter range they can fly."/>
+    <string id="uM0htR" text="Air Frictions"/>
+    <string id="UwsNpv" text="Air Friction of Arrows and Bolts"/>
+    <string id="drgPfb" text="The air friction coefficient of arrows and bolts. The higher the value, the shorter range they can fly."/>
+    <string id="M0SuVr" text="Air Friction of Knives"/>
+    <string id="Kd4VmF" text="The air friction coefficient of throwing knives. The higher the value, the shorter range they can fly."/>
+    <string id="LyggxT" text="Air Friction of Axes"/>
+    <string id="wMEqS6" text="The air friction coefficient of throwing axes. The higher the value, the shorter range they can fly."/>
+    <string id="93jkRp" text="Uninterrupted"/>
+    <string id="9PV6v8" text="Enable Uninterrupted."/>
+    <string id="ivwMpr" text="Damage Interrupt Attack Threshold Pierce"/>
+    <string id="H5ck0h" text="Required pierce damage to interrupt attacks."/>
+    <string id="QReRZg" text="Damage Interrupt Attack Threshold Cut"/>
+    <string id="noUcuQ" text="Required cut damage to interrupt attacks."/>
+    <string id="u9nr4f" text="Damage Interrupt Attack Threshold Blunt"/>
+    <string id="j7CCyc" text="Required blunt damage to interrupt attacks."/>
+    <string id="4ssQXo" text="ModifyRespawnParty"/>
+    <string id="3DEgLf" text="Enable ModifyRespawnParty."/>
+    <string id="S6aWgf" text="AI Lord Party Size on Respawn"/>
+    <string id="mWy5M3" text="The number of soldiers AI lords respawn with."/>
+    <string id="V2Wjgt" text="Player Clan Party Size on Respawn"/>
+    <string id="Yq2nnC" text="The number of soldiers player's clan members start with when creating party."/>
+    <string id="IO6I6z" text="LearnToQuit"/>
+    <string id="uTgEDC" text="Enable LearnToQuit."/>
+    <string id="l1OFVA" text="Retreat Chance Multiplier"/>
+    <string id="grJG1p" text="Multiplier to the chance of successful retreat."/>
+    <string id="KxWZN4" text="Verbose"/>
+    <string id="X60XwQ" text="Turn on the party retreating from battle message."/>
+    <string id="XzbHdq" text="BanditMerger"/>
+    <string id="qGI8by" text="Enable BanditMerger."/>
+    <string id="nwr2tB" text="Merge Radius"/>
+    <string id="ZZOPqG" text="The distance between two bandit groups to be merged."/>
+    <string id="TGaCVr" text="Max Non Looter Number For Merge"/>
+    <string id="gPtfQt" text="The maximum number of non-looter bandits in the same group to be allowed to merge more."/>
+    <string id="w2mfQR" text="Max Looter Number For Merge"/>
+    <string id="EBW4fg" text="The maximum number of looters in the same group to be allowed to merge more."/>
+    <string id="g8Wb7m" text="Maximum Looter Parties"/>
+    <string id="wT4K5t" text="The maximum total number of looter parties."/>
+    <string id="dJhAtk" text="{ATTACKER} withdrew from battle against {DEFENDER}."/>
+    <string id="LLIPq6" text="{DEFENDER} was forced to retreat against {ATTACKER}."/>
+  </strings>
+</base>
