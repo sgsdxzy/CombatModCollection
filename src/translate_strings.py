@@ -30,7 +30,7 @@ def replace_string(filename):
 
   with open("module_strings.xml", "wt") as out:
     for key, value in string_dict.items():
-      out.write('<string id="{id}" text="{text}" />\n'.format(id=value, text=key))
+      out.write('<string id="{id}" text="{text}"/>\n'.format(id=value, text=key))
 
 
 if __name__ == "__main__":
