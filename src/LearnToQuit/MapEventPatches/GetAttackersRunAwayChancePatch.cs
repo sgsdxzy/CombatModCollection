@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.Localization;
 
 namespace CombatModCollection.LearnToQuit.MapEventPatches
 {
@@ -48,10 +50,13 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
             {
                 if (Settings.Instance.Strategy_LearnToQuit_Verbose)
                 {
-                    string information = __instance.AttackerSide.LeaderParty.Name.ToString() +
-                        " withdrew from battle against " +
-                        __instance.DefenderSide.LeaderParty.Name.ToString();
-                    InformationManager.DisplayMessage(new InformationMessage(information));
+                    Dictionary<string, TextObject> attributes = new Dictionary<string, TextObject>
+                    {
+                        {"ATTACKER", __instance.AttackerSide.LeaderParty.Name },
+                        {"DEFENDER", __instance.DefenderSide.LeaderParty.Name },
+                    };
+                    TextObject information = new TextObject("{=dJhAtk}{ATTACKER} withdrew from battle against {DEFENDER}.", attributes);
+                    InformationManager.DisplayMessage(new InformationMessage(information.ToString()));
                 }
 
                 __result = true;
@@ -93,10 +98,13 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
                 MapEventCustomMembers.DefendersRanAway[__instance.Id] = true;
                 if (Settings.Instance.Strategy_LearnToQuit_Verbose)
                 {
-                    string information = __instance.DefenderSide.LeaderParty.Name.ToString() +
-                        " was forced to retreat against " +
-                        __instance.AttackerSide.LeaderParty.Name.ToString();
-                    InformationManager.DisplayMessage(new InformationMessage(information));
+                    Dictionary<string, TextObject> attributes = new Dictionary<string, TextObject>
+                    {
+                        {"ATTACKER", __instance.AttackerSide.LeaderParty.Name },
+                        {"DEFENDER", __instance.DefenderSide.LeaderParty.Name },
+                    };
+                    TextObject information = new TextObject("{=LLIPq6}{DEFENDER} was forced to retreat against {ATTACKER}.", attributes);
+                    InformationManager.DisplayMessage(new InformationMessage(information.ToString()));
                 }
                 TroopSacrificeModel.SacrificeTroops(sacrificeRatio, __instance.DefenderSide, __instance);
 
