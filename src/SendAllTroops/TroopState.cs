@@ -316,8 +316,9 @@ namespace CombatModCollection.SendAllTroops
                 // Uses the vanilla hero health system
                 totalDamage = Math.Min(singleDamage, HitPoints);
                 HitPoints -= singleDamage;
-                if (HitPoints <= 20)
+                if (HitPoints <= 0)
                 {
+                    HitPoints = 1;
                     CurrentDeathCount = 1;
                     return true;
                 }
