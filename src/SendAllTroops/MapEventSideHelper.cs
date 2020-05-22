@@ -74,23 +74,13 @@ namespace CombatModCollection.SendAllTroops
             IBattleObserver battleObserver,
             out float damage)
         {
-            bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage);
+            bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage, out int heroRemainingHP);
             if (strikedTroop.IsHero)
             {
-                int newHP = strikedTroop.HeroObject.HitPoints - (int)Math.Round(damage);
+                strikedTroop.HeroObject.HitPoints = heroRemainingHP;
                 if (IsFinishingStrike)
                 {
-                    if (newHP > 20)
-                    {
-                        strikedTroop.HeroObject.HitPoints = 1;
-                    }
                     battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
-                } else
-                {
-                    if (newHP <= 20)
-                    {
-                        strikedTroop.HeroObject.HitPoints = 21;
-                    }
                 }
             }
             else

@@ -134,10 +134,10 @@ namespace CombatModCollection.SendAllTroops
             return partyState.MakePartyAttack(consumption);
         }
 
-        public bool ApplyDamageToPartyTroop(PartyAttackComposition attack, PartyBase party, CharacterObject troop, out float damage)
+        public bool ApplyDamageToPartyTroop(PartyAttackComposition attack, PartyBase party, CharacterObject troop, out float damage, out int heroRemainingHP)
         {
             PartyState partyState = GetPartyState(party);
-            return partyState.ApplyDamageToTroop(attack, troop, out damage);
+            return partyState.ApplyDamageToTroop(attack, troop, out damage, out heroRemainingHP);
         }
     }
 }
