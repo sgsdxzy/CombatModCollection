@@ -74,15 +74,20 @@ namespace CombatModCollection.SendAllTroops
             IBattleObserver battleObserver,
             out float damage)
         {
+            bool flag = false;
             bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage);
-            if (IsFinishingStrike)
+            if (strikedTroop.IsHero)
             {
-                if (strikedTroop.IsHero)
+                side.AddHeroDamage(strikedTroop.HeroObject, (int)Math.Round(damage));
+                if (strikedTroop.HeroObject.IsWounded)
                 {
-                    strikedTroop.HeroObject.HitPoints = 1;
+                    flag = true;
                     battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
                 }
-                else
+            }
+            else
+            {
+                if (IsFinishingStrike)
                 {
                     float survivalChance = Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty);
                     if (MBRandom.RandomFloat < survivalChance)
@@ -99,13 +104,13 @@ namespace CombatModCollection.SendAllTroops
                         if (strikedTroopParty.MobileParty != null)
                             SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
                     }
+                    flag = true;
                 }
-
+            }
+            if (flag)
                 // side.RemoveSelectedTroopFromSimulationList();
                 RemoveSelectedTroopFromSimulationList(side, selectedSimulationTroopIndex, strikedTroopList);
-            }
-                
-            return IsFinishingStrike;
+            return flag;
         }
 
         public static float RecalculateStrengthOfSide(MapEventSide side, MapEventState mapEventState)
