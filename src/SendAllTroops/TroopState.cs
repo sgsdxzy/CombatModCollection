@@ -318,8 +318,11 @@ namespace CombatModCollection.SendAllTroops
             if (IsHero)
             {
                 // Uses the vanilla hero health system
-                totalDamage = CalculateRecievedDamage(attack);
-                troop.HeroObject.HitPoints -= (int)Math.Round(totalDamage);
+                totalDamage = Math.Min(CalculateRecievedDamage(attack), MaxHitPoints);
+                AccumulatedDamage += totalDamage;
+                int actualDamage = (int)Math.Floor(AccumulatedDamage);
+                AccumulatedDamage -= actualDamage;
+                troop.HeroObject.HitPoints -= actualDamage;
                 return troop.HeroObject.IsWounded;
             }
             else
