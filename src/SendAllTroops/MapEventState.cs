@@ -36,11 +36,11 @@ namespace CombatModCollection.SendAllTroops
         public float SettlementPenalty = 1;
 
         // For DetailedCombatModel
-        public int BattleScale;
-        public int StageRounds;
-        public readonly int WallLevel;
-        public readonly float MeleePenaltyForAttacker;
-        private readonly int NumberOfRoundsBeforeGateBreach;
+        public int BattleScale = 0;
+        public int StageRounds = 0;
+        public readonly int WallLevel = 0;
+        public readonly float MeleePenaltyForAttacker = 0;
+        private readonly int NumberOfRoundsBeforeGateBreach = 0;
         public bool GateBreached { get { return StageRounds > NumberOfRoundsBeforeGateBreach; } }
 
         private MapEventState(MapEvent mapEvent)
@@ -49,7 +49,7 @@ namespace CombatModCollection.SendAllTroops
             IsSiege = mapEvent.IsSiegeAssault;
             if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
-                if (IsSiege)
+                if (IsSiege && mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.SiegeEvent != null && mapEvent.MapEventSettlement.IsFortification)
                 {
                     BattleScale = 4;
                     WallLevel = mapEvent.MapEventSettlement.Town.GetWallLevel();

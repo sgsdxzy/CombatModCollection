@@ -7,11 +7,11 @@ namespace CombatModCollection.SendAllTroops
 {
     public class TroopState
     {
-        //public readonly string Name;
+        private readonly CharacterObject troop;
         private readonly PartyState partyState;
         private readonly bool IsHero;
         private readonly int TotalCount;
-        private float HitPoints;
+        private readonly float MaxHitPoints;
 
         private readonly List<Weapon> Weapons = new List<Weapon>(4);
         private readonly Item Shield = null;
@@ -23,7 +23,20 @@ namespace CombatModCollection.SendAllTroops
         private float AccumulatedDamage = 0;
         private int ExpectedDeathCount = 0;
         private int CurrentDeathCount = 0;
-        private int Alive { get { return TotalCount - CurrentDeathCount; } }
+        private int Alive
+        {
+            get
+            {
+                if (IsHero)
+                {
+                    return troop.HeroObject.IsWounded ? 0 : 1;
+                }
+                else
+                {
+                    return TotalCount - CurrentDeathCount;
+                }
+            }
+        }
         private bool IsUsingShield = false;
         private bool IsUsingRanged = false;
         private bool IsMounted = false;
@@ -31,13 +44,13 @@ namespace CombatModCollection.SendAllTroops
 
         private int _expectedHits = 0;
 
-        public TroopState(PartyState _partyState, CharacterObject troop, int count = 1)
+        public TroopState(PartyState _partyState, CharacterObject _troop, int count = 1)
         {
-            //Name = troop.Name.ToString();
+            troop = _troop;
             partyState = _partyState;
             IsHero = troop.IsHero;
             TotalCount = count;
-            HitPoints = troop.HitPoints;
+            MaxHitPoints = troop.MaxHitPoints();
             if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
             {
                 var template = troop.IsHero ? TroopTemplate.GetRefreshedTemplate(troop) : TroopTemplate.GetTroopTemplate(troop);
@@ -218,7 +231,14 @@ namespace CombatModCollection.SendAllTroops
 
         public PartyAttackComposition MakeTotalAttack(float consumption)
         {
-            return MakeSingleAttack(consumption) * Alive;
+            if (Alive > 0)
+            {
+                return MakeSingleAttack(consumption) * Alive;
+            }
+            else
+            {
+                return new PartyAttackComposition();
+            }
         }
 
         private float CalculateRecievedDamage(PartyAttackComposition attack)
@@ -293,30 +313,17 @@ namespace CombatModCollection.SendAllTroops
             return damage;
         }
 
-        public bool TakeHit(PartyAttackComposition attack, out float totalDamage, out int heroRemainingHP)
+        public bool TakeHit(PartyAttackComposition attack, out float totalDamage)
         {
             if (IsHero)
             {
-                float singleDamage = CalculateRecievedDamage(attack);
                 // Uses the vanilla hero health system
-                totalDamage = Math.Min(singleDamage, HitPoints);
-                HitPoints -= singleDamage;
-                if (HitPoints <= 20.0f)
-                {
-                    CurrentDeathCount = 1;
-                    heroRemainingHP = Math.Min(20, (int)Math.Round(HitPoints));
-                    return true;
-                }
-                else
-                {
-                    CurrentDeathCount = 0;
-                    heroRemainingHP = Math.Max(21, (int)Math.Round(HitPoints));
-                    return false;
-                }
+                totalDamage = CalculateRecievedDamage(attack);
+                troop.HeroObject.HitPoints -= (int)Math.Round(totalDamage);
+                return troop.HeroObject.IsWounded;
             }
             else
             {
-                heroRemainingHP = 0;
                 if (Alive <= 0)
                 {
                     totalDamage = 0;
@@ -339,13 +346,12 @@ namespace CombatModCollection.SendAllTroops
 
                 float singleDamage = CalculateRecievedDamage(attack);
                 // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks  
-                totalDamage = Math.Min(singleDamage * Alive, HitPoints * TotalCount - AccumulatedDamage);
-                AccumulatedDamage += totalDamage;
+                totalDamage = Math.Min(singleDamage, MaxHitPoints) * Alive;
                 if (Settings.Instance.Battle_SendAllTroops_RandomDeath)
                 {
                     for (int i = 0; i < Alive; i++)
                     {
-                        if (MBRandom.RandomFloat * HitPoints < singleDamage)
+                        if (MBRandom.RandomFloat * MaxHitPoints < singleDamage)
                         {
                             ExpectedDeathCount += 1;
                         }
@@ -353,7 +359,12 @@ namespace CombatModCollection.SendAllTroops
                 }
                 else
                 {
-                    ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / HitPoints);
+                    AccumulatedDamage += totalDamage;
+                    ExpectedDeathCount = (int)Math.Round(AccumulatedDamage / MaxHitPoints);
+                    if (ExpectedDeathCount > TotalCount)
+                    {
+                        ExpectedDeathCount = TotalCount;
+                    }
                 }
                 _expectedHits = Alive - 1;
 

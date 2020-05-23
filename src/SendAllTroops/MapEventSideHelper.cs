@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment.Managers;
@@ -74,18 +73,14 @@ namespace CombatModCollection.SendAllTroops
             IBattleObserver battleObserver,
             out float damage)
         {
-            bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage, out int heroRemainingHP);
-            if (strikedTroop.IsHero)
+            bool IsFinishingStrike = mapEventState.ApplyDamageToPartyTroop(attack, strikedTroopParty, strikedTroop, out damage);
+            if (IsFinishingStrike)
             {
-                strikedTroop.HeroObject.HitPoints = heroRemainingHP;
-                if (IsFinishingStrike)
+                if (strikedTroop.IsHero)
                 {
                     battleObserver?.TroopNumberChanged(side.MissionSide, (IBattleCombatant)strikedTroopParty, (BasicCharacterObject)strikedTroop, -1, 0, 1, 0, 0, 0);
                 }
-            }
-            else
-            {
-                if (IsFinishingStrike)
+                else
                 {
                     float survivalChance = Campaign.Current.Models.PartyHealingModel.GetSurvivalChance(strikedTroopParty, strikedTroop, damageType, strikerParty);
                     if (MBRandom.RandomFloat < survivalChance)
@@ -103,10 +98,10 @@ namespace CombatModCollection.SendAllTroops
                             SkillLevelingManager.OnSurgeryApplied(strikedTroopParty.MobileParty, 0.5f);
                     }
                 }
-            }
-            if (IsFinishingStrike)
+
                 // side.RemoveSelectedTroopFromSimulationList();
                 RemoveSelectedTroopFromSimulationList(side, selectedSimulationTroopIndex, strikedTroopList);
+            }
             return IsFinishingStrike;
         }
 

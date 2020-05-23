@@ -29,10 +29,10 @@ namespace CombatModCollection.SendAllTroops
             return troopState;
         }
 
-        public bool ApplyDamageToTroop(PartyAttackComposition attack, CharacterObject troop, out float damage, out int heroRemainingHP)
+        public bool ApplyDamageToTroop(PartyAttackComposition attack, CharacterObject troop, out float damage)
         {
             TroopState troopState = GetTroopState(troop);
-            bool isFinishingBlow = troopState.TakeHit(attack, out damage, out heroRemainingHP);
+            bool isFinishingBlow = troopState.TakeHit(attack, out damage);
             return isFinishingBlow;
         }
 
