@@ -15,8 +15,8 @@ namespace CombatModCollection.WarStomp.MissionPatches
             int forcedAgentMountIndex,
             string horseCreationKey)
         {
-            if (Settings.Instance.Battle_WarStomp_UnstoppableHorseCharge ||
-                (Settings.Instance.Battle_WarStomp_UnstoppableWarHorseCharge && horse.Item.ItemCategory == DefaultItemCategories.WarHorse))
+            if (SubModule.Settings.Battle_WarStomp_UnstoppableHorseCharge ||
+                (SubModule.Settings.Battle_WarStomp_UnstoppableWarHorseCharge && horse.Item.ItemCategory == DefaultItemCategories.WarHorse))
             {
                 var flags = __result.GetAgentFlags();
                 flags &= ~AgentFlag.CanRear;
@@ -26,7 +26,7 @@ namespace CombatModCollection.WarStomp.MissionPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_WarStomp;
+            return SubModule.Settings.Battle_WarStomp;
         }
     }
 }

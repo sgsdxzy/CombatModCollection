@@ -23,7 +23,7 @@ namespace CombatModCollection.ModifyRespawnParty.MobilePartyHelperPatches
             ++hero.NumberOfCreatedParties;
             spawnedParty.AddElementToMemberRoster(hero.CharacterObject, 1, true);
             int troopNumberLimit = hero == Hero.MainHero || hero.Clan == Clan.PlayerClan ?
-                Settings.Instance.Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn : Settings.Instance.Strategy_ModifyRespawnParty_AILordPartySizeOnRespawn;
+                SubModule.Settings.Strategy_ModifyRespawnParty_PlayerPartySizeOnRespawn : SubModule.Settings.Strategy_ModifyRespawnParty_AILordPartySizeOnRespawn;
             if (!Campaign.Current.GameStarted)
             {
                 float num = (float)(1.0 - (double)MBRandom.RandomFloat * (double)MBRandom.RandomFloat);
@@ -55,7 +55,7 @@ namespace CombatModCollection.ModifyRespawnParty.MobilePartyHelperPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Strategy_ModifyRespawnParty;
+            return SubModule.Settings.Strategy_ModifyRespawnParty;
         }
     }
 }

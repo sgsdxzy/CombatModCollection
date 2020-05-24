@@ -78,27 +78,27 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
             float strengthOfNumber;
             if (mapEventState.IsSiege)
             {
-                strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
-                //if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+                strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                //if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
                 //{
                 //    if (mapEventState.GateBreached)
                 //    {
-                //        strengthOfNumber = (Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber
-                //            + Settings.Instance.Battle_SendAllTroops_StrengthOfNumber) / 2;
+                //        strengthOfNumber = (SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber
+                //            + SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber) / 2;
                 //    }
                 //    else
                 //    {
-                //        strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                //        strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
                 //    }
                 //}
                 //else
                 //{
-                //    strengthOfNumber = Settings.Instance.Battle_SendAllTroops_SiegeStrengthOfNumber;
+                //    strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_SiegeStrengthOfNumber;
                 //}
             }
             else
             {
-                strengthOfNumber = Settings.Instance.Battle_SendAllTroops_StrengthOfNumber;
+                strengthOfNumber = SubModule.Settings.Battle_SendAllTroops_StrengthOfNumber;
             }
             float battleSpeedMultiplier = DamageMultiplier;
             if (strengthOfNumber != 0.6f)
@@ -163,7 +163,7 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_SendAllTroops;
+            return SubModule.Settings.Battle_SendAllTroops;
         }
 
     }

@@ -9,7 +9,7 @@ namespace CombatModCollection.SendAllTroops.CharacterObjectPatches
         public static bool Prefix(ref float __result,
             CharacterObject __instance)
         {
-            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 TroopTemplate template = TroopTemplate.GetTroopTemplate(__instance);
                 __result = template.Strength;
@@ -24,7 +24,7 @@ namespace CombatModCollection.SendAllTroops.CharacterObjectPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_SendAllTroops;
+            return SubModule.Settings.Battle_SendAllTroops;
         }
     }
 }

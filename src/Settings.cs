@@ -1,18 +1,18 @@
-﻿using MBOptionScreen.Attributes;
-using MBOptionScreen.Attributes.v2;
-using MBOptionScreen.Settings;
+﻿using MCM.Abstractions.Attributes;
+using MCM.Abstractions.Attributes.v2;
+using MCM.Abstractions.Settings.Base.Global;
 
 namespace CombatModCollection
 {
-    public class Settings : AttributeSettings<Settings>
+    public class Settings : AttributeGlobalSettings<Settings>
     {
-        public override string Id { get; set; } = "Light.CombatModCollection_v1";
-        public override string ModName => "Combat Mod Collection";
-        public override string ModuleFolderName => "CombatModCollection";
+        public override string Id => "Light.CombatModCollection_v1";
+        public override string DisplayName => "Combat Mod Collection";
+        public override string FolderName => "CombatModCollection";
 
 
         [SettingPropertyBool(displayName: "{=TUkzZ4}SurviveByArmor", Order = 0, RequireRestart = true, HintText = "{=qbaoGX}Enable SurviveByArmor.")]
-        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor", order: 0, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor", GroupOrder = 0, IsMainToggle = true)]
         public bool Battle_SurviveByArmor { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=G8UbtR}Blunt Death Rate", minValue: 0f, maxValue: 1f, Order = 1, RequireRestart = false, HintText = "{=aASlgg}The death rate of blunt weapons.")]
@@ -20,7 +20,7 @@ namespace CombatModCollection
         public float Battle_SurviveByArmor_BluntDeathRate { get; set; } = 0.0f;
 
         [SettingPropertyBool(displayName: "{=FFtdLT}Survive By ExcessiveDamage", Order = 0, RequireRestart = false, HintText = "{=z5oYR8}Use excessive damage to determine survival rate. Excessive damage is the excessive part of the killing blow.")]
-        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor/{=yWuPAT}Survive By Excessive Damage", order: 2, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor/{=yWuPAT}Survive By Excessive Damage", GroupOrder = 2, IsMainToggle = true)]
         public bool Battle_SurviveByArmor_SurviveByExcessiveDamage { get; set; } = true;
 
         [SettingPropertyInteger(displayName: "{=Nbv5e2}Safe Excessive Damage", minValue: -50, maxValue: 50, Order = 1, RequireRestart = false, HintText = "{=o7jTMR}If excessive damage is within this value, one is guaranteed to survive.")]
@@ -44,7 +44,7 @@ namespace CombatModCollection
         public bool Battle_SurviveByArmor_ApplyArmor { get; set; } = false;
 
         [SettingPropertyBool(displayName: "{=9D1mkX}Survive By Armor Value", Order = 0, RequireRestart = false, HintText = "{=AFJ03H}Use Armor value instead of character level to determine survival chance when Survive By Excessive Damage is off, or in battle simulations.")]
-        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor/{=9D1mkX}Survive By Armor Value", order: 3, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=TUkzZ4}SurviveByArmor/{=9D1mkX}Survive By Armor Value", GroupOrder = 3, IsMainToggle = true)]
         public bool Battle_SurviveByArmor_SurviveByArmorValue { get; set; } = true;
 
         [SettingPropertyInteger(displayName: "{=sSG34d}Armor Value Threshold", minValue: 1, maxValue: 400, Order = 1, RequireRestart = false, HintText = "{=ivmSs1}The armor value threshold to give a medium survival chance.")]
@@ -53,7 +53,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=ITpg8n}SendAllTroops", Order = 0, RequireRestart = true, HintText = "{=myZoTQ}Enable SendAllTroops.")]
-        [SettingPropertyGroup(groupName: "{=ITpg8n}SendAllTroops", order: 1, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=ITpg8n}SendAllTroops", GroupOrder = 1, IsMainToggle = true)]
         public bool Battle_SendAllTroops { get; set; } = false;
 
         [SettingPropertyBool(displayName: "{=4aqVhB}Random Damage", Order = 1, RequireRestart = false, HintText = "{=ZrqDEF}If set to false, the damage value is fixed. If true, it will randomly fluctuate around the center points.")]
@@ -77,7 +77,7 @@ namespace CombatModCollection
         public float Battle_SendAllTroops_XPMultiplier { get; set; } = 1.0f;
 
         [SettingPropertyFloatingInteger(displayName: "{=cO5EoB}Strength of Number", minValue: 0f, maxValue: 1f, Order = 0, RequireRestart = false, HintText = "{=Kg9oy2}Controls the penalty applied to the side with more members. A higher value makes the side with more members stronger.")]
-        [SettingPropertyGroup(groupName: "{=ITpg8n}SendAllTroops/{=l7RZ2J}Advanced Settings", order: 6)]
+        [SettingPropertyGroup(groupName: "{=ITpg8n}SendAllTroops/{=l7RZ2J}Advanced Settings", GroupOrder = 6)]
         public float Battle_SendAllTroops_StrengthOfNumber { get; set; } = 0.6f;
 
         [SettingPropertyFloatingInteger(displayName: "{=TopudX}Siege Strength of Number", minValue: 0f, maxValue: 1f, Order = 1, RequireRestart = false, HintText = "{=9djOfH}Controls the penalty applied to the side with more members in sieges. A higher value makes the side with more members stronger.")]
@@ -86,7 +86,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=1RYg7H}WarStomp", Order = 0, RequireRestart = true, HintText = "{=9XnXjr}Enable WarStomp.")]
-        [SettingPropertyGroup(groupName: "{=1RYg7H}WarStomp", order: 2, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=1RYg7H}WarStomp", GroupOrder = 2, IsMainToggle = true)]
         public bool Battle_WarStomp { get; set; } = false;
 
         [SettingPropertyBool(displayName: "{=b218nG}Unstoppable War Horse Charge", Order = 1, RequireRestart = false, HintText = "{=hMCreW}Whether warhorse charges are stoppable by thrust attacks.")]
@@ -107,7 +107,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=4s3EnO}PowerThrust", Order = 0, RequireRestart = true, HintText = "{=IH4Opq}Enable PowerThrust. The total magnitude = kE * (0.5 * weight * speed^2) + kP * (weight * speed) + kC.")]
-        [SettingPropertyGroup(groupName: "{=4s3EnO}PowerThrust", order: 3, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=4s3EnO}PowerThrust", GroupOrder = 3, IsMainToggle = true)]
         public bool Battle_PowerThrust { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=6HDWN0}kE", minValue: 0f, maxValue: 0.2f, valueFormat: "0.000", Order = 1, RequireRestart = false, HintText = "{=DJD6ps}The coefficient for energy when calculating magnitude.")]
@@ -132,7 +132,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=GUT10Z}RealisticBallistics", Order = 0, RequireRestart = true, HintText = "{=346ex2}Enable RealisticBallistics.")]
-        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics", order: 4, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics", GroupOrder = 4, IsMainToggle = true)]
         public bool Battle_RealisticBallistics { get; set; } = false;
 
         [SettingPropertyBool(displayName: "{=j7cmtP}Consistant Arrow Speed", Order = 1, RequireRestart = false, HintText = "{=r3x53T}Change the missile speed of every bow and crossbow to match its damage.")]
@@ -140,7 +140,7 @@ namespace CombatModCollection
         public bool Battle_RealisticBallistics_ConsistantArrowSpeed { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=f0MQ6b}Arrow Speed Multiplier", minValue: 0.1f, maxValue: 2f, Order = 0, RequireRestart = false, HintText = "{=cxEZom}Multiply the missile speed of arrows.")]
-        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=ZK8HFi}Bows", order: 2)]
+        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=ZK8HFi}Bows", GroupOrder = 2)]
         public float Battle_RealisticBallistics_ArrowSpeedMultiplier { get; set; } = 1.0f;
 
         [SettingPropertyFloatingInteger(displayName: "{=0xKaDd}Bow Accuracy Multiplier", minValue: 0.1f, maxValue: 2f, Order = 1, RequireRestart = false, HintText = "{=5T1Oir}Multiple the accuracy of bows.")]
@@ -156,7 +156,7 @@ namespace CombatModCollection
         public bool Battle_RealisticBallistics_BowToCut { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=u97Mjd}Bolt Speed Multiplier", minValue: 0.1f, maxValue: 2f, Order = 0, RequireRestart = false, HintText = "{=A29Q87}Multiple the missile speed of bolts.")]
-        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=wWbzF5}Crossbows", order: 3)]
+        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=wWbzF5}Crossbows", GroupOrder = 3)]
         public float Battle_RealisticBallistics_BoltSpeedMultiplier { get; set; } = 1.0f;
 
         [SettingPropertyFloatingInteger(displayName: "{=RS9Q5r}Crossbow Accuracy Multiplier", minValue: 0.1f, maxValue: 2f, Order = 1, RequireRestart = false, HintText = "{=0TxJ7V}Multiple the accuracy of crossbows.")]
@@ -172,7 +172,7 @@ namespace CombatModCollection
         public bool Battle_RealisticBallistics_CrossbowToCut { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=FkTyl1}Thrown Speed Multiplier", minValue: 0.1f, maxValue: 2f, Order = 0, RequireRestart = false, HintText = "{=fAlgaM}Multiple the missile speed of thrown weapons.")]
-        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=OwEq8g}Thrown Weapons", order: 4)]
+        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=OwEq8g}Thrown Weapons", GroupOrder = 4)]
         public float Battle_RealisticBallistics_ThrownSpeedMultiplier { get; set; } = 1.0f;
 
         [SettingPropertyFloatingInteger(displayName: "{=hEepCK}Thrown Accuracy Multiplier", minValue: 0.1f, maxValue: 2f, Order = 1, RequireRestart = false, HintText = "{=4wpBgt}Multiple the accuracy of thrown weapons.")]
@@ -184,7 +184,7 @@ namespace CombatModCollection
         public float Battle_RealisticBallistics_ThrownDamageMultiplier { get; set; } = 1.0f;
 
         [SettingPropertyFloatingInteger(displayName: "{=vtk5qm}Air Friction of Javelins", minValue: 0f, maxValue: 0.02f, valueFormat: "0.000", Order = 0, RequireRestart = false, HintText = "{=sIzIQe}The air friction coefficient of javelins. The higher the value, the shorter range they can fly.")]
-        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=uM0htR}Air Frictions", order: 5)]
+        [SettingPropertyGroup(groupName: "{=GUT10Z}RealisticBallistics/{=uM0htR}Air Frictions", GroupOrder = 5)]
         public float Battle_RealisticBallistics_AirFrictionJavelin { get; set; } = 0.002f;
 
         [SettingPropertyFloatingInteger(displayName: "{=UwsNpv}Air Friction of Arrows and Bolts", minValue: 0f, maxValue: 0.02f, valueFormat: "0.000", Order = 1, RequireRestart = false, HintText = "{=drgPfb}The air friction coefficient of arrows and bolts. The higher the value, the shorter range they can fly.")]
@@ -201,7 +201,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=93jkRp}Uninterrupted", Order = 0, RequireRestart = true, HintText = "{=9PV6v8}Enable Uninterrupted.")]
-        [SettingPropertyGroup(groupName: "{=93jkRp}Uninterrupted", order: 5, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=93jkRp}Uninterrupted", GroupOrder = 5, IsMainToggle = true)]
         public bool Battle_Uninterrupted { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=ivwMpr}Damage Interrupt Attack Threshold Pierce", minValue: 0f, maxValue: 50f, valueFormat: "0.0", Order = 1, RequireRestart = false, HintText = "{=H5ck0h}Required pierce damage to interrupt attacks.")]
@@ -219,7 +219,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=4ssQXo}ModifyRespawnParty", Order = 0, RequireRestart = true, HintText = "{=3DEgLf}Enable ModifyRespawnParty.")]
-        [SettingPropertyGroup(groupName: "{=4ssQXo}ModifyRespawnParty", order: 6, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=4ssQXo}ModifyRespawnParty", GroupOrder = 6, IsMainToggle = true)]
         public bool Strategy_ModifyRespawnParty { get; set; } = false;
 
         [SettingPropertyInteger(displayName: "{=S6aWgf}AI Lord Party Size on Respawn", minValue: 0, maxValue: 200, Order = 1, RequireRestart = false, HintText = "{=mWy5M3}The number of soldiers AI lords respawn with.")]
@@ -232,7 +232,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=IO6I6z}LearnToQuit", Order = 0, RequireRestart = true, HintText = "{=uTgEDC}Enable LearnToQuit.")]
-        [SettingPropertyGroup(groupName: "{=IO6I6z}LearnToQuit", order: 7, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=IO6I6z}LearnToQuit", GroupOrder = 7, IsMainToggle = true)]
         public bool Strategy_LearnToQuit { get; set; } = false;
 
         [SettingPropertyFloatingInteger(displayName: "{=l1OFVA}Retreat Chance Multiplier", minValue: 0f, maxValue: 5f, Order = 1, RequireRestart = false, HintText = "{=grJG1p}Multiplier to the chance of successful retreat.")]
@@ -245,7 +245,7 @@ namespace CombatModCollection
 
 
         [SettingPropertyBool(displayName: "{=XzbHdq}BanditMerger", Order = 0, RequireRestart = true, HintText = "{=qGI8by}Enable BanditMerger.")]
-        [SettingPropertyGroup(groupName: "{=XzbHdq}BanditMerger", order: 8, isMainToggle: true)]
+        [SettingPropertyGroup(groupName: "{=XzbHdq}BanditMerger", GroupOrder = 8, IsMainToggle = true)]
         public bool Strategy_BanditMerger { get; set; } = false;
 
         [SettingPropertyInteger(displayName: "{=nwr2tB}Merge Radius", minValue: 0, maxValue: 100, Order = 1, RequireRestart = false, HintText = "{=ZZOPqG}The distance between two bandit groups to be merged.")]

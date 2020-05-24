@@ -9,18 +9,18 @@ namespace CombatModCollection.RealisticBallistics.ManagedParametersPatches
         public static void Postfix()
         {
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionArrow,
-                 Settings.Instance.Battle_RealisticBallistics_AirFrictionArrow);
+                 SubModule.Settings.Battle_RealisticBallistics_AirFrictionArrow);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin,
-                Settings.Instance.Battle_RealisticBallistics_AirFrictionJavelin);
+                SubModule.Settings.Battle_RealisticBallistics_AirFrictionJavelin);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe,
-                 Settings.Instance.Battle_RealisticBallistics_AirFrictionAxe);
+                 SubModule.Settings.Battle_RealisticBallistics_AirFrictionAxe);
             ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife,
-                 Settings.Instance.Battle_RealisticBallistics_AirFrictionKnife);
+                 SubModule.Settings.Battle_RealisticBallistics_AirFrictionKnife);
         }
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_RealisticBallistics;
+            return SubModule.Settings.Battle_RealisticBallistics;
         }
     }
 }

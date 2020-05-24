@@ -47,7 +47,7 @@ namespace CombatModCollection.SendAllTroops
         {
             StageRounds = (int)MapEvent__mapEventUpdateCount.GetValue(mapEvent);
             IsSiege = mapEvent.IsSiegeAssault;
-            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 if (IsSiege && mapEvent.MapEventSettlement != null && mapEvent.MapEventSettlement.SiegeEvent != null && mapEvent.MapEventSettlement.IsFortification)
                 {

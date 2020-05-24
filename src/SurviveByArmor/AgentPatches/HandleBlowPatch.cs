@@ -20,7 +20,7 @@ namespace CombatModCollection.SurviveByArmor.AgentPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_SurviveByArmor;
+            return SubModule.Settings.Battle_SurviveByArmor;
         }
     }
 }

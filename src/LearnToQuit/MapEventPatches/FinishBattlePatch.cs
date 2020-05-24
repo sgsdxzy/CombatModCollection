@@ -43,7 +43,7 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Strategy_LearnToQuit;
+            return SubModule.Settings.Strategy_LearnToQuit;
         }
     }
 }

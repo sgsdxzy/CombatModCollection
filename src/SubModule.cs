@@ -8,11 +8,13 @@ namespace CombatModCollection
     public class SubModule : MBSubModuleBase
     {
         private bool Patched = false;
+        public static Settings Settings;
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             if (!Patched)
             {
+                Settings = Settings.Instance;
                 var harmony = new Harmony("mod.bannerlord.lightcombat");
                 harmony.PatchAll();
                 Patched = true;
@@ -28,7 +30,7 @@ namespace CombatModCollection
 
         private void AddModels(CampaignGameStarter gameStarter)
         {
-            if (Settings.Instance.Strategy_BanditMerger)
+            if (SubModule.Settings.Strategy_BanditMerger)
             {
                 gameStarter?.AddModel(new BanditMerger.LightBanditDensityModel());
             }
@@ -36,7 +38,7 @@ namespace CombatModCollection
 
         private void AddBehaviors(CampaignGameStarter gameStarter)
         {
-            if (Settings.Instance.Strategy_BanditMerger)
+            if (SubModule.Settings.Strategy_BanditMerger)
             {
                 gameStarter?.AddBehavior(new BanditMerger.BanditMergeBehavior());
             }

@@ -9,16 +9,16 @@ namespace CombatModCollection.Uninterrupted.ManagedParametersPatches
         public static void Postfix()
         {
             ManagedParameters.SetParameter(ManagedParametersEnum.DamageInterruptAttackThresholdPierce,
-                 Settings.Instance.Battle_Uninterrupted_DamageInterruptAttackthresholdPierce);
+                 SubModule.Settings.Battle_Uninterrupted_DamageInterruptAttackthresholdPierce);
             ManagedParameters.SetParameter(ManagedParametersEnum.DamageInterruptAttackThresholdCut,
-                 Settings.Instance.Battle_Uninterrupted_DamageInterruptAttackthresholdCut);
+                 SubModule.Settings.Battle_Uninterrupted_DamageInterruptAttackthresholdCut);
             ManagedParameters.SetParameter(ManagedParametersEnum.DamageInterruptAttackThresholdBlunt,
-                 Settings.Instance.Battle_Uninterrupted_DamageInterruptAttackthresholdBlunt);
+                 SubModule.Settings.Battle_Uninterrupted_DamageInterruptAttackthresholdBlunt);
         }
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_Uninterrupted;
+            return SubModule.Settings.Battle_Uninterrupted;
         }
     }
 }

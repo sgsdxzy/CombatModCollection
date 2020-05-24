@@ -51,7 +51,7 @@ namespace CombatModCollection.SendAllTroops
             IsHero = troop.IsHero;
             TotalCount = count;
             MaxHitPoints = troop.MaxHitPoints();
-            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 var template = troop.IsHero ? TroopTemplate.GetRefreshedTemplate(troop) : TroopTemplate.GetTroopTemplate(troop);
                 foreach (var weapon in template.Weapons)
@@ -204,7 +204,7 @@ namespace CombatModCollection.SendAllTroops
 
         private PartyAttackComposition MakeSingleAttack(float consumption)
         {
-            if (!Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+            if (!SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 PartyAttackComposition attack = new PartyAttackComposition();
                 attack.Infantry.Melee = Strength;
@@ -244,7 +244,7 @@ namespace CombatModCollection.SendAllTroops
         private float CalculateRecievedDamage(PartyAttackComposition attack)
         {
             float damage;
-            if (Settings.Instance.Battle_SendAllTroops_DetailedCombatModel)
+            if (SubModule.Settings.Battle_SendAllTroops_DetailedCombatModel)
             {
                 float infantryMeleeDefense = ArmorPoints;
                 float infantryMissileDefense = ArmorPoints;
@@ -305,7 +305,7 @@ namespace CombatModCollection.SendAllTroops
                 damage = attack.Infantry.Melee / Strength;
             }
 
-            if (Settings.Instance.Battle_SendAllTroops_RandomDamage)
+            if (SubModule.Settings.Battle_SendAllTroops_RandomDamage)
             {
                 damage *= MBRandom.RandomFloat * MBRandom.RandomFloat * 4f;
             }
@@ -350,7 +350,7 @@ namespace CombatModCollection.SendAllTroops
                 float singleDamage = CalculateRecievedDamage(attack);
                 // Apply the damage to all alive members at once, and ignore the next Alive - 1 attacks  
                 totalDamage = Math.Min(singleDamage, MaxHitPoints) * Alive;
-                if (Settings.Instance.Battle_SendAllTroops_RandomDeath)
+                if (SubModule.Settings.Battle_SendAllTroops_RandomDeath)
                 {
                     for (int i = 0; i < Alive; i++)
                     {

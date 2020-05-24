@@ -23,7 +23,7 @@ namespace CombatModCollection.WarStomp.MissionPatches
                 if (Vec3.DotProduct(attackerAgentVelocity, victimAgentVelocity) /
                     (attackerAgentVelocity.Length * victimAgentVelocity.Length) > 0.5)
                 {
-                    specialMagnitude *= Settings.Instance.Battle_WarStomp_WarStompDamageMultiplier;
+                    specialMagnitude *= SubModule.Settings.Battle_WarStomp_WarStompDamageMultiplier;
                 }
             }
 
@@ -31,7 +31,7 @@ namespace CombatModCollection.WarStomp.MissionPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_WarStomp;
+            return SubModule.Settings.Battle_WarStomp;
         }
     }
 }

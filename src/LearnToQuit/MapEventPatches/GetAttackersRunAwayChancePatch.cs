@@ -41,14 +41,14 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
                 // Attacker Runaway
                 if (powerRatio > 1.2)
                 {
-                    float baseChance = (powerRatio - 1.2f) * 1.5f * Settings.Instance.Strategy_LearnToQuit_RetreatChance;
+                    float baseChance = (powerRatio - 1.2f) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
                     float bonus = -(float)__instance.AttackerSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                     AttackerRunaway = MBRandom.RandomFloat < baseChance + bonus;
                 }
             }
             if (AttackerRunaway)
             {
-                if (Settings.Instance.Strategy_LearnToQuit_Verbose)
+                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
                 {
                     Dictionary<string, TextObject> attributes = new Dictionary<string, TextObject>
                     {
@@ -87,7 +87,7 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
                     else
                     {
                         sacrificeRatio = (float)forTryingToGetAway / (float)ofRegularMembers;
-                        float baseChance = (1f - 1.25f * powerRatio) * 1.5f * Settings.Instance.Strategy_LearnToQuit_RetreatChance;
+                        float baseChance = (1f - 1.25f * powerRatio) * 1.5f * SubModule.Settings.Strategy_LearnToQuit_RetreatChance;
                         float bonus = -(float)__instance.DefenderSide.LeaderParty.LeaderHero.GetTraitLevel(DefaultTraits.Valor) * 0.2f;
                         DefenderRunaway = MBRandom.RandomFloat < baseChance + bonus;
                     }
@@ -96,7 +96,7 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
             if (DefenderRunaway)
             {
                 MapEventCustomMembers.DefendersRanAway[__instance.Id] = true;
-                if (Settings.Instance.Strategy_LearnToQuit_Verbose)
+                if (SubModule.Settings.Strategy_LearnToQuit_Verbose)
                 {
                     Dictionary<string, TextObject> attributes = new Dictionary<string, TextObject>
                     {
@@ -118,7 +118,7 @@ namespace CombatModCollection.LearnToQuit.MapEventPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Strategy_LearnToQuit;
+            return SubModule.Settings.Strategy_LearnToQuit;
         }
     }
 }

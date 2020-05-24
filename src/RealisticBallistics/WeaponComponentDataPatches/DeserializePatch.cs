@@ -13,7 +13,7 @@ namespace CombatModCollection.RealisticBallistics.WeaponComponentDataPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_RealisticBallistics;
+            return SubModule.Settings.Battle_RealisticBallistics;
         }
     }
 }

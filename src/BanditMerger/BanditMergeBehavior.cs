@@ -24,7 +24,7 @@ namespace CombatModCollection.BanditMerger
                     && NumberCanBeMerged(mobileParty))
                 {
                     foreach (MobileParty nearbyMobileParty in Campaign.Current.GetNearbyMobileParties(
-                        mobileParty.Position2D, Settings.Instance.Strategy_BanditMerger_MergeRadius, (Func<MobileParty, bool>)(x => true)).ToList())
+                        mobileParty.Position2D, SubModule.Settings.Strategy_BanditMerger_MergeRadius, (Func<MobileParty, bool>)(x => true)).ToList())
                     {
                         if (nearbyMobileParty != null && nearbyMobileParty != mobileParty && nearbyMobileParty.IsActive
                             && nearbyMobileParty.IsBandit && !nearbyMobileParty.IsCurrentlyUsedByAQuest
@@ -45,11 +45,11 @@ namespace CombatModCollection.BanditMerger
         {
             if (party.MapFaction.StringId == "looters")
             {
-                return party.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxLooterNumberForMerge;
+                return party.Party.NumberOfAllMembers < SubModule.Settings.Strategy_BanditMerger_MaxLooterNumberForMerge;
             }
             else
             {
-                return party.Party.NumberOfAllMembers < Settings.Instance.Strategy_BanditMerger_MaxNonLooterNumberForMerge;
+                return party.Party.NumberOfAllMembers < SubModule.Settings.Strategy_BanditMerger_MaxNonLooterNumberForMerge;
             }
         }
     }

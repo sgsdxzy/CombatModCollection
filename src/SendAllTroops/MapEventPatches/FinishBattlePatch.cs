@@ -13,7 +13,7 @@ namespace CombatModCollection.SendAllTroops.MapEventPatches
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_SendAllTroops;
+            return SubModule.Settings.Battle_SendAllTroops;
         }
     }
 }

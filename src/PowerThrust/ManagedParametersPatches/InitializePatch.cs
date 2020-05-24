@@ -9,15 +9,15 @@ namespace CombatModCollection.PowerThrust.ManagedParametersPatches
         public static void Postfix()
         {
             ManagedParameters.SetParameter(ManagedParametersEnum.NonTipThrustHitDamageMultiplier,
-                Settings.Instance.Battle_PowerThrust_NonTipThrustHitDamageMultiplier);
+                SubModule.Settings.Battle_PowerThrust_NonTipThrustHitDamageMultiplier);
             ManagedParameters.SetParameter(ManagedParametersEnum.ThrustHitWithArmDamageMultiplier,
-                Settings.Instance.Battle_PowerThrust_ThrustHitWithArmDamageMultiplier);
+                SubModule.Settings.Battle_PowerThrust_ThrustHitWithArmDamageMultiplier);
             ManagedParameters.SetParameter(ManagedParametersEnum.ThrustCombatSpeedGraphZeroProgressValue, 1.0f);
         }
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_PowerThrust;
+            return SubModule.Settings.Battle_PowerThrust;
         }
     }
 }

@@ -29,13 +29,13 @@ namespace CombatModCollection.WarStomp.MissionPatches
         {
             if (damageType == DamageTypes.Pierce && victimAgentFlag.HasAnyFlag<AgentFlag>(AgentFlag.Mountable))
             {
-                inflictedDamage = (int)(inflictedDamage * Settings.Instance.Battle_WarStomp_DamageMultiplierToHorse);
+                inflictedDamage = (int)(inflictedDamage * SubModule.Settings.Battle_WarStomp_DamageMultiplierToHorse);
             }
         }
 
         public static bool Prepare()
         {
-            return Settings.Instance.Battle_WarStomp;
+            return SubModule.Settings.Battle_WarStomp;
         }
     }
 }

@@ -24,46 +24,46 @@ namespace CombatModCollection.RealisticBallistics
             {
                 case WeaponClass.Bow:
                     float missileSpeed = weaponData.MissileSpeed;
-                    if (Settings.Instance.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
                     {
                         missileSpeed = weaponData.MissileDamage;
                     }
-                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_ArrowSpeedMultiplier;
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ArrowSpeedMultiplier;
                     float accuracy = weaponData.Accuracy;
-                    accuracy *= Settings.Instance.Battle_RealisticBallistics_BowAccuracyMultiplier;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_BowAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     float damage = weaponData.ThrustDamage;
-                    damage *= Settings.Instance.Battle_RealisticBallistics_BowDamageMultiplier;
+                    damage *= SubModule.Settings.Battle_RealisticBallistics_BowDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
-                    if (Settings.Instance.Battle_RealisticBallistics_BowToCut)
+                    if (SubModule.Settings.Battle_RealisticBallistics_BowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
                     break;
                 case WeaponClass.Crossbow:
                     missileSpeed = weaponData.MissileSpeed;
-                    if (Settings.Instance.Battle_RealisticBallistics_ConsistantArrowSpeed)
+                    if (SubModule.Settings.Battle_RealisticBallistics_ConsistantArrowSpeed)
                     {
                         missileSpeed = weaponData.MissileDamage;
                     }
-                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_BoltSpeedMultiplier;
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_BoltSpeedMultiplier;
                     accuracy = weaponData.Accuracy;
-                    accuracy *= Settings.Instance.Battle_RealisticBallistics_CrossbowAccuracyMultiplier;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_CrossbowAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     damage = weaponData.ThrustDamage;
-                    damage *= Settings.Instance.Battle_RealisticBallistics_CrossbowDamageMultiplier;
+                    damage *= SubModule.Settings.Battle_RealisticBallistics_CrossbowDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
-                    if (Settings.Instance.Battle_RealisticBallistics_CrossbowToCut)
+                    if (SubModule.Settings.Battle_RealisticBallistics_CrossbowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
@@ -72,27 +72,27 @@ namespace CombatModCollection.RealisticBallistics
                 case WeaponClass.ThrowingAxe:
                 case WeaponClass.ThrowingKnife:
                     missileSpeed = weaponData.MissileSpeed;
-                    missileSpeed *= Settings.Instance.Battle_RealisticBallistics_ThrownSpeedMultiplier;
+                    missileSpeed *= SubModule.Settings.Battle_RealisticBallistics_ThrownSpeedMultiplier;
                     accuracy = weaponData.Accuracy;
-                    accuracy *= Settings.Instance.Battle_RealisticBallistics_ThrownAccuracyMultiplier;
+                    accuracy *= SubModule.Settings.Battle_RealisticBallistics_ThrownAccuracyMultiplier;
                     if (accuracy > 100)
                     {
                         accuracy = 100;
                     }
                     damage = weaponData.ThrustDamage;
-                    damage *= Settings.Instance.Battle_RealisticBallistics_ThrownDamageMultiplier;
+                    damage *= SubModule.Settings.Battle_RealisticBallistics_ThrownDamageMultiplier;
                     WeaponComponentData_MissileSpeed.SetValue(weaponData, (int)Math.Round(missileSpeed));
                     WeaponComponentData_Accuracy.SetValue(weaponData, (int)Math.Round(accuracy));
                     WeaponComponentData_ThrustDamage.SetValue(weaponData, (int)Math.Round(damage));
                     break;
                 case WeaponClass.Arrow:
-                    if (Settings.Instance.Battle_RealisticBallistics_BowToCut)
+                    if (SubModule.Settings.Battle_RealisticBallistics_BowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }
                     break;
                 case WeaponClass.Bolt:
-                    if (Settings.Instance.Battle_RealisticBallistics_CrossbowToCut)
+                    if (SubModule.Settings.Battle_RealisticBallistics_CrossbowToCut)
                     {
                         WeaponComponentData_ThrustDamageType.SetValue(weaponData, DamageTypes.Cut);
                     }

@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bannerlord.MBOptionScreen" Version="2.0.10" />
+    <PackageReference Include="Bannerlord.MCM.Integrated" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
